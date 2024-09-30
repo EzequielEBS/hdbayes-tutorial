@@ -1,5 +1,8 @@
 setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/Grad MAp FGV/proj_hdbayes/hdbayes-tutorials/bayesian_subset_selection")
 
+# load libraries
+library(hdbayes)
+
 # load data
 formulas <- readRDS("data/formulas.rds")
 covariates_models <- readRDS("data/covariates_models.rds")
@@ -24,3 +27,4 @@ metrics <- data.frame(
 
 # save results
 saveRDS(metrics, "results/metrics.rds")
+write.csv(metrics, "results/metrics.csv", row.names = FALSE)
