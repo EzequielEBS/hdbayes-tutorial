@@ -5,16 +5,14 @@ library(bayestestR)
 library(ggplot2)
 library(dplyr)
 library(MCMCpack)
-library(bayestestR)
-library(dplyr)
 
 # load auxiliary functions
 source("functions.R")
 
 # load samples
-load("post_samples.RData")
-load("post_samples_ctrl.RData")
-load("post_samples_trt.RData")
+load("data/post_samples.RData")
+load("data/post_samples_ctrl.RData")
+load("data/post_samples_trt.RData")
 
 # normalize data
 age_stats <- with(actg036,
@@ -43,8 +41,8 @@ data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
 
 # calculate marginal means by arm
-mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", family, post_samples_ctrl$post_betam)
-mean_models_trt <- mean_models_arm(current_data_trt, "outcome", family, post_samples_trt$post_betam)
+mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", "treatment", family, post_samples_ctrl$post_betam)
+mean_models_trt <- mean_models_arm(current_data_trt, "outcome", "treatment", family, post_samples_trt$post_betam)
 
 bma_ctrl <- bma(mean_models_ctrl, post_samples_ctrl$df_post, 10000)
 bma_trt <- bma(mean_models_trt, post_samples_trt$df_post, 10000)
@@ -61,6 +59,8 @@ bma_marg_means <- ggplot(df_bma_arm, aes(x = value, fill = group)) +
   theme_gray() +
   scale_fill_manual(values = c("blue", "red"))
 
+bma_marg_means
+
 # Save the plot
 ggsave("figures/bma_marg_means.png", bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
 
@@ -68,21 +68,21 @@ df_bma <- data.frame(
   value = bma_trt - bma_ctrl
 )
 
-ci_hdi_bma_95 <- ci(df_bma$value, method = "HDI", ci = 0.95)
-ci_hdi_bma_90 <- ci(df_bma$value, method = "HDI", ci = 0.90)
+ci_bma_95 <- ci(df_bma$value, ci = 0.95)
+ci_bma_90 <- ci(df_bma$value, ci = 0.90)
 
-hdi_95_lower <- ci_hdi_bma_95$CI_low
-hdi_95_upper <- ci_hdi_bma_95$CI_high
-hdi_90_lower <- ci_hdi_bma_90$CI_low
-hdi_90_upper <- ci_hdi_bma_90$CI_high
+ci_95_lower <- ci_bma_95$CI_low
+ci_95_upper <- ci_bma_95$CI_high
+ci_90_lower <- ci_bma_90$CI_low
+ci_90_upper <- ci_bma_90$CI_high
 
 # Compute density for the entire dataset
 density_data <- density(df_bma$value) # Compute density
 density_df <- data.frame(x = density_data$x, y = density_data$y) # Convert to data frame
 
 # Filter density data for the HDI regions
-density_95 <- density_df %>% filter(x >= hdi_95_lower & x <= hdi_95_upper)
-density_90 <- density_df %>% filter(x >= hdi_90_lower & x <= hdi_90_upper)
+density_95 <- density_df %>% filter(x >= ci_95_lower & x <= ci_95_upper)
+density_90 <- density_df %>% filter(x >= ci_90_lower & x <= ci_90_upper)
 
 # Compute the mean, median, and quartiles
 mean_value <- mean(df_bma$value)
@@ -146,8 +146,8 @@ df_bma_summary <- data.frame(
             format(round(median_value, 3), nsmall = 3),
             format(round(q1_value, 3), nsmall = 3),
             format(round(q3_value, 3), nsmall = 3),
-            paste0("[", format(round(hdi_90_lower, 3), nsmall = 3), ", ", format(round(hdi_90_upper, 3), nsmall = 3), "]"),
-            paste0("[", format(round(hdi_95_lower, 3), nsmall = 3), ", ", format(round(hdi_95_upper, 3), nsmall = 3), "]")
+            paste0("[", format(round(ci_90_lower, 3), nsmall = 3), ", ", format(round(ci_90_upper, 3), nsmall = 3), "]"),
+            paste0("[", format(round(ci_95_lower, 3), nsmall = 3), ", ", format(round(ci_95_upper, 3), nsmall = 3), "]")
   )
 )
 

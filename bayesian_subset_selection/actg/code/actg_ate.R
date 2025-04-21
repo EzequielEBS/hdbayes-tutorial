@@ -33,6 +33,11 @@ current_data_ctrl <- current_data[current_data$treatment == 0,
 current_data_trt <- current_data[current_data$treatment == 1, 
                                  !(names(current_data) %in% c("treatment"))]
 
+# empirical ate
+mean_ctrl <- mean(current_data_ctrl$outcome)
+mean_trt <- mean(current_data_trt$outcome)
+raw_ate <- mean_trt - mean_ctrl
+
 # set parameters
 data <- list(current_data, hist_data)
 data_ctrl <- list(current_data_ctrl, hist_data)
@@ -40,8 +45,8 @@ data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
 
 # calculate ATE
-mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", family, post_samples_ctrl$post_betam)
-mean_models_trt <- mean_models_arm(current_data_trt, "outcome", family, post_samples_trt$post_betam)
+mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", "treatment", family, post_samples_ctrl$post_betam)
+mean_models_trt <- mean_models_arm(current_data_trt, "outcome", "treatment", family, post_samples_trt$post_betam)
 mean_ctrl <- mean_arm(post_samples_ctrl$df_post$post_model, mean_models_ctrl)
 mean_trt <- mean_arm(post_samples_trt$df_post$post_model, mean_models_trt)
 ate <- mean_trt - mean_ctrl
@@ -61,9 +66,24 @@ plot_ate <- ggplot(df_ate, aes(x = ate)) +
   labs(title = "Posterior distribution of the average treatment effect (ATE)", x = "ATE", y = "") +
   theme_gray()
 
+plot_ate
+
+df_or <- data.frame(
+  or = mean_ctrl / (1-mean_ctrl) / 
+    (mean_trt / (1-mean_trt))
+)
+
+# Plot the histogram
+plot_or <- ggplot(df_or, aes(x = or)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Posterior distribution of the odds ratio", x = "OR", y = "") +
+  theme_gray()
+
+plot_or
+
 # Save plot
-ggsave("figures/posterior_distribution_ate.png",
-       plot_ate, width = 10, height = 7, units = "in", dpi = 300)
+ggsave("figures/posterior_distribution_or.png",
+       plot_or, width = 10, height = 7, units = "in", dpi = 300)
 
 ########################################################################################
 # Plot posterior distribution of model covariates
@@ -81,21 +101,22 @@ post_beta_models_trt <- post_samples$post_betam[filter_models_trt]
 
 # Create individual plots for models with treatment effect
 plots_post_trt <- lapply(seq_along(post_beta_models_trt), function(i) {
-  ggplot(post_beta_models_trt[[i]], aes(x = treatment)) +
+  ggplot(exp(post_beta_models_trt[[i]]), aes(x = treatment)) +
     geom_histogram(bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
     labs(title = paste("Model:", cov_models_trt[i]), x = "", y = "") +
-    xlim(c(-2.5, 1.5)) +
-    theme_gray()
+    xlim(c(0, 1.5)) +
+    theme_gray() +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "black")
 })
 
 # Combine all plots using patchwork for models with treatment effect
 combined_plot_post_trt <- Reduce(`+`, plots_post_trt) + 
-  plot_annotation(title = "Posterior distribution of treatment effect in models") +
+  plot_annotation(title = "Posterior distribution of the odds ratio of treatment effect") +
   theme_gray()
 combined_plot_post_trt
 
 # Save plot
-ggsave("figures/posterior_distribution_treatment_effect.png",
+ggsave("figures/posterior_distribution_or_treatment_effect.png",
        combined_plot_post_trt, width = 15, height = 10, units = "in", dpi = 300)
 
 # Extract covariates and posterior samples for models without treatment effect
@@ -110,10 +131,11 @@ plots_post_wtrt <- lapply(seq_along(post_beta_models_wtrt), function(i) {
                                                            "logit_a0s[1]",
                                                            ".chain", ".iteration", ".draw"))]
   plots_i <- lapply(seq_along(covariates), function(j) {
-    ggplot(post_beta_models_wtrt[[i]], aes(x = !!sym(covariates[j]))) +
+    ggplot(exp(post_beta_models_wtrt[[i]]), aes(x = !!sym(covariates[j]))) +
       geom_histogram(bins = 30, fill = "skyblue", color = "black", alpha = 0.7) +
       labs(title = covariates[j], x = "", y = "") +
-      theme_gray()
+      theme_gray() +
+      geom_vline(xintercept = 1, linetype = "dashed", color = "black")
   })
   wrap_elements(Reduce(`+`, plots_i) + plot_layout(ncol = length(plots_i)) + 
                   plot_annotation(title = paste("Model:", cov_models_wtrt[i])) +
@@ -122,12 +144,12 @@ plots_post_wtrt <- lapply(seq_along(post_beta_models_wtrt), function(i) {
 
 # Combine all plots using patchwork for models without treatment effect
 combined_plot_post_wtrt <- Reduce(`+`, plots_post_wtrt) + plot_layout(ncol = 2) +
-  plot_annotation(title = "Posterior distribution of model covariates without treatment effect") +
+  plot_annotation(title = "Posterior distribution of the odds ratio (models without treatment effect)") +
   theme_gray()
 combined_plot_post_wtrt
 
 # Save plot
-ggsave("figures/posterior_distribution_covariates_without_treatment_effect.png",
+ggsave("figures/posterior_distribution_or_without_treatment_effect.png",
        combined_plot_post_wtrt, width = 20, height = 10, units = "in", dpi = 300)
 
 ########################################################################################
@@ -138,6 +160,12 @@ ggsave("figures/posterior_distribution_covariates_without_treatment_effect.png",
 # Convert matrices to dataframes and reshape them
 df_mean_models_ctrl <- as.data.frame(mean_models_ctrl)
 df_mean_models_trt <- as.data.frame(mean_models_trt)
+
+df_odds_ratio <- df_mean_models_ctrl / (1-df_mean_models_ctrl) / 
+  (df_mean_models_trt / (1-df_mean_models_trt)) 
+colnames(df_odds_ratio) <- paste0("Model: ", post_samples_ctrl$df_post$model)
+df_odds_ratio <- melt(df_odds_ratio)
+
 
 # Add identifiers for matrices
 df_mean_models_ctrl$arm <- "crtl"
@@ -179,6 +207,24 @@ plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
 # Save plot
 ggsave("figures/posterior_distribution_means_by_arm.png",
        plot_means_arm, width = 15, height = 20, units = "in", dpi = 300, scale = 0.5)
+
+# plot odds ratio
+plot_or_by_model <- ggplot(df_odds_ratio, aes(x = value)) +
+  geom_histogram(alpha = 0.6, bins = 30, position = "identity", fill = "skyblue") +
+  facet_wrap(~ variable, 
+             scales = "free",
+             ncol = 2) +  # Separate plots for each column
+  labs(
+    title = "Posterior distribution of the odds ratio",
+    x = "",
+    y = ""
+  ) +
+  xlim(range(df_odds_ratio$value)) +
+  theme_gray()
+
+# Save plot
+ggsave("figures/posterior_distribution_or_by_model.png",
+       plot_or_by_model, width = 15, height = 20, units = "in", dpi = 300, scale = 0.5)
 
 ########################################################################################
 # Plots of the posterior distribution of beta by arm
@@ -241,13 +287,13 @@ plots_post_beta2 <- plots_post_beta[len_cov == 2]
 plots_post_beta3 <- plots_post_beta[len_cov == 3]
 
 combined_plot_post_beta_1 <- Reduce(`+`, plots_post_beta1) +
-  plot_annotation(title = "Posterior distribution of model covariates by arm - Part 1") +
+  plot_annotation(title = "Posterior distribution of covariate effects by arm - Part 1") +
   theme_gray()
 combined_plot_post_beta_2 <- Reduce(`+`, plots_post_beta2) +
-  plot_annotation(title = "Posterior distribution of model covariates by arm - Part 2") +
+  plot_annotation(title = "Posterior distribution of covariate effects by arm - Part 2") +
   theme_gray()
 combined_plot_post_beta_3 <- Reduce(`+`, plots_post_beta3) +
-  plot_annotation(title = "Posterior distribution of model covariates by arm - Part 3") +
+  plot_annotation(title = "Posterior distribution of covariate effects by arm - Part 3") +
   theme_gray()
 
 combined_plot_post_beta_1
@@ -255,9 +301,182 @@ combined_plot_post_beta_2
 combined_plot_post_beta_3
 
 # Save plot
-ggsave("figures/posterior_distribution_covariates_by_arm1.png",
+ggsave("figures/posterior_distribution_cov_eff_by_arm1.png",
        combined_plot_post_beta_1, width = 20, height = 7, units = "in", dpi = 300)
-ggsave("figures/posterior_distribution_covariates_by_arm2.png",
+ggsave("figures/posterior_distribution_cov_eff_by_arm2.png",
        combined_plot_post_beta_2, width = 20, height = 14, units = "in", dpi = 300)
-ggsave("figures/posterior_distribution_covariates_by_arm3.png",
+ggsave("figures/posterior_distribution_cov_eff_by_arm3.png",
        combined_plot_post_beta_3, width = 7, height = 21, units = "in", dpi = 300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+
+
+fit <- glm(outcome ~ ., 
+           data = current_data[, colnames(current_data) != "treatment"], 
+           family = binomial(link = "logit"))
+
+pred_ctrl <- predict(fit, newdata = current_data_ctrl, type = "response")
+pred_trt <- predict(fit, newdata = current_data_trt, type = "response")
+
+mean_glm_ctrl <- mean(pred_ctrl)
+mean_glm_trt <- mean(pred_trt)
+ate_glm <- mean_glm_trt - mean_glm_ctrl
+
+mean_glm_ctrl
+mean_glm_trt
+ate_glm
+
+
+################################################################################
+
+
+
+fit_ctrl <- glm(outcome ~ ., 
+                data = current_data_ctrl, 
+                family = binomial(link = "logit"))
+fit_trt <- glm(outcome ~ ., 
+               data = current_data_trt, 
+               family = binomial(link = "logit"))
+
+pred_ctrl <- predict(fit_ctrl, newdata = current_data, type = "response")
+pred_trt <- predict(fit_trt, newdata = current_data, type = "response")
+
+mean_glm_ctrl <- mean(pred_ctrl)
+mean_glm_trt <- mean(pred_trt)
+ate_glm <- mean_glm_trt - mean_glm_ctrl
+
+mean_glm_ctrl
+mean_glm_trt
+ate_glm
+
+##############################################################################
+
+library(tidyverse)
+library(broom)
+
+glm1 <- glm(
+  data = current_data,
+  family = binomial,
+  outcome ~ treatment
+)
+
+# ANCOVA-type model
+glm2 <- glm(
+  data = current_data,
+  family = binomial,
+  outcome ~ .
+)
+
+# Confidence interval for odds-ratio
+tidy(glm1, conf.int = T) %>% 
+  filter(term == "treatment") %>% 
+  select(estimate, starts_with("conf.")) %>% 
+  mutate_all(exp)
+
+# ATE
+plogis(coef(glm1)[1] + coef(glm1)[2]) - plogis(coef(glm1)[1])
+# Raw ATE
+current_data %>% 
+  group_by(treatment) %>% 
+  summarise(p = mean(outcome == 1)) %>% 
+  pivot_wider(names_from = treatment, values_from = p) %>% 
+  mutate(sate = `1` - `0`)
+
+# Predict
+nd <- tibble(treatment = 0:1)
+
+# log odds metric
+predict(glm1, 
+        newdata = nd,
+        se.fit = TRUE) %>% 
+  data.frame() %>% 
+  bind_cols(nd)
+
+# probability metric
+predict(glm1, 
+        newdata = nd,
+        se.fit = TRUE,
+        type = "response") %>% 
+  data.frame() %>% 
+  bind_cols(nd)
+
+# sample statistics
+current_data %>% 
+  group_by(treatment) %>% 
+  summarise(p = mean(outcome == 1))
+
+# redefine the data grid
+current_data$id <- 1:nrow(current_data)
+nd <- current_data %>% 
+  select(id) %>% 
+  expand_grid(treatment = 0:1)
+
+predict(glm1, 
+        newdata = nd,
+        se.fit = TRUE,
+        # request the probability metric
+        type = "response") %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  # look at the first 6 rows
+  head()
+
+predict(glm1, 
+        newdata = nd,
+        se.fit = TRUE,
+        type = "response") %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  select(id, treatment, fit) %>% 
+  pivot_wider(names_from = treatment, values_from = fit) %>% 
+  summarise(ate = mean(`1` - `0`))
+
+
+################################################################################
+library(marginaleffects)
+
+bind_rows(tidy(glm1), tidy(glm2)) %>% 
+  filter(term == "treatment") %>% 
+  mutate(fit = c("glm1", "glm2"),
+         model_type = c("ANOVA", "ANCOVA")) %>%
+  rename(`beta[1]` = estimate) %>% 
+  select(fit, model_type, `beta[1]`, std.error)
+
+get_mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+nd <- current_data %>% 
+  select(age, race, cd4) %>% 
+  expand_grid(treatment = 0:1)
+
+bind_rows(
+  avg_comparisons(glm1, newdata = nd, variables = "treatment"),
+  avg_comparisons(glm2, newdata = nd, variables = "treatment")
+) %>% 
+  data.frame() %>% 
+  mutate(fit = c("glm1", "glm2"),
+         model_type = c("ANOVA", "ANCOVA")) %>%
+  rename(`tau[ATE]` = estimate) %>% 
+  select(fit, model_type, `tau[ATE]`, std.error)

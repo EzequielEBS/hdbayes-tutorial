@@ -178,8 +178,8 @@ post_models <- function(logp0_models, logml_models) {
                       logSumExp(logml_models + logp0_models))
 }
 
-predict_ <- function(data, outcome, family, beta_post){
-  cov_data <- colnames(data)[colnames(data) != outcome]
+predict_ <- function(data, outcome, trt, family, beta_post){
+  cov_data <- colnames(data)[!(colnames(data) %in% c(outcome, trt))]
   prod <- lapply(beta_post,
                  function(post_samp) {
                    cov <- names(post_samp)[names(post_samp) %in% cov_data]
@@ -202,15 +202,17 @@ predict_ <- function(data, outcome, family, beta_post){
   return(pred)
 }
 
-mean_models_arm <- function(data, outcome, family, beta_post){
-  pred <- predict_(data, outcome, family, beta_post)
+mean_models_arm <- function(data, outcome, trt, family, beta_post){
+  pred <- predict_(data, outcome, trt, family, beta_post)
   mean_models <- lapply(pred,
                         function(x) {
-                          sample_weights <- t(rdirichlet(1, rep(1, nrow(data))))
-                          x %*% sample_weights
+                          apply(x, 1, function(row){
+                            sample_weights <- t(rdirichlet(1, rep(1, nrow(data))))
+                            row %*% sample_weights
+                          })
                         }
   )
-  # mean_models <- lapply(pred, mean)
+  # mean_models <- lapply(pred, rowMeans)
   return(do.call(cbind, mean_models))
 }
 
