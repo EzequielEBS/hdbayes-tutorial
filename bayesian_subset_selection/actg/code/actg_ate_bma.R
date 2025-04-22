@@ -1,4 +1,4 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/Grad MAp FGV/proj_hdbayes/hdbayes-tutorials/bayesian_subset_selection/actg")
+setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
 
 # load libraries
 library(bayestestR)
@@ -7,7 +7,7 @@ library(dplyr)
 library(MCMCpack)
 
 # load auxiliary functions
-source("functions.R")
+source("code/functions.R")
 
 # load samples
 load("data/post_samples.RData")
@@ -62,7 +62,7 @@ bma_marg_means <- ggplot(df_bma_arm, aes(x = value, fill = group)) +
 bma_marg_means
 
 # Save the plot
-ggsave("figures/bma_marg_means.png", bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/figures/bma_marg_means.png", bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
 
 df_bma <- data.frame(
   value = bma_trt - bma_ctrl
@@ -135,8 +135,10 @@ bma_ate <- ggplot() +
   
   theme_gray()
 
+bma_ate
+
 # save the plot
-ggsave("figures/bma_ate.png", bma_ate, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/figures/bma_ate.png", bma_ate, width = 8, height = 6, units = "in", dpi = 300)
 
 # summary of the BMA
 

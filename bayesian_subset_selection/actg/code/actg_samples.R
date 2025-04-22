@@ -1,4 +1,4 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/Grad MAp FGV/proj_hdbayes/hdbayes-tutorials/bayesian_subset_selection/actg")
+setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
 
 # load libraries
 library(hdbayes)
@@ -7,7 +7,7 @@ library(matrixStats)
 library(MCMCpack)
 
 # load auxiliary functions
-source("functions.R")
+source("code/functions.R")
 
 # normalize data
 age_stats <- with(actg036,

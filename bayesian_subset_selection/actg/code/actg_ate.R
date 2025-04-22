@@ -1,12 +1,15 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/Grad MAp FGV/proj_hdbayes/hdbayes-tutorials/bayesian_subset_selection/actg")
+setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
 
 library(ggplot2)
 library(patchwork)
 library(reshape2)
 library(MCMCpack)
+library(broom)
+library(tidyverse)
+library(marginaleffects)
 
 # load auxiliary functions
-source("functions.R")
+source("code/functions.R")
 
 # load samples
 load("data/post_samples.RData")
@@ -82,7 +85,7 @@ plot_or <- ggplot(df_or, aes(x = or)) +
 plot_or
 
 # Save plot
-ggsave("figures/posterior_distribution_or.png",
+ggsave("results/figures/posterior_distribution_or.png",
        plot_or, width = 10, height = 7, units = "in", dpi = 300)
 
 ########################################################################################
@@ -116,7 +119,7 @@ combined_plot_post_trt <- Reduce(`+`, plots_post_trt) +
 combined_plot_post_trt
 
 # Save plot
-ggsave("figures/posterior_distribution_or_treatment_effect.png",
+ggsave("results/figures/posterior_distribution_or_treatment_effect.png",
        combined_plot_post_trt, width = 15, height = 10, units = "in", dpi = 300)
 
 # Extract covariates and posterior samples for models without treatment effect
@@ -149,7 +152,7 @@ combined_plot_post_wtrt <- Reduce(`+`, plots_post_wtrt) + plot_layout(ncol = 2) 
 combined_plot_post_wtrt
 
 # Save plot
-ggsave("figures/posterior_distribution_or_without_treatment_effect.png",
+ggsave("results/figures/posterior_distribution_or_without_treatment_effect.png",
        combined_plot_post_wtrt, width = 20, height = 10, units = "in", dpi = 300)
 
 ########################################################################################
@@ -205,7 +208,7 @@ plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
   theme_gray()
 
 # Save plot
-ggsave("figures/posterior_distribution_means_by_arm.png",
+ggsave("results/figures/posterior_distribution_means_by_arm.png",
        plot_means_arm, width = 15, height = 20, units = "in", dpi = 300, scale = 0.5)
 
 # plot odds ratio
@@ -223,7 +226,7 @@ plot_or_by_model <- ggplot(df_odds_ratio, aes(x = value)) +
   theme_gray()
 
 # Save plot
-ggsave("figures/posterior_distribution_or_by_model.png",
+ggsave("results/figures/posterior_distribution_or_by_model.png",
        plot_or_by_model, width = 15, height = 20, units = "in", dpi = 300, scale = 0.5)
 
 ########################################################################################
@@ -301,33 +304,16 @@ combined_plot_post_beta_2
 combined_plot_post_beta_3
 
 # Save plot
-ggsave("figures/posterior_distribution_cov_eff_by_arm1.png",
+ggsave("results/figures/posterior_distribution_cov_eff_by_arm1.png",
        combined_plot_post_beta_1, width = 20, height = 7, units = "in", dpi = 300)
-ggsave("figures/posterior_distribution_cov_eff_by_arm2.png",
+ggsave("results/figures/posterior_distribution_cov_eff_by_arm2.png",
        combined_plot_post_beta_2, width = 20, height = 14, units = "in", dpi = 300)
-ggsave("figures/posterior_distribution_cov_eff_by_arm3.png",
+ggsave("results/figures/posterior_distribution_cov_eff_by_arm3.png",
        combined_plot_post_beta_3, width = 7, height = 21, units = "in", dpi = 300)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+################################################################################
+# Checking ate calculations based on 
+# https://solomonkurz.netlify.app/blog/2023-04-24-causal-inference-with-logistic-regression/
 ################################################################################
 
 
@@ -349,8 +335,6 @@ ate_glm
 
 ################################################################################
 
-
-
 fit_ctrl <- glm(outcome ~ ., 
                 data = current_data_ctrl, 
                 family = binomial(link = "logit"))
@@ -371,8 +355,6 @@ ate_glm
 
 ##############################################################################
 
-library(tidyverse)
-library(broom)
 
 glm1 <- glm(
   data = current_data,
@@ -395,6 +377,7 @@ tidy(glm1, conf.int = T) %>%
 
 # ATE
 plogis(coef(glm1)[1] + coef(glm1)[2]) - plogis(coef(glm1)[1])
+
 # Raw ATE
 current_data %>% 
   group_by(treatment) %>% 
@@ -453,7 +436,6 @@ predict(glm1,
 
 
 ################################################################################
-library(marginaleffects)
 
 bind_rows(tidy(glm1), tidy(glm2)) %>% 
   filter(term == "treatment") %>% 
