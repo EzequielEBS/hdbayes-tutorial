@@ -16,7 +16,9 @@ formulas <- readRDS("data/formulas.rds")
 
 # run hdbayes
 fits <- lapply(formulas, function(x) 
-  glm.post(x, family = binomial(link = "logit"), data = list(data), parallel_chains = ncores))
+  glm.post(x, family = binomial(link = "logit"),
+           data = list(data), parallel_chains = ncores,
+           refresh = 0))
 
 # save results
 saveRDS(fits, "results/fits_bayesian_model.rds")
