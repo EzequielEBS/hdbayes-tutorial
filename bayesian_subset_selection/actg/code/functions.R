@@ -178,8 +178,14 @@ post_models <- function(logp0_models, logml_models) {
                       logSumExp(logml_models + logp0_models))
 }
 
-predict_ <- function(data, outcome, trt, family, beta_post){
-  cov_data <- colnames(data)[!(colnames(data) %in% c(outcome, trt))]
+predict_ <- function(data, outcome, trt, family, beta_post, arm){
+  # cov_data <- colnames(data)[!(colnames(data) %in% c(outcome, trt))]
+  if (arm == 1) {
+    data[[trt]] <- 1
+  } else if (arm == 0) {
+    data[[trt]] <- 0
+  }
+  cov_data <- colnames(data)[!(colnames(data) %in% c(outcome))]
   prod <- lapply(beta_post,
                  function(post_samp) {
                    cov <- names(post_samp)[names(post_samp) %in% cov_data]
@@ -202,8 +208,8 @@ predict_ <- function(data, outcome, trt, family, beta_post){
   return(pred)
 }
 
-mean_models_arm <- function(data, outcome, trt, family, beta_post){
-  pred <- predict_(data, outcome, trt, family, beta_post)
+mean_models_arm <- function(data, outcome, trt, family, beta_post, arm){
+  pred <- predict_(data, outcome, trt, family, beta_post, arm)
   mean_models <- lapply(pred,
                         function(x) {
                           apply(x, 1, function(row){
@@ -216,9 +222,9 @@ mean_models_arm <- function(data, outcome, trt, family, beta_post){
   return(do.call(cbind, mean_models))
 }
 
-mean_arm <- function(post_models, mean_arm_models){
-  mean_arm_models %*% post_models
-}
+# mean_arm <- function(post_models, mean_arm_models){
+#   mean_arm_models %*% post_models
+# }
 
 bma <- function(x, df_post, n_samples = 1000){
   ks <- sample(1:nrow(df_post), n_samples, replace = TRUE, prob = df_post$post_model)

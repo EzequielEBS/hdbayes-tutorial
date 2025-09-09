@@ -1,64 +1,25 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
-
 # load libraries
 library(bayestestR)
 library(ggplot2)
 library(dplyr)
 library(MCMCpack)
 library(patchwork)
+library(reshape2)
+library(hdbayes)
 
 # load auxiliary functions
-source("code/functions.R")
+source("bayesian_subset_selection/actg/code/functions.R")
 
 # load samples
-load("data/post_samples.RData")
-load("data/post_samples_ctrl.RData")
-load("data/post_samples_trt.RData")
+load("bayesian_subset_selection/actg/data/post_samples.RData")
+load("bayesian_subset_selection/actg/data/post_samples_ctrl.RData")
+load("bayesian_subset_selection/actg/data/post_samples_trt.RData")
+load("bayesian_subset_selection/actg/data/mean_models_ctrl.RData")
+load("bayesian_subset_selection/actg/data/mean_models_trt.RData")
+load("bayesian_subset_selection/actg/data/bma_ctrl.RData")
+load("bayesian_subset_selection/actg/data/bma_trt.RData")
 
-# define data
-current_data <- actg036
-hist_data <- actg019
-
-# split data
-current_data_ctrl <- current_data[current_data$treatment == 0, 
-                                  !(names(current_data) %in% c("treatment"))]
-current_data_trt <- current_data[current_data$treatment == 1, 
-                                 !(names(current_data) %in% c("treatment"))]
-
-# normalize data
-age_stats_ctrl <- with(current_data_ctrl,
-                       c('mean' = mean(age), 'sd' = sd(age)))
-cd4_stats_ctrl <- with(current_data_ctrl,
-                       c('mean' = mean(cd4), 'sd' = sd(cd4)))
-age_stats_trt <- with(current_data_trt,
-                      c('mean' = mean(age), 'sd' = sd(age)))
-cd4_stats_trt <- with(current_data_trt,
-                      c('mean' = mean(cd4), 'sd' = sd(cd4)))
-age_stats_hist <- with(hist_data,
-                       c('mean' = mean(age), 'sd' = sd(age)))
-cd4_stats_hist <- with(hist_data,
-                       c('mean' = mean(cd4), 'sd' = sd(cd4)))
-
-current_data_ctrl$age <- (current_data_ctrl$age - age_stats_ctrl['mean']) / age_stats_ctrl['sd']
-current_data_ctrl$cd4 <- (current_data_ctrl$cd4 - cd4_stats_ctrl['mean']) / cd4_stats_ctrl['sd']
-current_data_trt$age <- (current_data_trt$age - age_stats_trt['mean']) / age_stats_trt['sd']
-current_data_trt$cd4 <- (current_data_trt$cd4 - cd4_stats_trt['mean']) / cd4_stats_trt['sd']
-hist_data$age <- (hist_data$age - age_stats_hist['mean']) / age_stats_hist['sd']
-hist_data$cd4 <- (hist_data$cd4 - cd4_stats_hist['mean']) / cd4_stats_hist['sd']
-
-# set parameters
-data <- list(current_data, hist_data)
-data_ctrl <- list(current_data_ctrl, hist_data)
-data_trt <- list(current_data_trt, hist_data)
-family <- binomial(link = "logit")
-
-# calculate marginal means by arm
-mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", "treatment", family, post_samples_ctrl$post_betam)
-mean_models_trt <- mean_models_arm(current_data_trt, "outcome", "treatment", family, post_samples_trt$post_betam)
-
-bma_ctrl <- bma(mean_models_ctrl, post_samples_ctrl$df_post, 10000)
-bma_trt <- bma(mean_models_trt, post_samples_trt$df_post, 10000)
-
+# create BMA data frames
 df_bma_arm <- data.frame(
   value = c(bma_ctrl, bma_trt),
   group = c(rep("ctrl", length(bma_ctrl)), rep("trt", length(bma_trt)))
@@ -66,8 +27,8 @@ df_bma_arm <- data.frame(
 
 df_or <- data.frame(or = bma_trt / (1-bma_trt) / bma_ctrl / (1-bma_ctrl))
 
+# compute credible intervals for the odds ratio
 ci_or_90 <- ci(df_or$or, ci = 0.90)
-
 ci_or_90_lower <- ci_or_90$CI_low
 ci_or_90_upper <- ci_or_90$CI_high
 
@@ -87,6 +48,7 @@ blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorVal
 
 # Define colors for mean, median, and quartiles
 stats_colors <- c("90% \nBCI" = blended_color,
+                  
                   "Density" = "skyblue",
                   "ATE = 0" = "black",
                   "OR = 1" = "black"
@@ -96,14 +58,14 @@ stats_colors <- c("90% \nBCI" = blended_color,
 plot_or <- ggplot() +
   # geom_density(data = df_or %>% filter(or <= ci_or_90_lower), aes(x = or), 
   #              color = "skyblue", fill = "skyblue", alpha = 0.5) +
-  geom_area(data = or_density_df %>% filter(x <= ci_or_90_lower + 0.005), 
-            aes(x = x, y = y, fill = "Density", colour = "Density"), 
+  geom_area(data = or_density_df %>% filter(x <= ci_or_90_lower + 0.003), 
+            aes(x = x, y = y, fill = "Density"), 
             alpha = 0.7) +
-  geom_area(data = or_density_df %>% filter(x >= ci_or_90_upper - 0.005), 
-            aes(x = x, y = y, fill = "Density", colour = "Density"), 
+  geom_area(data = or_density_df %>% filter(x >= ci_or_90_upper - 0.001), 
+            aes(x = x, y = y, fill = "Density"), 
             alpha = 0.7) +
   geom_area(data = or_density_90, 
-            aes(x = x, y = y, fill = "90% \nBCI", colour = "Density"), 
+            aes(x = x, y = y, fill = "90% \nBCI"), 
             alpha = 0.7) +
   geom_vline(aes(xintercept = 1, colour = "OR = 1"), linetype = "dotted", size = 1)  +
   labs(title = "",
@@ -112,7 +74,7 @@ plot_or <- ggplot() +
   scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
   scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
   # scale_color_manual(name = NULL, values = stats_colors) +
-  theme_minimal() +
+  theme_bw() +
   theme(legend.position = c(.95, .95),
         legend.justification = c("right", "top"),
         legend.box.just = "right",
@@ -120,17 +82,22 @@ plot_or <- ggplot() +
         legend.background = element_rect(fill = "white", color = "black"),
         panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
-  )
+  ) +
+  theme(text = element_text(size = 16),        # Base text size
+        axis.title = element_text(size = 18),  # Axis titles
+        axis.text = element_text(size = 16),   # Axis tick labels
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
 
 plot_or
 
 # Save plot
-ggsave("results/figures/posterior_distribution_or.png",
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or.png",
        plot_or, width = 10, height = 7, units = "in", dpi = 300)
 
 # Plot the histograms
 bma_marg_means <- ggplot(df_bma_arm, aes(x = value, fill = group)) +
-  geom_histogram(alpha = 0.5, position = "identity", bins = 30) +
+  geom_density(alpha = 0.5, position = "identity") +
   labs(title = "", x = "Marginal Mean", y = "") +
   theme_gray() +
   scale_fill_manual(values = c("blue", "red"))
@@ -138,7 +105,8 @@ bma_marg_means <- ggplot(df_bma_arm, aes(x = value, fill = group)) +
 bma_marg_means
 
 # Save the plot
-ggsave("results/figures/bma_marg_means.png", bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/bma_marg_means.png", 
+       bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
 
 df_bma <- data.frame(
   value = bma_trt - bma_ctrl
@@ -170,18 +138,18 @@ q3_value <- quantile(df_bma$value, 0.75)
 bma_ate <- ggplot() +
   # Full density curve
   # geom_density(data = df_bma, aes(x = value), color = "skyblue", fill = "skyblue", alpha = 0.5) +
-  geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 0.0001), 
-            aes(x = x, y = y, fill = "Density", colour = "Density"), 
+  geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 0.0003), 
+            aes(x = x, y = y, fill = "Density"), 
             alpha = 0.7) +
   geom_area(data = ate_density_df %>% filter(x >= ci_ate_90_upper - 0.0003), 
-            aes(x = x, y = y, fill = "Density", colour = "Density"), 
+            aes(x = x, y = y, fill = "Density"), 
             alpha = 0.7) +
   
   # # Highlight 95% HDI region
-  # geom_area(data = density_95, aes(x = x, y = y, fill = "95%"), alpha = 0.3) +
+  geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI"), alpha = 0.7) +
   # 
   # # Highlight 90% HDI region
-  geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI", colour = "Density"), alpha = 0.7) +
+  # geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI", colour = "Density"), alpha = 0.7) +
   
   # # Add vertical dashed lines for 95% HDI
   # geom_vline(aes(xintercept = ci_95_lower, color = "95% BCI"), linetype = "dashed", size = 1) +
@@ -205,7 +173,7 @@ bma_ate <- ggplot() +
   labs(title = "",
        x = "Average treatment effect (ATE)", y = "", color = "") +
   
-  theme_minimal() +
+  theme_bw() +
   theme(legend.position = c(.95, .95),
         legend.justification = c("right", "top"),
         legend.box.just = "right",
@@ -213,19 +181,32 @@ bma_ate <- ggplot() +
         legend.background = element_rect(fill = "white", color = "black"),
         panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
-  )
+  ) +
+  theme(text = element_text(size = 16),        # Base text size
+        axis.title = element_text(size = 18),  # Axis titles
+        axis.text = element_text(size = 16),   # Axis tick labels
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
 
 bma_ate
 
 # save the plot
-ggsave("results/figures/bma_ate.png", bma_ate, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/bma_ate.png",
+       bma_ate, width = 8, height = 6, units = "in", dpi = 300)
 
 # put or and bma_ate together
-bma_ate_or <- bma_ate + plot_or + plot_layout(ncol = 2, guides = 'collect')
+bma_ate_or <- (bma_ate + theme(legend.position = "none")) + 
+  plot_or + plot_layout(ncol = 2) &
+  theme(
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text  = element_text(size = 14)
+  )
 bma_ate_or
 
 # save the plot
-ggsave("results/figures/bma_ate_or.png", bma_ate_or, width = 16, height = 6, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_or.png",
+       bma_ate_or, width = 14, height = 8, units = "in", dpi = 300)
 
 # summary of the BMA
 df_bma_summary <- data.frame(
@@ -241,3 +222,228 @@ df_bma_summary <- data.frame(
 
 print(xtable::xtable(df_bma_summary, caption = "BMA summary (ATE)"), 
       type = "latex", include.rownames = FALSE)
+
+
+########################################################################################
+# Plot means by arm
+########################################################################################
+
+
+# Convert matrices to dataframes and reshape them
+df_mean_models_ctrl <- as.data.frame(mean_models_ctrl)
+df_mean_models_trt <- as.data.frame(mean_models_trt)
+
+# models <- paste0("Covariates: ", post_samples_ctrl$df_post$model)
+# titles_post_ctrl <- paste("Ctrl:", format(round(post_samples_ctrl$df_post$post_model, digits = 3), 
+#                                                        nsmall = 3))
+# titles_post_trt <- paste("Trt:", format(round(post_samples_trt$df_post$post_model, digits = 3),
+#                                                      nsmall = 3))
+# models <- paste0("Covariates: ", post_samples$df_post$model)
+models <- post_samples$df_post$model
+# titles_post_ctrl <- paste("Ctrl:", format(round(post_samples$df_post$post_model, digits = 3), 
+#                                           nsmall = 3))
+# titles_post_trt <- paste("Trt:", format(round(post_samples$df_post$post_model, digits = 3),
+#                                         nsmall = 3))
+# titles_post <- paste(models, titles_post_ctrl, titles_post_trt, sep = " | ")
+# titles_post <- paste(models, 
+#                      paste("Prob:", 
+#                            format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3)),
+#                      sep = " | ")
+titles_post <- models
+
+# Add identifiers for matrices
+df_mean_models_ctrl$arm <- "Ctrl"
+df_mean_models_trt$arm <- "Trt"
+
+# Combine the data
+df_mean_models <- rbind(
+  melt(df_mean_models_ctrl, id.vars = "arm"),  # Convert to long format
+  melt(df_mean_models_trt, id.vars = "arm")
+)
+
+df_mean_models$variable <- titles_post[match(df_mean_models$variable, 
+                                             paste0("V", 1:(ncol(df_mean_models_ctrl)-1)), 
+                                             nomatch = 0)]
+
+ann <- data.frame(
+  variable = titles_post, 
+  x = rep(0.12, length(titles_post)), # position inside plot
+  y = rep(35, length(titles_post)), # position inside plot
+  label = paste("Prob:", 
+                format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3))
+)
+
+# Plot histograms
+plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
+  geom_density(alpha = 0.6, position = "identity", color = "black") +
+  facet_wrap(~ factor(variable, levels = titles_post), 
+             scales = "fixed",
+             ncol = 3) +  # Separate plots for each column
+  geom_label(
+    data = ann,
+    aes(x, y, label = label),
+    inherit.aes = FALSE,
+    fill = "white",   # box color
+    color = "black",    # text color
+    hjust = 0
+  ) +
+  labs(
+    title = "",
+    x = "Average effect",
+    y = "",
+    fill = "Arm"
+  ) +
+  scale_fill_manual(values = c("blue", "red")) +
+  xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
+  theme_bw() +
+  theme(
+    legend.position = c(0.97, 0.05),   # (x, y) coordinates — bottom right
+    legend.justification = c(1, 0),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(fill = "white", color = "black"),
+  ) +
+  theme(text = element_text(size = 12),        # Base text size
+        axis.title = element_text(size = 14),  # Axis titles
+        axis.text = element_text(size = 12),   # Axis tick labels
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        strip.text = element_text(size = 11))
+
+plot_means_arm
+
+plot_means_arm_top6 <- ggplot(df_mean_models %>%
+                                filter(variable %in% c("age, treatment, cd4", 
+                                                       "age, treatment, race, cd4",
+                                                       "treatment, cd4",
+                                                       "treatment, race, cd4",
+                                                       "age, cd4",
+                                                       "age, race, cd4"
+                                )), 
+                              aes(x = value, fill = arm)) +
+  geom_density(alpha = 0.7, position = "identity", color = "black") +
+  facet_wrap(~ factor(variable,
+                      levels = c("age, treatment, cd4", 
+                                 "age, treatment, race, cd4",
+                                 "treatment, cd4",
+                                 "treatment, race, cd4",
+                                 "age, cd4",
+                                 "age, race, cd4"
+                                 )
+                      ), 
+             scales = "fixed",
+             ncol = 3) +  # Separate plots for each column
+  geom_label(
+    data = ann %>%
+      filter(variable %in% c("age, treatment, cd4", 
+                             "age, treatment, race, cd4",
+                             "treatment, cd4",
+                             "treatment, race, cd4",
+                             "age, cd4",
+                             "age, race, cd4"
+      )),
+    aes(x, y, label = label),
+    inherit.aes = FALSE,
+    fill = "white",   # box color
+    color = "black",    # text color
+    hjust = 0,
+    size = 6
+  ) +
+  labs(
+    title = "",
+    x = "Average effect",
+    y = "",
+    fill = "Arm"
+  ) +
+  scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
+  xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
+  theme_bw() +
+  theme(
+    legend.position = c(0.97, 0.05),   # (x, y) coordinates — bottom right
+    legend.justification = c(1, 0),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(fill = "white", color = "black"),
+  ) +
+  theme(text = element_text(size = 11),        # Base text size
+        axis.title = element_text(size = 14),  # Axis titles
+        axis.text = element_text(size = 12),   # Axis tick labels
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        strip.text = element_text(size = 16))
+
+plot_means_arm_top6
+
+# Save plot
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm.png",
+       plot_means_arm, width = 11, height = 14, units = "in", dpi = 300)
+# Save plot
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_top6.png",
+       plot_means_arm_top6, width = 14, height = 8, units = "in", dpi = 300)
+
+########################################################################################
+# Plot or by arm
+########################################################################################
+
+df_mean_models_or <- as.data.frame(
+  do.call(cbind,
+  lapply(1:(ncol(df_mean_models_trt)-1), function(j) {
+  or <- df_mean_models_trt[,j]/(1-df_mean_models_trt[,j]) / 
+    df_mean_models_ctrl[,j]/(1-df_mean_models_ctrl[,j])
+})
+)
+)
+
+df_mean_models_or <- melt(df_mean_models_or)
+df_mean_models_or$variable <- titles_post[match(df_mean_models_or$variable, 
+                               paste0("V", 1:(ncol(df_mean_models_trt)-1)), 
+                               nomatch = 0)]
+
+ann_or <- df_mean_models_or %>%
+  group_by(variable) %>%
+  summarise(
+    x = 1.8,          # fixed x
+    y = max(density(value)$y) - max(density(value)$y)/5# y depends on max value of the facet
+  )
+ann_or <- merge(ann_or, 
+      data.frame(label = paste("Prob:", 
+                               format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3)),
+                 variable = post_samples$df_post$model),
+      by = "variable")
+
+plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
+  geom_density(alpha = 0.6, position = "identity",  color = "skyblue", fill = "skyblue") +
+  geom_vline(aes(xintercept = 1), linetype = "dotted", size = 1) +
+  facet_wrap(~ factor(variable, levels = titles_post), 
+             scales = "free_y",
+             ncol = 3) +  # Separate plots for each column
+  geom_label(
+    data = ann_or,
+    aes(x, y, label = label),
+    inherit.aes = FALSE,
+    fill = "white",   # box color
+    color = "black",    # text color
+    hjust = 0
+  ) +
+  labs(
+    title = "",
+    x = "Odds ratio",
+    y = ""
+  ) +
+  xlim(floor(range(df_mean_models_or$value)*1e3)/1e3) +
+  theme_bw() +
+  theme(
+    legend.position = c(0.95, 0.05),   # (x, y) coordinates — bottom right
+    legend.justification = c(1, 0),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(fill = "white", color = "black"),
+  ) +
+  theme(text = element_text(size = 12),        # Base text size
+        axis.title = element_text(size = 14),  # Axis titles
+        axis.text = element_text(size = 12),   # Axis tick labels
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        strip.text = element_text(size = 11))
+
+plot_or_models
+
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_by_model.png",
+       plot_or_models, width = 11, height = 14, units = "in", dpi = 300)

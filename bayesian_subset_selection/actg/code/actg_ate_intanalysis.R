@@ -1,5 +1,3 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
-
 library(ggplot2)
 library(patchwork)
 library(reshape2)
@@ -7,6 +5,7 @@ library(MCMCpack)
 library(broom)
 library(tidyverse)
 library(marginaleffects)
+library(hdbayes)
 
 # load auxiliary functions
 source("code/functions.R")
@@ -58,6 +57,7 @@ data_ctrl <- list(current_data_ctrl, hist_data)
 data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
 
+# REWRITE
 # calculate ATE
 mean_models_ctrl <- mean_models_arm(current_data_ctrl, "outcome", "treatment", family, post_samples_ctrl$post_betam)
 mean_models_trt <- mean_models_arm(current_data_trt, "outcome", "treatment", family, post_samples_trt$post_betam)
@@ -476,11 +476,11 @@ nd <- current_data %>%
   expand_grid(treatment = 0:1)
 
 bind_rows(
-  avg_comparisons(glm1, newdata = nd, variables = "treatment"),
-  avg_comparisons(glm2, newdata = nd, variables = "treatment")
+  avg_comparisons(glm1, newdata = nd, variables = "treatment", conf_level = 0.95),
+  avg_comparisons(glm2, newdata = nd, variables = "treatment", conf_level = 0.95)
 ) %>% 
   data.frame() %>% 
   mutate(fit = c("glm1", "glm2"),
          model_type = c("ANOVA", "ANCOVA")) %>%
   rename(`tau[ATE]` = estimate) %>% 
-  select(fit, model_type, `tau[ATE]`, std.error)
+  select(fit, model_type, `tau[ATE]`, std.error, conf.low, conf.high)

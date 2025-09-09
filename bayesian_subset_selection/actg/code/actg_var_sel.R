@@ -1,26 +1,52 @@
-setwd("C:/Users/Ezequiel/OneDrive - Fundacao Getulio Vargas - FGV/MSc_MAp_CD/hdbayes_project/hdbayes-tutorial/bayesian_subset_selection/actg")
-
 # load libraries
 library(hdbayes)
 library(parallel)
 library(matrixStats)
 
 # load auxiliary functions
-source("code/functions.R")
-
-# normalize data
-age_stats <- with(actg036,
-                  c('mean' = mean(age), 'sd' = sd(age)))
-cd4_stats <- with(actg036,
-                  c('mean' = mean(cd4), 'sd' = sd(cd4)))
-actg036$age <- ( actg036$age - age_stats['mean'] ) / age_stats['sd']
-actg019$age <- ( actg019$age - age_stats['mean'] ) / age_stats['sd']
-actg036$cd4 <- ( actg036$cd4 - cd4_stats['mean'] ) / cd4_stats['sd']
-actg019$cd4 <- ( actg019$cd4 - cd4_stats['mean'] ) / cd4_stats['sd']
+source("bayesian_subset_selection/actg/code/functions.R")
 
 # define data
 current_data <- actg036
 hist_data <- actg019
+
+# split data
+current_data_ctrl <- current_data[current_data$treatment == 0, 
+                                  !(names(current_data) %in% c("treatment"))]
+current_data_trt <- current_data[current_data$treatment == 1, 
+                                 !(names(current_data) %in% c("treatment"))]
+
+# normalize data
+age_stats <- with(current_data,
+                  c('mean' = mean(age), 'sd' = sd(age)))
+cd4_stats <- with(current_data,
+                  c('mean' = mean(cd4), 'sd' = sd(cd4)))
+age_stats_ctrl <- with(current_data_ctrl,
+                       c('mean' = mean(age), 'sd' = sd(age)))
+cd4_stats_ctrl <- with(current_data_ctrl,
+                       c('mean' = mean(cd4), 'sd' = sd(cd4)))
+age_stats_trt <- with(current_data_trt,
+                      c('mean' = mean(age), 'sd' = sd(age)))
+cd4_stats_trt <- with(current_data_trt,
+                      c('mean' = mean(cd4), 'sd' = sd(cd4)))
+age_stats_hist <- with(hist_data,
+                       c('mean' = mean(age), 'sd' = sd(age)))
+cd4_stats_hist <- with(hist_data,
+                       c('mean' = mean(cd4), 'sd' = sd(cd4)))
+
+current_data$age <- (current_data$age - age_stats['mean']) / age_stats['sd']
+current_data$cd4 <- (current_data$cd4 - cd4_stats['mean']) / cd4_stats['sd']
+# current_data_ctrl$age <- (current_data_ctrl$age - age_stats['mean']) / age_stats['sd']
+# current_data_ctrl$cd4 <- (current_data_ctrl$cd4 - cd4_stats['mean']) / cd4_stats['sd']
+# current_data_trt$age <- (current_data_trt$age - age_stats['mean']) / age_stats['sd']
+# current_data_trt$cd4 <- (current_data_trt$cd4 - cd4_stats['mean']) / cd4_stats['sd']
+current_data_ctrl$age <- (current_data_ctrl$age - age_stats_ctrl['mean']) / age_stats_ctrl['sd']
+current_data_ctrl$cd4 <- (current_data_ctrl$cd4 - cd4_stats_ctrl['mean']) / cd4_stats_ctrl['sd']
+current_data_trt$age <- (current_data_trt$age - age_stats_trt['mean']) / age_stats_trt['sd']
+current_data_trt$cd4 <- (current_data_trt$cd4 - cd4_stats_trt['mean']) / cd4_stats_trt['sd']
+hist_data$age <- (hist_data$age - age_stats_hist['mean']) / age_stats_hist['sd']
+hist_data$cd4 <- (hist_data$cd4 - cd4_stats_hist['mean']) / cd4_stats_hist['sd']
+
 
 # construct Beta prior with mean 0.5 and variance 0.005
 beta_pars <- elicit_beta_mean_cv(m0 = 0.5, v0 = 0.005)
