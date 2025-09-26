@@ -236,7 +236,7 @@ get.stan.data.npp.wip = function(
   return(standat)
 }
 
-glm.npp_wip = function(
+glm.npp.wip = function(
     formula,
     family,
     data.list,

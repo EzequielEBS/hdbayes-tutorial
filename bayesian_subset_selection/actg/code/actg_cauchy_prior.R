@@ -91,7 +91,7 @@ post_beta <- function(formula) {
                      formula = formula
   )
   a0.lognc <- data.frame(do.call(rbind, a0.lognc))
-  fit <- glm.npp_wip(formula, 
+  fit <- glm.npp.wip(formula, 
                           data = list(current_data,
                                       hist_data),
                           family = family,
