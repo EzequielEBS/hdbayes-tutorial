@@ -5,7 +5,7 @@ library(matrixStats)
 library(MCMCpack)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/functions.R")
+source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
 
 # define data
 current_data <- actg036
@@ -50,15 +50,17 @@ hist_data$cd4 <- (hist_data$cd4 - cd4_stats_hist['mean']) / cd4_stats_hist['sd']
 
 # set parameters
 beta_pars <- elicit_beta_mean_cv(m0 = 0.5, v0 = 0.005)
+delta0 <- 1
+lambda0 <- 1
 a0_seq <- seq(0, 1, length.out = 21)
 data <- list(current_data, hist_data)
 data_ctrl <- list(current_data_ctrl, hist_data)
 data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
-c0 <- 3^0.5
+c0 <- 0.5^0.5
 d0 <- 0.5^0.5
-delta0 <- beta_pars$a
-lambda0 <- beta_pars$b
+# delta0 <- beta_pars$a
+# lambda0 <- beta_pars$b
 iter_warmup <- 1000
 iter_sampling <- 2500
 
@@ -117,8 +119,6 @@ mean_models_trt <- mean_models_arm(current_data,
                                    1)
 
 risk_diff <- mean_models_trt - mean_models_ctrl
-risk_diff_onlytrt <- mean_models_trt[,2] - mean_models_ctrl[,2]
-risk_diff_complete <- mean_models_trt[,15] - mean_models_ctrl[,15]
 
 # compute BMA
 # bma_ctrl <- bma(mean_models_ctrl, post_samples_ctrl$df_post, 10000)
@@ -126,13 +126,12 @@ risk_diff_complete <- mean_models_trt[,15] - mean_models_ctrl[,15]
 bma_ctrl <- bma(mean_models_ctrl, post_samples$df_post, 10000)
 bma_trt <- bma(mean_models_trt, post_samples$df_post, 10000)
 
-bma_ard <- bma(risk_diff, post_samples$df_post, 10000)
 
 # save results
-save(post_samples, file = "bayesian_subset_selection/actg/data/post_samples.RData")
-save(post_samples_ctrl, file = "bayesian_subset_selection/actg/data/post_samples_ctrl.RData")
-save(post_samples_trt, file = "bayesian_subset_selection/actg/data/post_samples_trt.RData")
-save(mean_models_ctrl, file = "bayesian_subset_selection/actg/data/mean_models_ctrl.RData")
-save(mean_models_trt, file = "bayesian_subset_selection/actg/data/mean_models_trt.RData")
-save(bma_ctrl, file = "bayesian_subset_selection/actg/data/bma_ctrl.RData")
-save(bma_trt, file = "bayesian_subset_selection/actg/data/bma_trt.RData")
+save(post_samples, file = "bayesian_subset_selection/actg/samples/post_samples.RData")
+save(post_samples_ctrl, file = "bayesian_subset_selection/actg/samples/post_samples_ctrl.RData")
+save(post_samples_trt, file = "bayesian_subset_selection/actg/samples/post_samples_trt.RData")
+save(mean_models_ctrl, file = "bayesian_subset_selection/actg/samples/mean_models_ctrl.RData")
+save(mean_models_trt, file = "bayesian_subset_selection/actg/samples/mean_models_trt.RData")
+save(bma_ctrl, file = "bayesian_subset_selection/actg/samples/bma_ctrl.RData")
+save(bma_trt, file = "bayesian_subset_selection/actg/samples/bma_trt.RData")

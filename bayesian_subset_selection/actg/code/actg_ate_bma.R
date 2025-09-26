@@ -56,16 +56,17 @@ stats_colors <- c("90% \nBCI" = blended_color,
 
 # Plot the density of the odds ratio
 plot_or <- ggplot() +
-  # geom_density(data = df_or %>% filter(or <= ci_or_90_lower), aes(x = or), 
-  #              color = "skyblue", fill = "skyblue", alpha = 0.5) +
+  # geom_density(data = or_density_df,
+  #              aes(x = x, y = y),
+  #              color = "black") +
   geom_area(data = or_density_df %>% filter(x <= ci_or_90_lower + 0.003), 
-            aes(x = x, y = y, fill = "Density"), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
             alpha = 0.7) +
   geom_area(data = or_density_df %>% filter(x >= ci_or_90_upper - 0.001), 
-            aes(x = x, y = y, fill = "Density"), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
             alpha = 0.7) +
   geom_area(data = or_density_90, 
-            aes(x = x, y = y, fill = "90% \nBCI"), 
+            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
             alpha = 0.7) +
   geom_vline(aes(xintercept = 1, colour = "OR = 1"), linetype = "dotted", size = 1)  +
   labs(title = "",
@@ -139,14 +140,16 @@ bma_ate <- ggplot() +
   # Full density curve
   # geom_density(data = df_bma, aes(x = value), color = "skyblue", fill = "skyblue", alpha = 0.5) +
   geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 0.0003), 
-            aes(x = x, y = y, fill = "Density"), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
             alpha = 0.7) +
   geom_area(data = ate_density_df %>% filter(x >= ci_ate_90_upper - 0.0003), 
-            aes(x = x, y = y, fill = "Density"), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
             alpha = 0.7) +
   
   # # Highlight 95% HDI region
-  geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI"), alpha = 0.7) +
+  geom_area(data = ate_density_90, 
+            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
+            alpha = 0.7) +
   # 
   # # Highlight 90% HDI region
   # geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI", colour = "Density"), alpha = 0.7) +
@@ -293,7 +296,7 @@ plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
     y = "",
     fill = "Arm"
   ) +
-  scale_fill_manual(values = c("blue", "red")) +
+  scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
   xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
   theme_bw() +
   theme(
@@ -410,7 +413,7 @@ ann_or <- merge(ann_or,
       by = "variable")
 
 plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
-  geom_density(alpha = 0.6, position = "identity",  color = "skyblue", fill = "skyblue") +
+  geom_density(alpha = 0.6, position = "identity", fill = "#66A8D0") +
   geom_vline(aes(xintercept = 1), linetype = "dotted", size = 1) +
   facet_wrap(~ factor(variable, levels = titles_post), 
              scales = "free_y",
