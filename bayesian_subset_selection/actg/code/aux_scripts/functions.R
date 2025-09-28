@@ -296,10 +296,12 @@ plot_ate <- function(samples){
   bma_ate <- ggplot() +
     # Full density curve
     # geom_density(data = df_bma, aes(x = value), color = "skyblue", fill = "skyblue", alpha = 0.5) +
-    geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 0.0003), 
+    geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 
+                                                 (ci_ate_90_lower - min(ate_density_df$x))*0.1), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
-    geom_area(data = ate_density_df %>% filter(x >= ci_ate_90_upper - 0.0003), 
+    geom_area(data = ate_density_df %>% filter(x >= ci_ate_90_upper - 
+                                                 (max(ate_density_df$x) - ci_ate_90_upper)*0.01), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
     
