@@ -149,7 +149,18 @@ glm.npp.lognc.wip = function(
                               iter_warmup = iter_warmup, iter_sampling = iter_sampling, chains = chains,
                               ...)
   d    = fit$draws(format = 'draws_matrix')
+  
+  col_names <- colnames(d)
+  if ((a0 == 0) & (wip == 1) ) {
+    d = cbind(rep(1, iter_sampling * chains),
+              rcauchy(iter_sampling * chains, location = 0, scale = 10),
+              matrix(rcauchy(iter_sampling * chains * (p - 1), location = 0, scale = 2.5),
+                     ncol = p - 1))
+    colnames(d) = col_names
+  }
   summ = posterior::summarise_draws(d)
+  
+  
   
   ## compute log normalizing constants (lognc) for half-normal prior on dispersion
   standat$lognc_disp  = pnorm(0, mean = standat$disp_mean, sd = standat$disp_sd, lower.tail = F, log.p = T)
@@ -202,8 +213,8 @@ glm.npp.lognc.wip = function(
   res = c(
     'a0'           = a0,
     'lognc'        = bs$logml,
-    'min_ess_bulk' = min(summ[, 'ess_bulk']),
-    'max_Rhat'     = max(summ[, 'rhat'])
+    'min_ess_bulk' = min(summ[, 'ess_bulk'], na.rm = T),
+    'max_Rhat'     = max(summ[, 'rhat'], na.rm = T)
   )
   
   if ( res['min_ess_bulk'] < 1000 )
@@ -228,3 +239,4 @@ glm.npp.lognc.wip = function(
     )
   return(res)
 }
+

@@ -60,34 +60,22 @@ logp0 <- function(formula) {
   )
 }
 
-logncfun <- function(a0,
-                     formula){
-  if (a0 == 0) {
-    pm <- ncol(model.matrix(formula, data = hist_data))
-    c(
-      'a0'           = a0,
-      'lognc'        = -pm * log(pi),
-      'min_ess_bulk' = 1000,
-      'max_Rhat'     = 0
-    )
-  }
-  else {
-    glm.npp.lognc.wip(
-      a0 = a0,
-      formula = formula,
-      family = family, 
-      histdata = hist_data, 
-      iter_warmup = iter_warmup,
-      iter_sampling = iter_sampling, 
-      chains = 4, 
-      refresh = 0
-    )
-  }
+logncfun.wip <- function(a0, formula) {
+  glm.npp.lognc.wip(
+    a0 = a0,
+    formula = formula,
+    family = family, 
+    histdata = hist_data, 
+    iter_warmup = iter_warmup,
+    iter_sampling = iter_sampling, 
+    chains = 4, 
+    refresh = 0
+  ) 
 }
 
 post_beta <- function(formula) {
   a0.lognc <- lapply(a0_seq, 
-                     logncfun, 
+                     logncfun.wip, 
                      formula = formula
   )
   a0.lognc <- data.frame(do.call(rbind, a0.lognc))
@@ -149,29 +137,34 @@ post_samples_cauchy <- list(logp0_models = logp0_models,
      df_post_ord = df_post_ord)
 
 save(post_samples_cauchy, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_cauchy.RData")
+     file = "bayesian_subset_selection/actg/samples/post_samples_wip.RData")
 
 xtable::xtable(df_post_ord, digits = 3)
 
-load("bayesian_subset_selection/actg/data/post_samples_d0.RData")
+# sample normal prior
+# load auxiliary functions
+source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+delta0 <- 1
+lambda0 <- 1
+a0_seq <- seq(0, 1, length.out = 21)
+data <- list(current_data, hist_data)
+family <- binomial(link = "logit")
+c0 <- 0.5^0.5
+d0 <- 0.5^0.5
+iter_warmup <- 1000
+iter_sampling <- 2500
 
-# Plot using ggplot2
-ate_cauchy <- plot_ate(post_samples_cauchy)
+# run complete model
+post_samples <- samples_models(data = data,
+                               outcome = "outcome",
+                               family = family,
+                               a0_seq = a0_seq,
+                               c0 = c0,
+                               d0 = d0,
+                               delta0 = delta0,
+                               lambda0 = lambda0,
+                               iter_warmup = iter_warmup,
+                               iter_sampling = iter_sampling,
+                               num_cores = 14)
 
-ate_cauchy + ggtitle("Cauchy prior on coefficients")
-ggsave("bayesian_subset_selection/actg/results/figures/ate_cauchy.png",
-       ate_cauchy, width = 10, height = 7, units = "in", dpi = 300)
-
-ate_d0 <- lapply(post_samples_d0, function(x) {
-  plot_ate(x)
-})
-
-all_ate_d0 <- (ate_d0[[1]] + ggtitle(expression(psi[0] == 0.25))+ xlim(-0.1, 0.05) + xlab("")) /
-(ate_d0[[2]] + ggtitle(expression(psi[0] == 0.5)) + xlim(-0.1, 0.05) + xlab("")) /
-(ate_d0[[3]] + ggtitle(expression(psi[0] == 1)) + xlim(-0.1, 0.05) +xlab("")) /
-(ate_d0[[4]] + ggtitle(expression(psi[0] == 2)) + xlim(-0.1, 0.05)) +
-  plot_layout(guides = "collect") & theme(legend.position = 'bottom')
-all_ate_d0
-
-ggsave("bayesian_subset_selection/actg/results/figures/ate_psi0.png",
-       all_ate_d0, width = 10, height = 25, units = "in", dpi = 300)
+save(post_samples, file = "bayesian_subset_selection/actg/samples/post_samples_norm.RData")
