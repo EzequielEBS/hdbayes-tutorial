@@ -8,16 +8,14 @@ library(reshape2)
 library(hdbayes)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/functions.R")
+source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
 
 # load samples
-load("bayesian_subset_selection/actg/data/post_samples.RData")
-load("bayesian_subset_selection/actg/data/post_samples_ctrl.RData")
-load("bayesian_subset_selection/actg/data/post_samples_trt.RData")
-load("bayesian_subset_selection/actg/data/mean_models_ctrl.RData")
-load("bayesian_subset_selection/actg/data/mean_models_trt.RData")
-load("bayesian_subset_selection/actg/data/bma_ctrl.RData")
-load("bayesian_subset_selection/actg/data/bma_trt.RData")
+load("bayesian_subset_selection/actg/samples/post_samples.RData")
+load("bayesian_subset_selection/actg/samples/mean_models_ctrl.RData")
+load("bayesian_subset_selection/actg/samples/mean_models_trt.RData")
+load("bayesian_subset_selection/actg/samples/bma_ctrl.RData")
+load("bayesian_subset_selection/actg/samples/bma_trt.RData")
 
 df_bma <- data.frame(
   value = bma_trt - bma_ctrl

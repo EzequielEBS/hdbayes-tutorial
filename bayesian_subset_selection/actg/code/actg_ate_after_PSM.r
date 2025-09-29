@@ -100,8 +100,8 @@ bma_ate_after_PSM <- ggplot() +
 bma_ate_after_PSM
 
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate.png",
-       bma_ate, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_after_PSM.png",
+       bma_ate_after_PSM, width = 8, height = 6, units = "in", dpi = 300)
 
 # create BMA data frames
 df_bma_arm_after_PSM <- data.frame(
@@ -170,38 +170,22 @@ plot_or_after_PSM <- ggplot() +
 plot_or_after_PSM
 
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or.png",
-       plot_or, width = 10, height = 7, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_after_PSM.png",
+       plot_or_after_PSM, width = 10, height = 7, units = "in", dpi = 300)
 
 # put or and bma_ate together
-bma_ate_or <- (bma_ate + theme(legend.position = "none")) + 
-  plot_or + plot_layout(ncol = 2) &
+bma_ate_or_after_PSM <- (bma_ate_after_PSM + theme(legend.position = "none")) + 
+  plot_or_after_PSM + plot_layout(ncol = 2) &
   theme(
     axis.title = element_text(size = 14),
     legend.title = element_text(size = 12),
     legend.text  = element_text(size = 14)
   )
-bma_ate_or
+bma_ate_or_after_PSM
 
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_or.png",
-       bma_ate_or, width = 14, height = 8, units = "in", dpi = 300)
-
-# summary of the BMA
-df_bma_summary <- data.frame(
-  statistic = c("Mean", "Median", "Q1", "Q3", "90% BCI", "95% BCI"),
-  value = c(format(round(mean_value, 3), nsmall = 3),
-            format(round(median_value, 3), nsmall = 3),
-            format(round(q1_value, 3), nsmall = 3),
-            format(round(q3_value, 3), nsmall = 3),
-            paste0("[", format(round(ci_90_lower, 3), nsmall = 3), ", ", format(round(ci_90_upper, 3), nsmall = 3), "]"),
-            paste0("[", format(round(ci_95_lower, 3), nsmall = 3), ", ", format(round(ci_95_upper, 3), nsmall = 3), "]")
-  )
-)
-
-print(xtable::xtable(df_bma_summary, caption = "BMA summary (ATE)"), 
-      type = "latex", include.rownames = FALSE)
-
+ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_or_after_PSM.png",
+       bma_ate_or_after_PSM, width = 14, height = 8, units = "in", dpi = 300)
 
 ########################################################################################
 # Plot means by arm
@@ -209,8 +193,8 @@ print(xtable::xtable(df_bma_summary, caption = "BMA summary (ATE)"),
 
 
 # Convert matrices to dataframes and reshape them
-df_mean_models_ctrl <- as.data.frame(mean_models_ctrl)
-df_mean_models_trt <- as.data.frame(mean_models_trt)
+df_mean_models_ctrl_after_PSM <- as.data.frame(mean_models_ctrl_after_PSM)
+df_mean_models_trt_after_PSM <- as.data.frame(mean_models_trt_after_PSM)
 
 # models <- paste0("Covariates: ", post_samples_ctrl$df_post$model)
 # titles_post_ctrl <- paste("Ctrl:", format(round(post_samples_ctrl$df_post$post_model, digits = 3), 
@@ -218,7 +202,7 @@ df_mean_models_trt <- as.data.frame(mean_models_trt)
 # titles_post_trt <- paste("Trt:", format(round(post_samples_trt$df_post$post_model, digits = 3),
 #                                                      nsmall = 3))
 # models <- paste0("Covariates: ", post_samples$df_post$model)
-models <- post_samples$df_post$model
+models_after_PSM <- post_samples_after_PSM$df_post$model
 # titles_post_ctrl <- paste("Ctrl:", format(round(post_samples$df_post$post_model, digits = 3), 
 #                                           nsmall = 3))
 # titles_post_trt <- paste("Trt:", format(round(post_samples$df_post$post_model, digits = 3),
@@ -228,38 +212,38 @@ models <- post_samples$df_post$model
 #                      paste("Prob:", 
 #                            format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3)),
 #                      sep = " | ")
-titles_post <- models
+titles_post_after_PSM <- models_after_PSM
 
 # Add identifiers for matrices
-df_mean_models_ctrl$arm <- "Ctrl"
-df_mean_models_trt$arm <- "Trt"
+df_mean_models_ctrl_after_PSM$arm <- "Ctrl"
+df_mean_models_trt_after_PSM$arm <- "Trt"
 
 # Combine the data
-df_mean_models <- rbind(
-  melt(df_mean_models_ctrl, id.vars = "arm"),  # Convert to long format
-  melt(df_mean_models_trt, id.vars = "arm")
+df_mean_models_after_PSM <- rbind(
+  melt(df_mean_models_ctrl_after_PSM, id.vars = "arm"),  # Convert to long format
+  melt(df_mean_models_trt_after_PSM, id.vars = "arm")
 )
 
-df_mean_models$variable <- titles_post[match(df_mean_models$variable, 
-                                             paste0("V", 1:(ncol(df_mean_models_ctrl)-1)), 
+df_mean_models_after_PSM$variable <- titles_post_after_PSM[match(df_mean_models_after_PSM$variable, 
+                                             paste0("V", 1:(ncol(df_mean_models_ctrl_after_PSM)-1)), 
                                              nomatch = 0)]
 
-ann <- data.frame(
-  variable = titles_post, 
-  x = rep(0.12, length(titles_post)), # position inside plot
-  y = rep(35, length(titles_post)), # position inside plot
+ann_after_PSM <- data.frame(
+  variable = titles_post_after_PSM, 
+  x = rep(0.12, length(titles_post_after_PSM)), # position inside plot
+  y = rep(35, length(titles_post_after_PSM)), # position inside plot
   label = paste("Prob:", 
-                format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3))
+                format(round(post_samples_after_PSM$df_post$post_model, digits = 3), nsmall = 3))
 )
 
 # Plot histograms
-plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
+plot_means_arm_after_PSM <- ggplot(df_mean_models_after_PSM, aes(x = value, fill = arm)) +
   geom_density(alpha = 0.6, position = "identity", color = "black") +
-  facet_wrap(~ factor(variable, levels = titles_post), 
+  facet_wrap(~ factor(variable, levels = titles_post_after_PSM), 
              scales = "fixed",
              ncol = 3) +  # Separate plots for each column
   geom_label(
-    data = ann,
+    data = ann_after_PSM,
     aes(x, y, label = label),
     inherit.aes = FALSE,
     fill = "white",   # box color
@@ -273,7 +257,7 @@ plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
     fill = "Arm"
   ) +
   scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
-  xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
+  xlim(floor(range(df_mean_models_after_PSM$value)*1e3)/1e3) +
   theme_bw() +
   theme(
     legend.position = c(0.97, 0.05),   # (x, y) coordinates — bottom right
@@ -288,114 +272,114 @@ plot_means_arm <- ggplot(df_mean_models, aes(x = value, fill = arm)) +
         legend.text = element_text(size = 12),
         strip.text = element_text(size = 11))
 
-plot_means_arm
+plot_means_arm_after_PSM
 
-plot_means_arm_top6 <- ggplot(df_mean_models %>%
-                                filter(variable %in% c("age, treatment, cd4", 
-                                                       "age, treatment, race, cd4",
-                                                       "treatment, cd4",
-                                                       "treatment, race, cd4",
-                                                       "age, cd4",
-                                                       "age, race, cd4"
-                                )), 
-                              aes(x = value, fill = arm)) +
-  geom_density(alpha = 0.7, position = "identity", color = "black") +
-  facet_wrap(~ factor(variable,
-                      levels = c("age, treatment, cd4", 
-                                 "age, treatment, race, cd4",
-                                 "treatment, cd4",
-                                 "treatment, race, cd4",
-                                 "age, cd4",
-                                 "age, race, cd4"
-                      )
-  ), 
-  scales = "fixed",
-  ncol = 3) +  # Separate plots for each column
-  geom_label(
-    data = ann %>%
-      filter(variable %in% c("age, treatment, cd4", 
-                             "age, treatment, race, cd4",
-                             "treatment, cd4",
-                             "treatment, race, cd4",
-                             "age, cd4",
-                             "age, race, cd4"
-      )),
-    aes(x, y, label = label),
-    inherit.aes = FALSE,
-    fill = "white",   # box color
-    color = "black",    # text color
-    hjust = 0,
-    size = 6
-  ) +
-  labs(
-    title = "",
-    x = "Average effect",
-    y = "",
-    fill = "Arm"
-  ) +
-  scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
-  xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
-  theme_bw() +
-  theme(
-    legend.position = c(0.97, 0.05),   # (x, y) coordinates — bottom right
-    legend.justification = c(1, 0),
-    legend.title = element_text(size = 10),
-    legend.background = element_rect(fill = "white", color = "black"),
-  ) +
-  theme(text = element_text(size = 11),        # Base text size
-        axis.title = element_text(size = 14),  # Axis titles
-        axis.text = element_text(size = 12),   # Axis tick labels
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 12),
-        strip.text = element_text(size = 16))
-
-plot_means_arm_top6
+# plot_means_arm_top6 <- ggplot(df_mean_models %>%
+#                                 filter(variable %in% c("age, treatment, cd4", 
+#                                                        "age, treatment, race, cd4",
+#                                                        "treatment, cd4",
+#                                                        "treatment, race, cd4",
+#                                                        "age, cd4",
+#                                                        "age, race, cd4"
+#                                 )), 
+#                               aes(x = value, fill = arm)) +
+#   geom_density(alpha = 0.7, position = "identity", color = "black") +
+#   facet_wrap(~ factor(variable,
+#                       levels = c("age, treatment, cd4", 
+#                                  "age, treatment, race, cd4",
+#                                  "treatment, cd4",
+#                                  "treatment, race, cd4",
+#                                  "age, cd4",
+#                                  "age, race, cd4"
+#                       )
+#   ), 
+#   scales = "fixed",
+#   ncol = 3) +  # Separate plots for each column
+#   geom_label(
+#     data = ann %>%
+#       filter(variable %in% c("age, treatment, cd4", 
+#                              "age, treatment, race, cd4",
+#                              "treatment, cd4",
+#                              "treatment, race, cd4",
+#                              "age, cd4",
+#                              "age, race, cd4"
+#       )),
+#     aes(x, y, label = label),
+#     inherit.aes = FALSE,
+#     fill = "white",   # box color
+#     color = "black",    # text color
+#     hjust = 0,
+#     size = 6
+#   ) +
+#   labs(
+#     title = "",
+#     x = "Average effect",
+#     y = "",
+#     fill = "Arm"
+#   ) +
+#   scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
+#   xlim(floor(range(df_mean_models$value)*1e3)/1e3) +
+#   theme_bw() +
+#   theme(
+#     legend.position = c(0.97, 0.05),   # (x, y) coordinates — bottom right
+#     legend.justification = c(1, 0),
+#     legend.title = element_text(size = 10),
+#     legend.background = element_rect(fill = "white", color = "black"),
+#   ) +
+#   theme(text = element_text(size = 11),        # Base text size
+#         axis.title = element_text(size = 14),  # Axis titles
+#         axis.text = element_text(size = 12),   # Axis tick labels
+#         legend.title = element_text(size = 14),
+#         legend.text = element_text(size = 12),
+#         strip.text = element_text(size = 16))
+# 
+# plot_means_arm_top6
 
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm.png",
-       plot_means_arm, width = 11, height = 14, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_after_PSM.png",
+       plot_means_arm_after_PSM, width = 11, height = 14, units = "in", dpi = 300)
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_top6.png",
-       plot_means_arm_top6, width = 14, height = 8, units = "in", dpi = 300)
+# ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_top6.png",
+#        plot_means_arm_top6, width = 14, height = 8, units = "in", dpi = 300)
 
 ########################################################################################
 # Plot or by arm
 ########################################################################################
 
-df_mean_models_or <- as.data.frame(
+df_mean_models_or_after_PSM <- as.data.frame(
   do.call(cbind,
-          lapply(1:(ncol(df_mean_models_trt)-1), function(j) {
-            or <- df_mean_models_trt[,j]/(1-df_mean_models_trt[,j]) / 
-              df_mean_models_ctrl[,j]/(1-df_mean_models_ctrl[,j])
+          lapply(1:(ncol(df_mean_models_trt_after_PSM)-1), function(j) {
+            or <- df_mean_models_trt_after_PSM[,j]/(1-df_mean_models_trt_after_PSM[,j]) / 
+              df_mean_models_ctrl_after_PSM[,j]/(1-df_mean_models_ctrl_after_PSM[,j])
           })
   )
 )
 
-df_mean_models_or <- melt(df_mean_models_or)
-df_mean_models_or$variable <- titles_post[match(df_mean_models_or$variable, 
-                                                paste0("V", 1:(ncol(df_mean_models_trt)-1)), 
+df_mean_models_or_after_PSM <- melt(df_mean_models_or_after_PSM)
+df_mean_models_or_after_PSM$variable <- titles_post_after_PSM[match(df_mean_models_or_after_PSM$variable, 
+                                                paste0("V", 1:(ncol(df_mean_models_trt_after_PSM)-1)), 
                                                 nomatch = 0)]
 
-ann_or <- df_mean_models_or %>%
+ann_or_after_PSM <- df_mean_models_or_after_PSM %>%
   group_by(variable) %>%
   summarise(
     x = 1.8,          # fixed x
     y = max(density(value)$y) - max(density(value)$y)/5# y depends on max value of the facet
   )
-ann_or <- merge(ann_or, 
+ann_or_after_PSM <- merge(ann_or_after_PSM, 
                 data.frame(label = paste("Prob:", 
-                                         format(round(post_samples$df_post$post_model, digits = 3), nsmall = 3)),
-                           variable = post_samples$df_post$model),
+                                         format(round(post_samples_after_PSM$df_post$post_model, digits = 3), nsmall = 3)),
+                           variable = post_samples_after_PSM$df_post$model),
                 by = "variable")
 
-plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
+plot_or_models_after_PSM <- ggplot(df_mean_models_or_after_PSM, aes(x = value)) +
   geom_density(alpha = 0.6, position = "identity", fill = "#66A8D0") +
   geom_vline(aes(xintercept = 1), linetype = "dotted", size = 1) +
-  facet_wrap(~ factor(variable, levels = titles_post), 
+  facet_wrap(~ factor(variable, levels = titles_post_after_PSM), 
              scales = "free_y",
              ncol = 3) +  # Separate plots for each column
   geom_label(
-    data = ann_or,
+    data = ann_or_after_PSM,
     aes(x, y, label = label),
     inherit.aes = FALSE,
     fill = "white",   # box color
@@ -407,7 +391,7 @@ plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
     x = "Odds ratio",
     y = ""
   ) +
-  xlim(floor(range(df_mean_models_or$value)*1e3)/1e3) +
+  xlim(floor(range(df_mean_models_or_after_PSM$value)*1e3)/1e3) +
   theme_bw() +
   theme(
     legend.position = c(0.95, 0.05),   # (x, y) coordinates — bottom right
@@ -422,7 +406,7 @@ plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
         legend.text = element_text(size = 12),
         strip.text = element_text(size = 11))
 
-plot_or_models
+plot_or_models_after_PSM
 
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_by_model.png",
-       plot_or_models, width = 11, height = 14, units = "in", dpi = 300)
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_by_model_after_PSM.png",
+       plot_or_models_after_PSM, width = 11, height = 14, units = "in", dpi = 300)
