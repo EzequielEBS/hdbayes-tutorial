@@ -255,8 +255,8 @@ plot_ate <- function(samples){
     value = bma_trt - bma_ctrl
   )
   
-  ci_bma_95 <- ci(df_bma$value, ci = 0.95)
-  ci_bma_90 <- ci(df_bma$value, ci = 0.90)
+  ci_bma_95 <- bayestestR::ci(df_bma$value, ci = 0.95)
+  ci_bma_90 <- bayestestR::ci(df_bma$value, ci = 0.90)
   
   ci_ate_95_lower <- ci_bma_95$CI_low
   ci_ate_95_upper <- ci_bma_95$CI_high
@@ -297,11 +297,11 @@ plot_ate <- function(samples){
     # Full density curve
     # geom_density(data = df_bma, aes(x = value), color = "skyblue", fill = "skyblue", alpha = 0.5) +
     geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 
-                                                 (ci_ate_90_lower - min(ate_density_df$x))*0.1), 
+                                                 (ci_ate_90_lower - min(ate_density_df$x))*0.007), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
     geom_area(data = ate_density_df %>% filter(x >= ci_ate_90_upper - 
-                                                 (max(ate_density_df$x) - ci_ate_90_upper)*0.01), 
+                                                 (max(ate_density_df$x) - ci_ate_90_upper)*0.007), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
     

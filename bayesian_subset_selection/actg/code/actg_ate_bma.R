@@ -19,102 +19,12 @@ load("bayesian_subset_selection/actg/data/mean_models_trt.RData")
 load("bayesian_subset_selection/actg/data/bma_ctrl.RData")
 load("bayesian_subset_selection/actg/data/bma_trt.RData")
 
-# create BMA data frames
-df_bma_arm <- data.frame(
-  value = c(bma_ctrl, bma_trt),
-  group = c(rep("ctrl", length(bma_ctrl)), rep("trt", length(bma_trt)))
-)
-
-df_or <- data.frame(or = bma_trt / (1-bma_trt) / bma_ctrl / (1-bma_ctrl))
-
-# compute credible intervals for the odds ratio
-ci_or_90 <- ci(df_or$or, ci = 0.90)
-ci_or_90_lower <- ci_or_90$CI_low
-ci_or_90_upper <- ci_or_90$CI_high
-
-# Compute density for the entire dataset
-or_density_data <- density(df_or$or) # Compute density
-or_density_df <- data.frame(x = or_density_data$x, y = or_density_data$y) # Convert to data frame
-
-# Filter density data for the HDI regions
-or_density_90 <- or_density_df %>% filter(x >= ci_or_90_lower & x <= ci_or_90_upper)
-
-blended_rgb <- round(colMeans(rbind(
-  c(135, 206, 235),
-  c(70, 130, 180)
-)))
-
-blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
-
-# Define colors for mean, median, and quartiles
-stats_colors <- c("90% \nBCI" = blended_color,
-                  
-                  "Density" = "skyblue",
-                  "ATE = 0" = "black",
-                  "OR = 1" = "black"
-                  )
-
-# Plot the density of the odds ratio
-plot_or <- ggplot() +
-  # geom_density(data = or_density_df,
-  #              aes(x = x, y = y),
-  #              color = "black") +
-  geom_area(data = or_density_df %>% filter(x <= ci_or_90_lower + 0.003), 
-            aes(x = x, y = y, fill = "Density"), color = "black",
-            alpha = 0.7) +
-  geom_area(data = or_density_df %>% filter(x >= ci_or_90_upper - 0.001), 
-            aes(x = x, y = y, fill = "Density"), color = "black",
-            alpha = 0.7) +
-  geom_area(data = or_density_90, 
-            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
-            alpha = 0.7) +
-  geom_vline(aes(xintercept = 1, colour = "OR = 1"), linetype = "dotted", size = 1)  +
-  labs(title = "",
-       x = "Odds ratio", y = "") +
-  # Add a legend for both color and fill
-  scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
-  scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
-  # scale_color_manual(name = NULL, values = stats_colors) +
-  theme_bw() +
-  theme(legend.position = c(.95, .95),
-        legend.justification = c("right", "top"),
-        legend.box.just = "right",
-        legend.margin = margin(6, 6, 6, 6),
-        legend.background = element_rect(fill = "white", color = "black"),
-        panel.background = element_rect(fill = "white", color = NA),
-        plot.background = element_rect(fill = "white", color = NA)
-  ) +
-  theme(text = element_text(size = 16),        # Base text size
-        axis.title = element_text(size = 18),  # Axis titles
-        axis.text = element_text(size = 16),   # Axis tick labels
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16))
-
-plot_or
-
-# Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or.png",
-       plot_or, width = 10, height = 7, units = "in", dpi = 300)
-
-# Plot the histograms
-bma_marg_means <- ggplot(df_bma_arm, aes(x = value, fill = group)) +
-  geom_density(alpha = 0.5, position = "identity") +
-  labs(title = "", x = "Marginal Mean", y = "") +
-  theme_gray() +
-  scale_fill_manual(values = c("blue", "red"))
-
-bma_marg_means
-
-# Save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_marg_means.png", 
-       bma_marg_means, width = 8, height = 6, units = "in", dpi = 300)
-
 df_bma <- data.frame(
   value = bma_trt - bma_ctrl
 )
 
-ci_bma_95 <- ci(df_bma$value, ci = 0.95)
-ci_bma_90 <- ci(df_bma$value, ci = 0.90)
+ci_bma_95 <- bayestestR::ci(df_bma$value, ci = 0.95)
+ci_bma_90 <- bayestestR::ci(df_bma$value, ci = 0.90)
 
 ci_ate_95_lower <- ci_bma_95$CI_low
 ci_ate_95_upper <- ci_bma_95$CI_high
@@ -157,7 +67,7 @@ bma_ate <- ggplot() +
   # # Add vertical dashed lines for 95% HDI
   # geom_vline(aes(xintercept = ci_95_lower, color = "95% BCI"), linetype = "dashed", size = 1) +
   # geom_vline(aes(xintercept = ci_95_upper, color = "95% BCI"), linetype = "dashed", size = 1) +
-
+  
   # Add vertical dashed lines for 90% BCI
   # geom_vline(aes(xintercept = ci_ate_90_lower, color = "90% BCI"), linetype = "dashed", size = 1) +
   # geom_vline(aes(xintercept = ci_ate_90_upper, color = "90% BCI"), linetype = "dashed", size = 1) +
@@ -196,6 +106,84 @@ bma_ate
 # save the plot
 ggsave("bayesian_subset_selection/actg/results/figures/bma_ate.png",
        bma_ate, width = 8, height = 6, units = "in", dpi = 300)
+
+# create BMA data frames
+df_bma_arm <- data.frame(
+  value = c(bma_ctrl, bma_trt),
+  group = c(rep("ctrl", length(bma_ctrl)), rep("trt", length(bma_trt)))
+)
+
+df_or <- data.frame(or = bma_trt / (1-bma_trt) / bma_ctrl / (1-bma_ctrl))
+
+# compute credible intervals for the odds ratio
+ci_or_90 <- bayestestR::ci(df_or$or, ci = 0.90)
+ci_or_90_lower <- ci_or_90$CI_low
+ci_or_90_upper <- ci_or_90$CI_high
+
+# Compute density for the entire dataset
+or_density_data <- density(df_or$or) # Compute density
+or_density_df <- data.frame(x = or_density_data$x, y = or_density_data$y) # Convert to data frame
+
+# Filter density data for the HDI regions
+or_density_90 <- or_density_df %>% filter(x >= ci_or_90_lower & x <= ci_or_90_upper)
+
+blended_rgb <- round(colMeans(rbind(
+  c(135, 206, 235),
+  c(70, 130, 180)
+)))
+
+blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
+
+# Define colors for mean, median, and quartiles
+stats_colors <- c("90% \nBCI" = blended_color,
+                  
+                  "Density" = "skyblue",
+                  "ATE = 0" = "black",
+                  "OR = 1" = "black"
+                  )
+
+# Plot the density of the odds ratio
+plot_or <- ggplot() +
+  # geom_density(data = or_density_df,
+  #              aes(x = x, y = y),
+  #              color = "black") +
+  geom_area(data = or_density_df %>% filter(x <= ci_or_90_lower + 0.01), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = or_density_df %>% filter(x >= ci_or_90_upper - 0.01), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = or_density_90, 
+            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
+            alpha = 0.7) +
+  geom_vline(aes(xintercept = 1, colour = "OR = 1"), linetype = "dotted", size = 1)  +
+  labs(title = "",
+       x = "Odds ratio", y = "") +
+  # Add a legend for both color and fill
+  scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
+  scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
+  # scale_color_manual(name = NULL, values = stats_colors) +
+  theme_bw() +
+  theme(legend.position = c(.95, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6),
+        legend.background = element_rect(fill = "white", color = "black"),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA)
+  ) +
+  theme(text = element_text(size = 16),        # Base text size
+        axis.title = element_text(size = 18),  # Axis titles
+        axis.text = element_text(size = 16),   # Axis tick labels
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
+
+plot_or
+
+# Save plot
+ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or.png",
+       plot_or, width = 10, height = 7, units = "in", dpi = 300)
+
 
 # put or and bma_ate together
 bma_ate_or <- (bma_ate + theme(legend.position = "none")) + 
