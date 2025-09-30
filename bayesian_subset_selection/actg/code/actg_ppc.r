@@ -65,15 +65,11 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
   ) %>%
     pivot_longer(cols = everything(), names_to = "prior", values_to = "prob") %>%
     mutate(prior_label = case_when(
-      prior == "wip" ~ "beta[0] %~% Cauchy(0,10) *','* beta[2:p] %~% Cauchy(0,2.5)",
-      prior == "norm" ~ "beta %~% Normal(0,0.5^2*I[p])"
+      prior == "wip" ~ "Cauchy",
+      prior == "norm" ~ "Normal"
     ))
   
-  df_pnew$prior_label <- ifelse(
-    df_pnew$prior == "wip",
-    "atop(beta[0] %~% Cauchy(0,10), beta[1:(p-1)] %~% Cauchy(0,2.5))",
-    "beta %~% Normal(0, 0.5^2 * I[p])"
-  )
+  df_pnew$prior_label <- factor(df_pnew$prior_label, levels = c("Normal", "Cauchy"))
   
   blended_rgb <- round(colMeans(rbind(
     c(135, 206, 235),
@@ -82,7 +78,7 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
   
   blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
   
-  ggplot(df_pnew, aes(x = prob, y = prior_label)) +
+  plot <- ggplot(df_pnew, aes(x = prob, y = prior_label)) +
     geom_density_ridges(alpha=0.6, fill = blended_color)+
     theme_ridges() +
     annotate(
@@ -97,8 +93,7 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
       label.size = 0.4,     # Border thickness of the box
       size = 3
     ) +
-    scale_y_discrete(labels = function(x) parse(text = x)) +
-    theme_minimal() +
+    theme_bw() +
     theme(legend.position = "none",
           # legend.position = c(0.8, 0.85),
           legend.background = element_rect(fill = "white", color = "black")) +
@@ -117,9 +112,40 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
       y = "",
     )
   filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_", i, ".png")
-  ggsave(filename, width = 6, height = 4, units = "in", dpi = 300)
+  ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
+  return(plot)
 },
 mc.cores = 15)
+
+pnew_13_21 <- (plots_pnew[[13]] + 
+                 scale_y_discrete(expand = c(0, 0)) +
+                 scale_x_continuous(expand = c(0, 0)) +
+                 xlim(c(0,1)) ) + 
+              (plots_pnew[[21]] + 
+                 scale_y_discrete(expand = c(0, 0)) +
+                 scale_x_continuous(expand = c(0, 0)) +
+                 xlim(c(0,1)) &
+                 theme(axis.text.y = element_blank())) +
+  plot_layout(guides = "collect") 
+pnew_13_21
+
+ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_21.png",
+       pnew_13_21, width = 10, height = 4, units = "in", dpi = 300)
+
+pnew_2_10 <- (plots_pnew[[2]] + 
+                 scale_y_discrete(expand = c(0, 0)) +
+                 scale_x_continuous(expand = c(0, 0)) +
+                 xlim(c(0,1)) ) + 
+  (plots_pnew[[10]] + 
+     scale_y_discrete(expand = c(0, 0)) +
+     scale_x_continuous(expand = c(0, 0)) +
+     xlim(c(0,1)) &
+     theme(axis.text.y = element_blank())) +
+  plot_layout(guides = "collect")
+pnew_2_10
+
+ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_2_10.png",
+       pnew_2_10, width = 10, height = 4, units = "in", dpi = 300)
 
 df_ynew <- data.frame(
   norm = counts_sim_norm,
