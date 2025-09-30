@@ -12,10 +12,14 @@ current_data <- actg036
 hist_data <- actg019
 
 # normalise data
-current_data$age <- scale(current_data$age, center = TRUE, scale = TRUE)
-current_data$cd4 <- scale(current_data$cd4, center = TRUE, scale = TRUE)
-hist_data$age <- scale(hist_data$age, center = TRUE, scale = TRUE)
-hist_data$cd4 <- scale(hist_data$cd4, center = TRUE, scale = TRUE)
+current_data$age <- (current_data$age - mean(current_data$age)) /
+  (2*sd(current_data$age))
+current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
+  (2*sd(current_data$cd4))
+hist_data$age <- (hist_data$age - mean(hist_data$age)) /
+  (2*sd(hist_data$age))
+hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
+  (2*sd(hist_data$cd4))
 
 # set parameters
 # beta_pars <- elicit_beta_mean_cv(m0 = 0.5, v0 = 0.005)
@@ -23,11 +27,9 @@ delta0 <- 1
 lambda0 <- 1
 a0_seq <- seq(0, 1, length.out = 21)
 data <- list(current_data, hist_data)
-data_ctrl <- list(current_data_ctrl, hist_data)
-data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
-c0 <- 3^0.5
-d0 <- 0.5^0.5
+c0 <- 1
+d0 <- 1
 # delta0 <- beta_pars$a
 # lambda0 <- beta_pars$b
 iter_warmup <- 1000
@@ -108,21 +110,23 @@ current_data <- actg036
 hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
 
 # normalise data
-current_data$age <- scale(current_data$age, center = TRUE, scale = TRUE)
-current_data$cd4 <- scale(current_data$cd4, center = TRUE, scale = TRUE)
-hist_data$age <- scale(hist_data$age, center = TRUE, scale = TRUE)
-hist_data$cd4 <- scale(hist_data$cd4, center = TRUE, scale = TRUE)
+current_data$age <- (current_data$age - mean(current_data$age)) /
+  (2*sd(current_data$age))
+current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
+  (2*sd(current_data$cd4))
+hist_data$age <- (hist_data$age - mean(hist_data$age)) /
+  (2*sd(hist_data$age))
+hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
+  (2*sd(hist_data$cd4))
 
 # set parameters
 delta0 <- 1
 lambda0 <- 1
 a0_seq <- seq(0, 1, length.out = 21)
 data <- list(current_data, hist_data)
-data_ctrl <- list(current_data_ctrl, hist_data)
-data_trt <- list(current_data_trt, hist_data)
 family <- binomial(link = "logit")
-c0 <- 3^0.5
-d0 <- 0.5^0.5
+c0 <- 0.5
+d0 <- 0.5
 iter_warmup <- 1000
 iter_sampling <- 2500
 

@@ -12,11 +12,6 @@ library(patchwork)
 current_data <- actg036
 hist_data <- actg019
 
-current_data$treatment <- current_data$treatment - mean(current_data$treatment)
-current_data$race <- current_data$race - mean(current_data$race)
-hist_data$treatment <- hist_data$treatment - mean(hist_data$treatment)
-hist_data$race <- hist_data$race - mean(hist_data$race)
-
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
 current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
@@ -44,7 +39,7 @@ logncfun.wip <- function(a0, ...){
 
 ncores <- detectCores() - 1
 a0.lognc.wip <- mclapply(
-  X = a0, FUN = logncfun_cauchy, iter_warmup = 1000,
+  X = a0, FUN = logncfun.wip, iter_warmup = 1000,
   iter_sampling = 2500, chains = 4,
   mc.cores = ncores
 )

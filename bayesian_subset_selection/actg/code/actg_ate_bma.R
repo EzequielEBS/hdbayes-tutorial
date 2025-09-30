@@ -17,6 +17,21 @@ load("bayesian_subset_selection/actg/samples/mean_models_trt.RData")
 load("bayesian_subset_selection/actg/samples/bma_ctrl.RData")
 load("bayesian_subset_selection/actg/samples/bma_trt.RData")
 
+blended_rgb <- round(colMeans(rbind(
+  c(135, 206, 235),
+  c(70, 130, 180)
+)))
+
+blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
+
+# Define colors for mean, median, and quartiles
+stats_colors <- c("90% \nBCI" = blended_color,
+                  
+                  "Density" = "skyblue",
+                  "ATE = 0" = "black",
+                  "OR = 1" = "black"
+)
+
 df_bma <- data.frame(
   value = bma_trt - bma_ctrl
 )

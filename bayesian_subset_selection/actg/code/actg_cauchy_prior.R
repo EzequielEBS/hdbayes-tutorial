@@ -17,11 +17,6 @@ library(patchwork)
 current_data <- actg036
 hist_data <- actg019
 
-current_data$treatment <- current_data$treatment - mean(current_data$treatment)
-current_data$race <- current_data$race - mean(current_data$race)
-hist_data$treatment <- hist_data$treatment - mean(hist_data$treatment)
-hist_data$race <- hist_data$race - mean(hist_data$race)
-
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
 current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
@@ -128,43 +123,14 @@ df_post <- data.frame(model = unlist(covariates_models),
 
 df_post_ord <- df_post[order(df_post$post_model, decreasing = TRUE),]
 rownames(df_post_ord) <- 1:nrow(df_post_ord)
-df_post_ord$ml <- log(df_post_ord$ml)
 
-post_samples_cauchy <- list(logp0_models = logp0_models,
+post_samples_wip <- list(logp0_models = logp0_models,
      post_betam = post_betam,
      logml_models = logml_models,
      df_post = df_post,
      df_post_ord = df_post_ord)
 
-save(post_samples_cauchy, 
+save(post_samples_wip, 
      file = "bayesian_subset_selection/actg/samples/post_samples_wip.RData")
 
 xtable::xtable(df_post_ord, digits = 3)
-
-# sample normal prior
-# load auxiliary functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
-delta0 <- 1
-lambda0 <- 1
-a0_seq <- seq(0, 1, length.out = 21)
-data <- list(current_data, hist_data)
-family <- binomial(link = "logit")
-c0 <- 0.5^0.5
-d0 <- 0.5^0.5
-iter_warmup <- 1000
-iter_sampling <- 2500
-
-# run complete model
-post_samples <- samples_models(data = data,
-                               outcome = "outcome",
-                               family = family,
-                               a0_seq = a0_seq,
-                               c0 = c0,
-                               d0 = d0,
-                               delta0 = delta0,
-                               lambda0 = lambda0,
-                               iter_warmup = iter_warmup,
-                               iter_sampling = iter_sampling,
-                               num_cores = 14)
-
-save(post_samples, file = "bayesian_subset_selection/actg/samples/post_samples_norm.RData")
