@@ -7,6 +7,7 @@ library(hdbayes)
 library(parallel)
 library(ggplot2)
 library(pROC)
+library(ggplotify)
 
 current_data <- actg036
 hist_data <- actg019
@@ -177,55 +178,60 @@ roc.curve.wip <- roc(current_data$outcome, rowMeans(pnew.wip))
 ci.auc.wip <- ci.auc(roc.curve.wip)
 ci.roc.wip <- ci.se(roc.curve.wip, specificities = seq(0, 1, l = 25))
 # Optionally, you can display the AUC with its CI directly on the plot
-png("bayesian_subset_selection/actg/results/figures/roc_wip_post_mean.png", width = 800, height = 600)
-plot(roc.curve.wip,
-     col = blended_color,
-     main = "Cauchy prior",
-     print.auc = FALSE)
-plot(ci.roc.wip, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-text(0.6, 0.2, 
-     labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                      roc.curve.wip$auc, ci.auc.wip[1], ci.auc.wip[3]),
-     cex = 1.2)
-dev.off()
+plot_roc.wip <- as.ggplot(function() {
+  plot(roc.curve.wip,
+       col = blended_color,
+       main = "Cauchy",
+       print.auc = FALSE)
+  plot(ci.roc.wip, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
+  text(0.6, 0.2, 
+       labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
+                        roc.curve.wip$auc, ci.auc.wip[1], ci.auc.wip[3]),
+       cex = 1.2)
+})
 
 roc.curves.wip <- lapply(1:ncol(pnew.wip), function(i) {
   roc(current_data$outcome, pnew.wip[, i])
 })
 
-png("bayesian_subset_selection/actg/results/figures/roc_wip_all.png",
-    width = 800, height = 600)
-plot(roc.curves.wip[[1]], col = blended_color, main = "Cauchy prior")
-
-for(i in 2:length(roc.curves.wip)) {
-  plot(roc.curves.wip[[i]], col = blended_color, add = TRUE)
-}
-dev.off()
+plot_roc.curves.wip <- as.ggplot(function() {
+  plot(roc.curves.wip[[1]], col = blended_color, main = "Cauchy")
+  for(i in 2:length(roc.curves.wip)) {
+    plot(roc.curves.wip[[i]], col = blended_color, add = TRUE)
+  }
+})
 
 roc.curve.norm <- roc(current_data$outcome, rowMeans(pnew.norm),
                       ci = TRUE)
 ci.auc.norm <- ci.auc(roc.curve.norm)
 ci.roc.norm <- ci.se(roc.curve.norm, specificities = seq(0, 1, l = 25))
 
-png("bayesian_subset_selection/actg/results/figures/roc_norm_post_mean.png", 
-    width = 800, height = 600)
-plot(roc.curve.norm, col = blended_color, main = "Normal prior", print.auc = FALSE)
-plot(ci.roc.norm, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-text(0.6, 0.2, 
-     labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                      roc.curve.norm$auc, ci.auc.norm[1], ci.auc.norm[3]),
-     cex = 1.2)
-dev.off()
+plot_roc.norm <- as.ggplot(function() {
+  plot(roc.curve.norm, col = blended_color, main = "Normal", print.auc = FALSE)
+  plot(ci.roc.norm, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
+  text(0.6, 0.2, 
+       labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
+                        roc.curve.norm$auc, ci.auc.norm[1], ci.auc.norm[3]),
+       cex = 1.2)
+})
 
 roc.curves.norm <- lapply(1:ncol(pnew.norm), function(i) {
   roc(current_data$outcome, pnew.norm[, i])
 })
 
-png("bayesian_subset_selection/actg/results/figures/roc_norm_all.png",
-    width = 800, height = 600)
-plot(roc.curves.norm[[1]], col = blended_color, main = "Normal prior")
+plot_roc.curves.norm <- as.ggplot(function() {
+  plot(roc.curves.norm[[1]], col = blended_color, main = "Normal")
+  for(i in 2:length(roc.curves.norm)) {
+    plot(roc.curves.norm[[i]], col = blended_color, add = TRUE)
+  }
+})
 
-for(i in 2:length(roc.curves.norm)) {
-  plot(roc.curves.norm[[i]], col = blended_color, add = TRUE)
-}
-dev.off()
+roc_wip_norm <- (plot_roc.wip) + (plot_roc.norm)
+roc_wip_norm
+ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm.png",
+       roc_wip_norm, width = 15, height = 8, units = "in", dpi = 300)
+
+roc_all_wip_norm <- (plot_roc.curves.wip) + (plot_roc.curves.norm)
+roc_all_wip_norm
+ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm.png",
+       roc_all_wip_norm, width = 15, height = 8, units = "in", dpi = 300)

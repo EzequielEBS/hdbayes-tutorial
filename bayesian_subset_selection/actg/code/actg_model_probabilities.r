@@ -28,8 +28,21 @@ prob_wip$type <- factor(prob_wip$type, levels = c("Prior", "Posterior"))
 models_wip <- ggplot(prob_wip, aes(x = model_id, y = value, fill = type)) +
   geom_col(position = "dodge") + # side-by-side
   labs(x = "Model", y = "Value", fill = "") +
-  theme_minimal() +
-  scale_fill_manual(values = c("Prior" = "#66A8D0", "Posterior" = "#D08E66"))
+  scale_fill_manual(values = c("Prior" = "#66A8D0", "Posterior" = "#D08E66")) +
+  theme_bw() +
+  theme(legend.position = c(.95, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6),
+        legend.background = element_rect(fill = "white", color = "black"),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA)
+  ) +
+  theme(text = element_text(size = 16),        # Base text size
+        axis.title = element_text(size = 18),  # Axis titles
+        axis.text = element_text(size = 16),   # Axis tick labels
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
 models_wip
 
 c0 <- c(0.25, 0.5, 1, 2)
@@ -54,8 +67,21 @@ models_norm <- lapply(seq_along(c0)
   ggplot(df, aes(x = model_id, y = value, fill = type)) +
     geom_col(position = "dodge") + # side-by-side
     labs(x = "Model", y = "Value", fill = "") +
-    theme_minimal() +
-    scale_fill_manual(values = c("Prior" = "#66A8D0", "Posterior" = "#D08E66"))
+    scale_fill_manual(values = c("Prior" = "#66A8D0", "Posterior" = "#D08E66")) +
+    theme_bw() +
+    theme(legend.position = c(.95, .95),
+          legend.justification = c("right", "top"),
+          legend.box.just = "right",
+          legend.margin = margin(6, 6, 6, 6),
+          legend.background = element_rect(fill = "white", color = "black"),
+          panel.background = element_rect(fill = "white", color = NA),
+          plot.background = element_rect(fill = "white", color = NA)
+    ) +
+    theme(text = element_text(size = 16),        # Base text size
+          axis.title = element_text(size = 18),  # Axis titles
+          axis.text = element_text(size = 16),   # Axis tick labels
+          legend.title = element_text(size = 18),
+          legend.text = element_text(size = 16))
 })
 
 models_wip_norm <- (models_wip + 
@@ -65,25 +91,25 @@ models_wip_norm <- (models_wip +
                     ) /
   (models_norm[[1]] + 
      ggtitle(
-       bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p]*")")
+       bquote("Normal" * "(" * 0 * ", " * .(c0[1])^2 * I[p^"(m)"]*")")
      ) +
      labs(x = "",
           y = "")) +
   (models_norm[[2]] + 
      ggtitle(
-       bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p]*")")
+       bquote("Normal" * "(" * 0 * ", " * .(c0[2])^2 * I[p^"(m)"]*")")
      ) +
      labs(x = "",
           y = "")) +
   (models_norm[[3]] + 
      ggtitle(
-       bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p]*")")
+       bquote("Normal" * "(" * 0 * ", " * .(c0[3])^2 * I[p^"(m)"]*")")
      ) +
      labs(x = "",
           y = "")) +
   (models_norm[[4]] + 
      ggtitle(
-       bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p]*")")
+       bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
      ) +
      labs(y = "")) +
   plot_layout(guides = "collect") & theme(legend.position = 'bottom')

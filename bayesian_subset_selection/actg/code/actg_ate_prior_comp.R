@@ -48,16 +48,16 @@ ate_wip_norm <-
      ggtitle("Cauchy") + 
      xlim(-.1, .1) + xlab("")) /
   (ates_c0d0[[1]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p]*")")) +
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
      xlim(-.1, .1) + xlab("")) /
   (ates_c0d0[[2]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p]*")")) + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
      xlim(-.1, .1) + xlab("")) /
   (ates_c0d0[[3]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p]*")")) + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
      xlim(-.1, .1) +xlab("")) /
   (ates_c0d0[[4]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p]*")")) + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
      xlim(-.1, .1)) +
   plot_layout(guides = "collect") & theme(legend.position = 'bottom')
 ate_wip_norm
