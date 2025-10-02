@@ -335,4 +335,4 @@ draws.a0_after_PSM <- lapply(seq_along(a0_hyper), function(i) {
 })
 
 save(draws.a0_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/draws_npp_a0__after_PSM.RData")
+     file = "bayesian_subset_selection/actg/samples/draws_npp_a0_after_PSM.RData")

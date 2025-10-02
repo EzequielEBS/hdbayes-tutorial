@@ -48,3 +48,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# others
+*.exe
+bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData
+bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData
+bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData
+bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData
