@@ -243,7 +243,7 @@ pnew.norm_after_PSM <- sapply(seq_len(nsim), function(i){
   p <- binomial('logit')$linkinv(Xnew %*% beta.sim)
   return(p)
 })
-pnew.wip_after_PSM <- sapply(seq_len(nsim), function(i){
+pnew.wip_after_PSM<- sapply(seq_len(nsim), function(i){
   beta.sim <- as.numeric(d.sub.wip_after_PSM[i, ])
   p <- binomial('logit')$linkinv(Xnew %*% beta.sim)
   return(p)

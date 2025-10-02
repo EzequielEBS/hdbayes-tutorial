@@ -1,4 +1,9 @@
 source("bayesian_subset_selection/actg/code/aux_scripts/get_stan_data.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/glm_logml_npp_wip.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/data_checks.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/expfam_loglik.r")
 
 library(hdbayes)
 library(parallel)
@@ -6,8 +11,6 @@ library(matrixStats)
 library(MCMCpack)
 library(bayestestR)
 library(dplyr)
-library(ggplot2)
-library(patchwork)
 
 current_data <- actg036
 hist_data <- actg019
@@ -97,36 +100,6 @@ a0.lognc.c0 <- lapply(c0, function(c0_val) {
   return(a0.lognc)
   }
 )
-
-draws.c0 <- lapply(seq_along(c0), function(i) {
-  c0_val <- c0[i]
-  standat.norm <- get.stan.data.npp.prior.wip(
-    formula        = formula,
-    family         = family,
-    data.list      = list(hist_data),
-    a0.lognc       = a0.lognc.c0[[i]]$a0,
-    lognc          =  matrix(a0.lognc.c0[[i]]$a0, ncol = 1),
-    offset.list    = NULL,
-    beta.sd        = c0_val,
-    disp.mean      = NULL,
-    disp.sd        = NULL,
-    a0.shape1      = delta0,
-    a0.shape2      = lambda0,
-    a0.lower       = 0,
-    a0.upper       = 1,
-    wip            = 0
-  )
-  
-  ## fit model in cmdstanr
-  fit.norm <- glm_npp_prior_wip$sample(
-    data = standat.norm,
-    iter_warmup = iter_sampling, iter_sampling = iter_warmup, chains = 4
-  )
-  
-  pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
-  draws.norm <- fit.norm$draws(format = 'draws_df', variables = pars) %>%
-    select(all_of(pars))
-})
 
 draws.c0 <- lapply(seq_along(c0), function(i) {
   c0_val <- c0[i]
