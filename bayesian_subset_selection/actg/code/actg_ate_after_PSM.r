@@ -139,7 +139,7 @@ plot_or_after_PSM <- ggplot() +
   geom_area(data = or_density_df_after_PSM %>% 
               filter(x >= ci_or_after_PSM_90_upper - 
                        (max(or_density_df_after_PSM$x) - 
-                          ci_or_after_PSM_90_upper)*0.001), 
+                          ci_or_after_PSM_90_upper)*0.005), 
             aes(x = x, y = y, fill = "Density"), color = "black",
             alpha = 0.7) +
   geom_area(data = or_density_90_after_PSM, 

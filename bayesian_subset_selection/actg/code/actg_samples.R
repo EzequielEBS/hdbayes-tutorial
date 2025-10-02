@@ -125,8 +125,8 @@ lambda0 <- 1
 a0_seq <- seq(0, 1, length.out = 21)
 data <- list(current_data, hist_data)
 family <- binomial(link = "logit")
-c0 <- 0.5
-d0 <- 0.5
+c0 <- 1
+d0 <- 1
 iter_warmup <- 1000
 iter_sampling <- 2500
 

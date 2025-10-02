@@ -1,6 +1,7 @@
 load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_wip.RData")
-# load("bayesian_subset_selection/actg/samples/post_samples_norm.RData")
+load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
+load("bayesian_subset_selection/actg/samples/post_samples_wip_after_PSM.RData")
 
 library(ggplot2)
 library(MCMCpack)
@@ -14,11 +15,6 @@ source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
 
 current_data <- actg036
 hist_data <- actg019
-
-current_data$treatment <- current_data$treatment - mean(current_data$treatment)
-current_data$race <- current_data$race - mean(current_data$race)
-hist_data$treatment <- hist_data$treatment - mean(hist_data$treatment)
-hist_data$race <- hist_data$race - mean(hist_data$race)
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -58,41 +54,89 @@ ate_wip_norm <-
      xlim(-.1, .1) +xlab("")) /
   (ates_c0d0[[4]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.1, .1)) +
-  plot_layout(guides = "collect") & theme(legend.position = 'bottom')
+     xlim(-.1, .1)) & 
+  theme(legend.position = 'none')
 ate_wip_norm
 
 ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm.png",
        ate_wip_norm, width = 7, height = 20, units = "in", dpi = 300)
 
-# ate_c0 <-
-#   (ates_c0[[1]] + ggtitle(bquote(tau[0] == .(c0[1]))) + xlim(-.1, .1) + xlab("")) /
-#   (ates_c0[[2]] + ggtitle(bquote(tau[0] == .(c0[2]))) + xlim(-.1, .1) + xlab("")) /
-#   (ates_c0[[3]] + ggtitle(bquote(tau[0] == .(c0[3]))) + xlim(-.1, .1) +xlab("")) /
-#   (ates_c0[[4]] + ggtitle(bquote(tau[0] == .(c0[4]))) + xlim(-.1, .1)) +
-#   plot_layout(guides = "collect") & theme(legend.position = 'bottom')
-# ate_c0
-# 
-# ggsave("bayesian_subset_selection/actg/results/figures/ate_tau0.png",
-#        ate_c0, width = 7, height = 20, units = "in", dpi = 300)
+#-------------------------------------------------------------------------------
+# After PSM
+#-------------------------------------------------------------------------------
 
-# ate_m0v0 <-
-#   (ates_m0v0[[1]] + 
-#    ggtitle(bquote((delta[0]*', '*lambda[0]) == (.(m0_v0[[1]][1])*', '*.(m0_v0[[1]][2])))) +
-#    xlim(-.1, .1) + xlab("")) /
-#   (ates_m0v0[[2]] +
-#    ggtitle(bquote((delta[0]*', '*lambda[0]) == (.(m0_v0[[2]][1])*', '*.(m0_v0[[2]][2])))) +
-#    xlim(-.1, .1) + xlab("")) /
-#   (ates_m0v0[[3]] +
-#    ggtitle(bquote((delta[0]*', '*lambda[0]) == (.(m0_v0[[3]][1])*', '*.(m0_v0[[3]][2])))) +
-#    xlim(-.1, .1) +xlab("")) /
-#   (ates_m0v0[[4]] +
-#    ggtitle(bquote((delta[0]*', '*lambda[0]) == (.(m0_v0[[4]][1])*', '*.(m0_v0[[4]][2])))) +
-#    xlim(-.1, .1)) +
-#   plot_layout(guides = "collect") & theme(legend.position = 'bottom')
-# ate_m0v0
-  
+current_data <- actg036
+hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
 
-# ggsave("bayesian_subset_selection/actg/results/figures/ate_m0v0.png",
-#        ate_m0v0, width = 7, height = 20, units = "in", dpi = 300)
+current_data$age <- (current_data$age - mean(current_data$age)) /
+  (2*sd(current_data$age))
+current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
+  (2*sd(current_data$cd4))
+hist_data$age <- (hist_data$age - mean(hist_data$age)) /
+  (2*sd(hist_data$age))
+hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
+  (2*sd(hist_data$cd4))
 
+
+family <- binomial(link = "logit")
+ate_wip_after_PSM <- plot_ate(post_samples_wip_after_PSM)
+
+c0 <- c(0.25, 0.5, 1, 2)
+ates_c0d0_after_PSM <- lapply(post_samples_c0d0_after_PSM, plot_ate)
+
+
+ate_wip_norm_after_PSM <- 
+  (ate_wip_after_PSM + 
+     ggtitle("Cauchy") + 
+     xlim(-.2, .2) + xlab("")) /
+  (ates_c0d0_after_PSM[[1]] + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+     xlim(-.2, .2) + xlab("")) /
+  (ates_c0d0_after_PSM[[2]] + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+     xlim(-.2, .2) + xlab("")) /
+  (ates_c0d0_after_PSM[[3]] + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+     xlim(-.2, .2) +xlab("")) /
+  (ates_c0d0_after_PSM[[4]] + 
+     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
+     xlim(-.2, .2)) &
+  theme(legend.position = 'bottom')
+ate_wip_norm_after_PSM
+
+ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm_after_PSM.png",
+       ate_wip_norm_after_PSM, width = 7, height = 20, units = "in", dpi = 300)
+
+#-------------------------------------------------------------------------------
+# Compare ATE distributions
+#-------------------------------------------------------------------------------
+
+models_before_after_PSM <- 
+  (models_wip_norm) |
+  (models_wip_norm_after_PSM) +
+  plot_layout(guides = "collect") & 
+  theme(legend.position = 'bottom',
+        legend.justification = "right",
+        legend.box.just = "right")
+models_before_after_PSM <- models_before_after_PSM + 
+  plot_annotation(
+    title = "Comparison of models before and after PSM",
+    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+  )
+
+ates_wip_norm_after_PSM <- 
+  (ate_wip_norm) |
+  (ate_wip_norm_after_PSM) +
+  plot_layout(guides = "collect") & 
+  theme(legend.position = 'bottom',
+        legend.justification = "right",
+        legend.box.just = "right")
+
+ates_wip_norm_after_PSM <- ates_wip_norm_after_PSM +
+  plot_annotation(
+    title = "Comparison of ATE distributions before and after PSM",
+    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+  )
+ates_wip_norm_after_PSM
+ggsave("bayesian_subset_selection/actg/results/figures/ates_wip_norm_before_after_PSM.png",
+       ates_wip_norm_after_PSM, width = 12, height = 14, units = "in", dpi = 300)

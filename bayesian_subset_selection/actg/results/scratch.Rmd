@@ -1,0 +1,60 @@
+---
+title: "scratch"
+output: pdf_document
+date: "2025-09-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+% latex table generated in R 4.4.1 by xtable 1.8-4 package
+% Tue Sep 30 17:54:16 2025
+\begin{table}[ht]
+\centering
+\begin{tabular}{lcrrrr}
+  \hline
+\multicolumn{2}{c}{ } & \multicolumn{2}{c}{After PSM} & \multicolumn{2}{c}{Before PSM} \\
+  \hline
+ $m$ & Variables & $p(m)$ & $p(m \mid D)$ & $p(m)$ & $p(m \mid D)$ \\ 
+  \hline
+M5 & treatment, cd4 & 0.058 & 0.198 & 0.064 & 0.058 \\ 
+  M2 & age, treatment, cd4 & 0.071 & 0.178 & 0.256 & 0.238 \\ 
+  M1 & age, treatment, race, cd4 & 0.067 & 0.132 & 0.553 & 0.586 \\ 
+  M3 & treatment, race, cd4 & 0.048 & 0.125 & 0.117 & 0.110 \\ 
+  M8 & cd4 & 0.028 & 0.107 & 0.001 & 0.000 \\ 
+  M6 & age, cd4 & 0.034 & 0.093 & 0.002 & 0.002 \\ 
+  M4 & age, race, cd4 & 0.036 & 0.075 & 0.005 & 0.005 \\ 
+  M7 & race, cd4 & 0.025 & 0.072 & 0.001 & 0.001 \\ 
+  M10 & age, treatment & 0.137 & 0.006 & 0.000 & 0.000 \\ 
+  M9 & age, treatment, race & 0.131 & 0.004 & 0.001 & 0.000 \\ 
+  M14 & treatment & 0.100 & 0.003 & 0.000 & 0.000 \\ 
+  M13 & age & 0.066 & 0.002 & 0.000 & 0.000 \\ 
+  M12 & treatment, race & 0.083 & 0.002 & 0.000 & 0.000 \\ 
+  M11 & age, race & 0.071 & 0.002 & 0.000 & 0.000 \\ 
+  M15 & race & 0.044 & 0.001 & 0.000 & 0.000 \\
+   \hline
+\end{tabular}
+\end{table}
