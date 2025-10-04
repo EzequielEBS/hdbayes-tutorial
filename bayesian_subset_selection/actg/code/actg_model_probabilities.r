@@ -311,10 +311,5 @@ models_before_after_PSM <-
   theme(legend.position = 'bottom',
         legend.justification = "right",
         legend.box.just = "right")
-models_before_after_PSM <- models_before_after_PSM + 
-  plot_annotation(
-    title = "Comparison of models before and after PSM",
-    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-  )
 ggsave("bayesian_subset_selection/actg/results/figures/models_before_after_PSM.png",
        models_before_after_PSM, width = 16, height = 15, units = "in", dpi = 300)
