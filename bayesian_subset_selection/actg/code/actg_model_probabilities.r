@@ -298,6 +298,12 @@ models_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm_after_PSM.png",
        models_wip_norm_after_PSM, width = 10, height = 15, units = "in", dpi = 300)
 
+
+#-------------------------------------------------------------------------------
+# Compare before and after PSM
+#-------------------------------------------------------------------------------
+
+
 models_before_after_PSM <- 
   (models_wip_norm) |
   (models_wip_norm_after_PSM) +

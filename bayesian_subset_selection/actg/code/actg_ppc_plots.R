@@ -799,7 +799,7 @@ roc_wip_norm <-
   )
 roc_wip_norm
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm.png",
-       roc_wip_norm, width = 7.5, height = 14, units = "in", dpi = 300)
+       roc_wip_norm, width = 7.5, height = 18, units = "in", dpi = 300)
 
 roc_a0 <- 
   (plot_roc.a0[[1]] + 
@@ -816,7 +816,7 @@ roc_a0 <-
   )
 roc_a0
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0.png",
-       roc_a0, width = 7.5, height = 11.2, units = "in", dpi = 300)
+       roc_a0, width = 7.5, height = 14.4, units = "in", dpi = 300)
 
 roc_all_wip_norm <- 
   (plot_roc.curves.wip +
@@ -836,7 +836,7 @@ roc_all_wip_norm <-
   )
 roc_all_wip_norm
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm.png",
-       roc_all_wip_norm, width = 7.5, height = 14, units = "in", dpi = 300)
+       roc_all_wip_norm, width = 7.5, height = 18, units = "in", dpi = 300)
 
 roc_all_a0 <- 
   (plot_roc.curves.a0[[1]] + 
@@ -853,7 +853,7 @@ roc_all_a0 <-
   )
 roc_all_a0
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0.png",
-       roc_all_a0, width = 7.5, height = 11.2, units = "in", dpi = 300)
+       roc_all_a0, width = 7.5, height = 14.4, units = "in", dpi = 300)
 
 roc_wip_norm_after_PSM <- 
   (plot_roc.wip_after_PSM +
@@ -874,7 +874,7 @@ roc_wip_norm_after_PSM <-
   )
 roc_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm_after_PSM.png",
-       roc_wip_norm_after_PSM, width = 7.5, height = 14, units = "in", dpi = 300)
+       roc_wip_norm_after_PSM, width = 7.5, height = 18, units = "in", dpi = 300)
 
 roc_a0_after_PSM <- 
   (plot_roc.a0_after_PSM[[1]] + 
@@ -891,7 +891,7 @@ roc_a0_after_PSM <-
   )
 roc_a0_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0_after_PSM.png",
-       roc_a0_after_PSM, width = 7.5, height = 11.2, units = "in", dpi = 300)
+       roc_a0_after_PSM, width = 7.5, height = 14.4, units = "in", dpi = 300)
 
 roc_all_wip_norm_after_PSM <- 
   (plot_roc.curves.wip_after_PSM +
@@ -912,7 +912,7 @@ roc_all_wip_norm_after_PSM <-
   )
 roc_all_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm_after_PSM.png",
-       roc_all_wip_norm_after_PSM, width = 7.5, height = 14, units = "in", dpi = 300)
+       roc_all_wip_norm_after_PSM, width = 7.5, height = 18, units = "in", dpi = 300)
 
 roc_all_a0_after_PSM <- 
   (plot_roc.curves.a0_after_PSM[[1]] + 
@@ -929,7 +929,7 @@ roc_all_a0_after_PSM <-
   )
 roc_all_a0_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_after_PSM.png",
-       roc_all_a0_after_PSM, width = 7.5, height = 11.2, units = "in", dpi = 300)
+       roc_all_a0_after_PSM, width = 7.5, height = 14.4, units = "in", dpi = 300)
 
 
 #-------------------------------------------------------------------------------
