@@ -57,11 +57,17 @@ pnew.norm <- lapply(seq_along(c0), function(j) {
   })
 })
 
+save(pnew.norm, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_norm.RData")
+
 pnew.wip <- sapply(seq_len(nsim), function(i){
   beta.sim <- as.numeric(d.sub.wip[i, ])
   p <- binomial('logit')$linkinv(Xnew %*% beta.sim)
   return(p)
 })
+
+save(pnew.wip, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_wip.RData")
 
 pnew.a0 <- lapply(seq_along(a0_hyper), function(j) {
   sapply(seq_len(nsim), function(i){
@@ -71,238 +77,84 @@ pnew.a0 <- lapply(seq_along(a0_hyper), function(j) {
   })
 })
 
-plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
-  prior_labels <- c(
-    wip = expression(Cauchy),
-    c01 = bquote(Normal(0, .(c0[1])^2 * I[p^(m)])),
-    c02 = bquote(Normal(0, .(c0[2])^2 * I[p^(m)])),
-    c03 = bquote(Normal(0, .(c0[3])^2 * I[p^(m)])),
-    c04 = bquote(Normal(0, .(c0[4])^2 * I[p^(m)]))
-  )
-  df_pnew <- data.frame(
-    wip = pnew.wip[i, ],
-    c01 = pnew.norm[[1]][i, ],
-    c02 = pnew.norm[[2]][i, ],
-    c03 = pnew.norm[[3]][i, ],
-    c04 = pnew.norm[[4]][i, ]
-  ) %>%
-    pivot_longer(cols = everything(), names_to = "prior", values_to = "prob") %>%
-    mutate(prior_label = factor(prior, levels = c("wip",
-                                                  "c01",
-                                                  "c02",
-                                                  "c03",
-                                                  "c04"),
-                                ordered = T))
-  
-  blended_rgb <- round(colMeans(rbind(
-    c(135, 206, 235),
-    c(70, 130, 180)
-  )))
-  
-  blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
-  
-  plot <- ggplot(df_pnew, aes(x = prob, y = prior_label)) +
-    geom_density_ridges(alpha=0.6, fill = blended_color)+
-    theme_ridges() +
-    scale_y_discrete(expand = c(0, 0), labels = prior_labels, limits = rev) +
-    scale_x_continuous(expand = c(0, 0)) +
-    annotate(
-      "label",
-      x = Inf,            # X position of the box
-      y = Inf, 
-      hjust = 1.5,  # Slightly inside the plot
-      vjust = 1.5,  # Slightly below the top
-      label = paste0("y = ", current_data$outcome[i]),  # Dynamic label
-      color = "black",      # Text color
-      fill = "white",       # Box background color
-      label.size = 0.4,     # Border thickness of the box
-      size = 3
-    ) +
-    theme_bw() +
-    theme(legend.position = "none",
-          # legend.position = c(0.8, 0.85),
-          legend.background = element_rect(fill = "white", color = "black")) +
-    theme(panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA)
-    ) +
-    xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
-          legend.title = element_text(size = 10),
-          legend.text = element_text(size = 10),
-          strip.text = element_text(size = 10)) +
-    labs(
-      x = "Probability of event",
-      y = "",
-    )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_", i, ".png")
-  ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
-  return(plot)
-},
-mc.cores = 2)
-
-save(plots_pnew, 
-     file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData")
-
-plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
-  prior_labels <- c(
-    a01 = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
-    a02 = bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")"),
-    a03 = bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")"),
-    a04 = bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")
-  )
-  df_pnew <- data.frame(
-    a01 = pnew.a0[[1]][i, ],
-    a02 = pnew.a0[[2]][i, ],
-    a03 = pnew.a0[[3]][i, ],
-    a04 = pnew.a0[[4]][i, ]
-  ) %>%
-    pivot_longer(cols = everything(), names_to = "prior", values_to = "prob") %>%
-    mutate(prior_label = factor(prior, levels = c("a01",
-                                                  "a02",
-                                                  "a03",
-                                                  "a04"),
-                                ordered = T))
-  
-  blended_rgb <- round(colMeans(rbind(
-    c(135, 206, 235),
-    c(70, 130, 180)
-  )))
-  
-  blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
-  
-  plot <- ggplot(df_pnew, aes(x = prob, y = prior_label)) +
-    geom_density_ridges(alpha=0.6, fill = blended_color)+
-    theme_ridges() +
-    scale_y_discrete(expand = c(0, 0), labels = prior_labels, limits = rev) +
-    scale_x_continuous(expand = c(0, 0)) +
-    annotate(
-      "label",
-      x = Inf,            # X position of the box
-      y = Inf, 
-      hjust = 1.5,  # Slightly inside the plot
-      vjust = 1.5,  # Slightly below the top
-      label = paste0("y = ", current_data$outcome[i]),  # Dynamic label
-      color = "black",      # Text color
-      fill = "white",       # Box background color
-      label.size = 0.4,     # Border thickness of the box
-      size = 3
-    ) +
-    theme_bw() +
-    theme(legend.position = "none",
-          # legend.position = c(0.8, 0.85),
-          legend.background = element_rect(fill = "white", color = "black")) +
-    theme(panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA)
-    ) +
-    xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
-          legend.title = element_text(size = 10),
-          legend.text = element_text(size = 10),
-          strip.text = element_text(size = 10)) +
-    labs(
-      x = "Probability of event",
-      y = "",
-    )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_", i, ".png")
-  ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
-  return(plot)
-},
-mc.cores = 2)
-
-save(plots_pnew_a0, 
-     file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData")
+save(pnew.a0, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_a0.RData")
 
 roc.curve.wip <- roc(current_data$outcome, rowMeans(pnew.wip))
+save(roc.curve.wip, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_wip.RData")
 # Compute the confidence interval for the AUC
 ci.auc.wip <- ci.auc(roc.curve.wip)
+save(ci.auc.wip, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_wip.RData")
 ci.roc.wip <- ci.se(roc.curve.wip, specificities = seq(0, 1, l = 25))
-# Optionally, you can display the AUC with its CI directly on the plot
-plot_roc.wip <- as.ggplot(function() {
-  plot(roc.curve.wip,
-       col = blended_color,
-       main = "Cauchy",
-       print.auc = FALSE)
-  plot(ci.roc.wip, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-  text(0.6, 0.2, 
-       labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                        roc.curve.wip$auc, ci.auc.wip[1], ci.auc.wip[3]),
-       cex = 1.2)
-})
+save(ci.roc.wip, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_wip.RData")
 
 roc.curves.wip <- lapply(1:ncol(pnew.wip), function(i) {
   roc(current_data$outcome, pnew.wip[, i])
 })
 
-plot_roc.curves.wip <- as.ggplot(function() {
-  plot(roc.curves.wip[[1]], col = blended_color, main = "Cauchy")
-  for(i in 2:length(roc.curves.wip)) {
-    plot(roc.curves.wip[[i]], col = blended_color, add = TRUE)
-  }
-})
+save(roc.curves.wip, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_wip.RData")
 
 roc.curve.norm <- lapply(seq_along(pnew.norm), function(j) {
   roc(current_data$outcome, rowMeans(pnew.norm[[j]]),
                       ci = TRUE)
   })
+save(roc.curve.norm, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_norm.RData")
+
 ci.auc.norm <- lapply(seq_along(roc.curve.norm), function(j) {
   ci.auc(roc.curve.norm[[j]])
 })
+save(ci.auc.norm, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_norm.RData")
+
 ci.roc.norm <- lapply(seq_along(roc.curve.norm), function(j) {
   ci.se(roc.curve.norm[[j]], specificities = seq(0, 1, l = 25))
 })
-
-plot_roc.norm <- lapply(seq_along(roc.curve.norm), function(j) {
-  as.ggplot(function() {
-  plot(roc.curve.norm[[j]], col = blended_color, main = "Normal", print.auc = FALSE)
-  plot(ci.roc.norm[[j]], type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-  text(0.6, 0.2, 
-       labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                        roc.curve.norm[[j]]$auc, ci.auc.norm[[j]][1], 
-                        ci.auc.norm[[j]][3]),
-       cex = 1.2)
-})
-})
+save(ci.roc.norm, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_norm.RData")
 
 roc.curves.norm <- lapply(seq_along(pnew.norm), function(j) {
   lapply(1:ncol(pnew.norm[[j]]), function(i) {
   roc(current_data$outcome, pnew.norm[[j]][, i])
 })
 })
-  
-plot_roc.curves.norm <- lapply(seq_along(roc.curves.norm), function(j) {
-  as.ggplot(function() {
-  plot(roc.curves.norm[[j]][[1]], col = blended_color, main = "Normal")
-  for(i in 2:length(roc.curves.norm[[j]])) {
-    plot(roc.curves.norm[[j]][[i]], col = blended_color, add = TRUE)
-  }
+save(roc.curves.norm, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_norm.RData")
+
+roc.curve.a0 <- lapply(seq_along(pnew.a0), function(j) {
+  roc(current_data$outcome, rowMeans(pnew.a0[[j]]),
+      ci = TRUE)
 })
+save(roc.curve.a0, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_a0.RData")
+
+ci.auc.a0 <- lapply(seq_along(roc.curve.a0), function(j) {
+  ci.auc(roc.curve.a0[[j]])
 })
+save(ci.auc.a0, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_a0.RData")
 
-roc_wip_norm <- (plot_roc.wip) + (plot_roc.norm)
-roc_wip_norm
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm.png",
-       roc_wip_norm, width = 15, height = 8, units = "in", dpi = 300)
+ci.roc.a0 <- lapply(seq_along(roc.curve.a0), function(j) {
+  ci.se(roc.curve.a0[[j]], specificities = seq(0, 1, l = 25))
+})
+save(ci.roc.a0, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_a0.RData")
 
-roc_all_wip_norm <- (plot_roc.curves.wip) + (plot_roc.curves.norm)
-roc_all_wip_norm
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm.png",
-       roc_all_wip_norm, width = 15, height = 8, units = "in", dpi = 300)
-
-
-
-
+roc.curves.a0 <- lapply(seq_along(pnew.a0), function(j) {
+  lapply(1:ncol(pnew.a0[[j]]), function(i) {
+    roc(current_data$outcome, pnew.a0[[j]][, i])
+  })
+})
+save(roc.curves.a0, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_a0.RData")
 
 #-------------------------------------------------------------------------------
 # After PSM
 #-------------------------------------------------------------------------------
-
-
-
-
 
 current_data <- actg036
 hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
@@ -342,12 +194,16 @@ pnew.norm_after_PSM <- lapply(seq_along(c0), function(j) {
     return(p)
   })
 })
+save(pnew.norm_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_norm_after_PSM.RData")
 
 pnew.wip_after_PSM <- sapply(seq_len(nsim), function(i){
   beta.sim <- as.numeric(d.sub.wip_after_PSM[i, ])
   p <- binomial('logit')$linkinv(Xnew %*% beta.sim)
   return(p)
 })
+save(pnew.wip_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_wip_after_PSM.RData")
 
 pnew.a0_after_PSM <- lapply(seq_along(a0_hyper), function(j) {
   sapply(seq_len(nsim), function(i){
@@ -356,265 +212,78 @@ pnew.a0_after_PSM <- lapply(seq_along(a0_hyper), function(j) {
     return(p)
   })
 })
+save(pnew.a0_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_pnew_a0_after_PSM.RData")
 
-plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
-  prior_labels <- c(
-    wip = expression(Cauchy),
-    c01 = bquote(Normal(0, .(c0[1])^2 * I[p^(m)])),
-    c02 = bquote(Normal(0, .(c0[2])^2 * I[p^(m)])),
-    c03 = bquote(Normal(0, .(c0[3])^2 * I[p^(m)])),
-    c04 = bquote(Normal(0, .(c0[4])^2 * I[p^(m)]))
-  )
-  df_pnew <- data.frame(
-    wip = pnew.wip_after_PSM[i, ],
-    c01 = pnew.norm_after_PSM[[1]][i, ],
-    c02 = pnew.norm_after_PSM[[2]][i, ],
-    c03 = pnew.norm_after_PSM[[3]][i, ],
-    c04 = pnew.norm_after_PSM[[4]][i, ]
-  ) %>%
-    pivot_longer(cols = everything(), names_to = "prior", values_to = "prob") %>%
-    mutate(prior_label = factor(prior, levels = c("wip",
-                                                  "c01",
-                                                  "c02",
-                                                  "c03",
-                                                  "c04"),
-                                ordered = T))
-  
-  blended_rgb <- round(colMeans(rbind(
-    c(135, 206, 235),
-    c(70, 130, 180)
-  )))
-  
-  blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
-  
-  plot <- ggplot(df_pnew, aes(x = prob, y = prior_label)) +
-    geom_density_ridges(alpha=0.6, fill = blended_color)+
-    theme_ridges() +
-    scale_y_discrete(expand = c(0, 0), labels = prior_labels, limits = rev) +
-    scale_x_continuous(expand = c(0, 0)) +
-    annotate(
-      "label",
-      x = Inf,            # X position of the box
-      y = Inf, 
-      hjust = 1.5,  # Slightly inside the plot
-      vjust = 1.5,  # Slightly below the top
-      label = paste0("y = ", current_data$outcome[i]),  # Dynamic label
-      color = "black",      # Text color
-      fill = "white",       # Box background color
-      label.size = 0.4,     # Border thickness of the box
-      size = 3
-    ) +
-    theme_bw() +
-    theme(legend.position = "none",
-          # legend.position = c(0.8, 0.85),
-          legend.background = element_rect(fill = "white", color = "black")) +
-    theme(panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA)
-    ) +
-    xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
-          legend.title = element_text(size = 10),
-          legend.text = element_text(size = 10),
-          strip.text = element_text(size = 10)) +
-    labs(
-      x = "Probability of event",
-      y = "",
-    )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_", 
-                     i, "_after_PSM.png")
-  ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
-  return(plot)
-},
-mc.cores = 1)
-
-save(plots_pnew_after_PSM,
-     file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData")
-
-plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
-  prior_labels <- c(
-    a01 = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
-    a02 = bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")"),
-    a03 = bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")"),
-    a04 = bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")
-  )
-  df_pnew <- data.frame(
-    a01 = pnew.a0_after_PSM[[1]][i, ],
-    a02 = pnew.a0_after_PSM[[2]][i, ],
-    a03 = pnew.a0_after_PSM[[3]][i, ],
-    a04 = pnew.a0_after_PSM[[4]][i, ]
-  ) %>%
-    pivot_longer(cols = everything(), names_to = "prior", values_to = "prob") %>%
-    mutate(prior_label = factor(prior, levels = c("a01",
-                                                  "a02",
-                                                  "a03",
-                                                  "a04"),
-                                ordered = T))
-  
-  blended_rgb <- round(colMeans(rbind(
-    c(135, 206, 235),
-    c(70, 130, 180)
-  )))
-  
-  blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
-  
-  plot <- ggplot(df_pnew, aes(x = prob, y = prior_label)) +
-    geom_density_ridges(alpha=0.6, fill = blended_color)+
-    theme_ridges() +
-    scale_y_discrete(expand = c(0, 0), labels = prior_labels, limits = rev) +
-    scale_x_continuous(expand = c(0, 0)) +
-    annotate(
-      "label",
-      x = Inf,            # X position of the box
-      y = Inf, 
-      hjust = 1.5,  # Slightly inside the plot
-      vjust = 1.5,  # Slightly below the top
-      label = paste0("y = ", current_data$outcome[i]),  # Dynamic label
-      color = "black",      # Text color
-      fill = "white",       # Box background color
-      label.size = 0.4,     # Border thickness of the box
-      size = 3
-    ) +
-    theme_bw() +
-    theme(legend.position = "none",
-          # legend.position = c(0.8, 0.85),
-          legend.background = element_rect(fill = "white", color = "black")) +
-    theme(panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA)
-    ) +
-    xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
-          legend.title = element_text(size = 10),
-          legend.text = element_text(size = 10),
-          strip.text = element_text(size = 10)) +
-    labs(
-      x = "Probability of event",
-      y = "",
-    )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_", 
-                     i, "_after_PSM.png")
-  ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
-  return(plot)
-},
-mc.cores = 1)
-
-save(plots_pnew_a0_after_PSM,
-     file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
-
-pnew_13_21 <- (plots_pnew[[13]] + 
-                 scale_y_discrete(expand = c(0, 0)) +
-                 scale_x_continuous(expand = c(0, 0)) +
-                 xlim(c(0,1)) ) + 
-  (plots_pnew[[21]] + 
-     scale_y_discrete(expand = c(0, 0)) +
-     scale_x_continuous(expand = c(0, 0)) +
-     xlim(c(0,1)) &
-     theme(axis.text.y = element_blank())) +
-  plot_layout(guides = "collect") 
-pnew_13_21
-
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_21.png",
-       pnew_13_21, width = 10, height = 4, units = "in", dpi = 300)
-
-pnew_2_10 <- (plots_pnew[[2]] + 
-                scale_y_discrete(expand = c(0, 0)) +
-                scale_x_continuous(expand = c(0, 0)) +
-                xlim(c(0,1)) ) + 
-  (plots_pnew[[10]] + 
-     scale_y_discrete(expand = c(0, 0)) +
-     scale_x_continuous(expand = c(0, 0)) +
-     xlim(c(0,1)) &
-     theme(axis.text.y = element_blank())) +
-  plot_layout(guides = "collect")
-pnew_2_10
-
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_2_10.png",
-       pnew_2_10, width = 10, height = 4, units = "in", dpi = 300)
 
 roc.curve.wip_after_PSM <- roc(current_data$outcome, rowMeans(pnew.wip_after_PSM))
-# Compute the confidence interval for the AUC
+save(roc.curve.wip_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_wip_after_PSM.RData")
+
 ci.auc.wip_after_PSM <- ci.auc(roc.curve.wip_after_PSM)
+save(ci.auc.wip_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_wip_after_PSM.RData")
+
 ci.roc.wip_after_PSM <- ci.se(roc.curve.wip_after_PSM, specificities = seq(0, 1, l = 25))
-# Optionally, you can display the AUC with its CI directly on the plot
-plot_roc.wip_after_PSM <- as.ggplot(function() {
-  plot(roc.curve.wip_after_PSM,
-       col = blended_color,
-       main = "Cauchy",
-       print.auc = FALSE)
-  plot(ci.roc.wip_after_PSM, type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-  text(0.6, 0.2, 
-       labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                        roc.curve.wip_after_PSM$auc, ci.auc.wip_after_PSM[1], ci.auc.wip_after_PSM[3]),
-       cex = 1.2)
-})
+save(ci.roc.wip_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_wip_after_PSM.RData")
 
 roc.curves.wip_after_PSM <- lapply(1:ncol(pnew.wip_after_PSM), function(i) {
   roc(current_data$outcome, pnew.wip_after_PSM[, i])
 })
-
-plot_roc.curves.wip_after_PSM <- as.ggplot(function() {
-  plot(roc.curves.wip_after_PSM[[1]], col = blended_color, main = "Cauchy")
-  for(i in 2:length(roc.curves.wip_after_PSM)) {
-    plot(roc.curves.wip_after_PSM[[i]], col = blended_color, add = TRUE)
-  }
-})
+save(roc.curves.wip_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_wip_after_PSM.RData")
 
 roc.curve.norm_after_PSM <- lapply(seq_along(pnew.norm_after_PSM), function(j) {
   roc(current_data$outcome, rowMeans(pnew.norm_after_PSM[[j]]),
       ci = TRUE)
 })
+save(roc.curve.norm_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_norm_after_PSM.RData")
+
 ci.auc.norm_after_PSM <- lapply(seq_along(roc.curve.norm_after_PSM), function(j) {
   ci.auc(roc.curve.norm_after_PSM[[j]])
 })
+save(ci.auc.norm_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_norm_after_PSM.RData")
+
 ci.roc.norm_after_PSM <- lapply(seq_along(roc.curve.norm_after_PSM), function(j) {
   ci.se(roc.curve.norm_after_PSM[[j]], specificities = seq(0, 1, l = 25))
 })
-
-plot_roc.norm_after_PSM <- lapply(seq_along(roc.curve.norm_after_PSM), function(j) {
-  as.ggplot(function() {
-    plot(roc.curve.norm_after_PSM[[j]], col = blended_color, main = "Normal", print.auc = FALSE)
-    plot(ci.roc.norm_after_PSM[[j]], type = "shape", col = rgb(0.2, 0.4, 0.6, 0.2))
-    text(0.6, 0.2, 
-         labels = sprintf("AUC = %.3f (%.3f-%.3f)", 
-                          roc.curve.norm_after_PSM[[j]]$auc, ci.auc.norm_after_PSM[[j]][1], 
-                          ci.auc.norm_after_PSM[[j]][3]),
-         cex = 1.2)
-  })
-})
+save(ci.roc.norm_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_norm_after_PSM.RData")
 
 roc.curves.norm_after_PSM <- lapply(seq_along(pnew.norm_after_PSM), function(j) {
   lapply(1:ncol(pnew.norm_after_PSM[[j]]), function(i) {
     roc(current_data$outcome, pnew.norm_after_PSM[[j]][, i])
   })
 })
+save(roc.curves.norm_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_norm_after_PSM.RData")
 
-plot_roc.curves.norm_after_PSM <- lapply(seq_along(roc.curves.norm_after_PSM), function(j) {
-  as.ggplot(function() {
-    plot(roc.curves.norm_after_PSM[[j]][[1]], col = blended_color, main = "Normal")
-    for(i in 2:length(roc.curves.norm_after_PSM[[j]])) {
-      plot(roc.curves.norm_after_PSM[[j]][[i]], col = blended_color, add = TRUE)
-    }
+roc.curve.a0_after_PSM <- lapply(seq_along(pnew.a0_after_PSM), function(j) {
+  roc(current_data$outcome, rowMeans(pnew.a0_after_PSM[[j]]),
+      ci = TRUE)
+})
+save(roc.curve.a0_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curve_a0_after_PSM.RData")
+
+ci.auc.a0_after_PSM <- lapply(seq_along(roc.curve.a0_after_PSM), function(j) {
+  ci.auc(roc.curve.a0_after_PSM[[j]])
+})
+save(ci.auc.a0_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_auc_a0_after_PSM.RData")
+
+ci.roc.a0_after_PSM <- lapply(seq_along(roc.curve.a0_after_PSM), function(j) {
+  ci.se(roc.curve.a0_after_PSM[[j]], specificities = seq(0, 1, l = 25))
+})
+save(ci.roc.a0_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_ci_roc_a0_after_PSM.RData")
+
+roc.curves.a0_after_PSM <- lapply(seq_along(pnew.a0_after_PSM), function(j) {
+  lapply(1:ncol(pnew.a0_after_PSM[[j]]), function(i) {
+    roc(current_data$outcome, pnew.a0_after_PSM[[j]][, i])
   })
 })
-
-
-#-------------------------------------------------------------------------------
-# Compare distributions before and after PSM
-#-------------------------------------------------------------------------------
-
-pnew_1 <- (plots_pnew[[1]] + 
-                 scale_y_discrete(expand = c(0, 0)) +
-                 scale_x_continuous(expand = c(0, 0)) +
-                 xlim(c(0,1)) +
-             ggtitle("Before PSM")) + 
-  (plots_pnew_a0_after_PSM[[1]] + 
-     scale_y_discrete(expand = c(0, 0)) +
-     scale_x_continuous(expand = c(0, 0)) +
-     xlim(c(0,1)) +
-     ggtitle("After PSM") &
-     theme(axis.text.y = element_blank())) +
-  plot_layout(guides = "collect") 
-pnew_1
+save(roc.curves.a0_after_PSM, 
+     file = "bayesian_subset_selection/actg/samples/ppc_roc_curves_a0_after_PSM.RData")
