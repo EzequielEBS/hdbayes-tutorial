@@ -1,6 +1,7 @@
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_logml_npp_wip.r")
+source("bayesian_subset_selection/actg/code/aux_scripts/glm_pp_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/data_checks.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/expfam_loglik.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")

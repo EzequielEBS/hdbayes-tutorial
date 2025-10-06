@@ -30,12 +30,6 @@ family <- binomial(link = "logit")
 ate_wip <- plot_ate(post_samples_wip)
 
 c0 <- c(0.25, 0.5, 1, 2)
-# d0 <- c(0.25, 0.5, 1, 2)
-# m0_v0 <- list(c(1, 1), c(2, 2), c(1, 10), c(10, 1))
-
-# ates_d0 <- lapply(post_samples_d0, plot_ate)
-# ates_c0 <- lapply(post_samples_c0, plot_ate)
-# ates_m0v0 <- lapply(post_samples_m0v0, plot_ate)
 ates_c0d0 <- lapply(post_samples_c0d0, plot_ate)
 
 
@@ -111,19 +105,6 @@ ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm_after_PSM.pn
 # Compare ATE distributions
 #-------------------------------------------------------------------------------
 
-models_before_after_PSM <- 
-  (models_wip_norm) |
-  (models_wip_norm_after_PSM) +
-  plot_layout(guides = "collect") & 
-  theme(legend.position = 'bottom',
-        legend.justification = "right",
-        legend.box.just = "right")
-models_before_after_PSM <- models_before_after_PSM + 
-  plot_annotation(
-    title = "Comparison of models before and after PSM",
-    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-  )
-
 ates_wip_norm_after_PSM <- 
   (ate_wip_norm) |
   (ate_wip_norm_after_PSM) +
@@ -132,11 +113,11 @@ ates_wip_norm_after_PSM <-
         legend.justification = "right",
         legend.box.just = "right")
 
-ates_wip_norm_after_PSM <- ates_wip_norm_after_PSM +
-  plot_annotation(
-    title = "Comparison of ATE distributions before and after PSM",
-    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
-  )
+# ates_wip_norm_after_PSM <- ates_wip_norm_after_PSM +
+  # plot_annotation(
+  #   title = "Comparison of ATE distributions before and after PSM",
+  #   theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+  # )
 ates_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ates_wip_norm_before_after_PSM.png",
        ates_wip_norm_after_PSM, width = 12, height = 14, units = "in", dpi = 300)

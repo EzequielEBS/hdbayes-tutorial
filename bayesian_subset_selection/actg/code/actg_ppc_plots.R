@@ -944,55 +944,57 @@ load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_
 
 pnew_1_before_PSM <- plots_pnew[[1]] +
   xlim(c(0,1)) +
-  ggtitle("Before PSM") +
+  # ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_1_before_PSM$layers <- pnew_1_before_PSM$layers[-length(pnew_1_before_PSM$layers)]
-pnew_1_before_after_PSM <- (pnew_1_before_PSM) | 
-  (plots_pnew_after_PSM[[1]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM"))
+pnew_1_before_after_PSM <- 
+  (pnew_1_before_PSM) | 
+  (plots_pnew_after_PSM[[1]])
 pnew_1_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_1_before_after_PSM.png",
        pnew_1_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
 
 pnew_13_before_PSM <- plots_pnew[[13]] +
   xlim(c(0,1)) +
-  ggtitle("Before PSM") +
+  # ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_13_before_PSM$layers <- 
   pnew_13_before_PSM$layers[-length(pnew_13_before_PSM$layers)]
 pnew_13_before_after_PSM <- (pnew_13_before_PSM) | 
   (plots_pnew_after_PSM[[13]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM"))
+     xlim(c(0,1))
+     # ggtitle("After PSM")
+   )
 pnew_13_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_before_after_PSM.png",
        pnew_13_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
 
 pnew_a0_1_before_PSM <- plots_pnew_a0[[1]] +
   xlim(c(0,1)) +
-  ggtitle("Before PSM") +
+  # ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_a0_1_before_PSM$layers <- 
   pnew_a0_1_before_PSM$layers[-length(pnew_a0_1_before_PSM$layers)]
 pnew_a0_1_before_after_PSM <- (pnew_a0_1_before_PSM) | 
   (plots_pnew_a0_after_PSM[[1]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM"))
+     xlim(c(0,1))
+     # ggtitle("After PSM")
+   )
 pnew_a0_1_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_1_before_after_PSM.png",
        pnew_a0_1_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
 
 pnew_a0_13_before_PSM <- plots_pnew_a0[[13]] +
   xlim(c(0,1)) +
-  ggtitle("Before PSM") +
+  # ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_a0_13_before_PSM$layers <- 
   pnew_a0_13_before_PSM$layers[-length(pnew_a0_13_before_PSM$layers)]
 pnew_a0_13_before_after_PSM <- (pnew_a0_13_before_PSM) | 
   (plots_pnew_a0_after_PSM[[13]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM"))
+     xlim(c(0,1))
+     # ggtitle("After PSM")
+   )
 pnew_a0_13_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_13_before_after_PSM.png",
        pnew_a0_13_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
