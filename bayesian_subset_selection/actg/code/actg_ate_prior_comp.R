@@ -36,23 +36,27 @@ ates_c0d0 <- lapply(post_samples_c0d0, plot_ate)
 ate_wip_norm <- 
   (ate_wip + 
      ggtitle("Cauchy") + 
-     xlim(-.1, .1) + xlab("")) +
+     xlim(-.1, .1) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0[[1]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     xlim(-.1, .1) + xlab("")) +
+     xlim(-.1, .1) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0[[2]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.1, .1) + xlab("")) +
+     xlim(-.1, .1) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
      xlim(-.1, .1) +
-     xlab("") 
+     theme(legend.position = 'none')
    ) +
   (ates_c0d0[[4]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.1, .1)) +
-  plot_layout(ncol = 2, guides = "collect") & 
-  theme(legend.position = 'bottom')
+     xlim(-.1, .1) + 
+     theme(legend.position = c(0.95, 0.95),
+           legend.background = element_rect(fill = "white", color = "black"))) +
+  plot_layout(ncol = 2) 
 ate_wip_norm
 
 ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm.png",
@@ -86,23 +90,27 @@ ates_c0d0_after_PSM <- lapply(post_samples_c0d0_after_PSM, plot_ate)
 ate_wip_norm_after_PSM <- 
   (ate_wip_after_PSM + 
      ggtitle("Cauchy") + 
-     xlim(-.2, .2) + xlab("")) +
+     xlim(-.2, .2) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0_after_PSM[[1]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     xlim(-.2, .2) + xlab("")) +
+     xlim(-.2, .2) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0_after_PSM[[2]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.2, .2) + xlab("")) +
+     xlim(-.2, .2) + xlab("") + 
+     theme(legend.position = 'none')) +
   (ates_c0d0_after_PSM[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.2, .2) +
-     xlab("")
+     xlim(-.2, .2) + 
+     theme(legend.position = 'none')
      ) +
   (ates_c0d0_after_PSM[[4]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
-     xlim(-.2, .2)) +
-  plot_layout(ncol = 2, guides = "collect") &
-  theme(legend.position = 'bottom')
+     xlim(-.2, .2) +
+     theme(legend.position = c(0.95, 0.95),
+           legend.background = element_rect(fill = "white", color = "black"))) +
+  plot_layout(ncol = 2)
 ate_wip_norm_after_PSM
 
 ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm_after_PSM.png",
