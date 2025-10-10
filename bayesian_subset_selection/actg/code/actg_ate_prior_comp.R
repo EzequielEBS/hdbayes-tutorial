@@ -145,7 +145,7 @@ ates_wip_norm_after_PSM <-
      plot_layout(ncol = 1) & 
      theme(legend.position = 'none') 
    ) |
-  ((ate_wip_after_PSM + 
+  ((((ate_wip_after_PSM + 
       ggtitle("After PSM", subtitle = "Cauchy") + 
       xlim(-.2, .2) + xlab("")) +
      (ates_c0d0_after_PSM[[1]] + 
@@ -161,17 +161,16 @@ ates_wip_norm_after_PSM <-
                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
         xlim(-.2, .2) +
         xlab("")
-     ) +
+     )) & 
+      theme(legend.position = 'none') ) +
      (ates_c0d0_after_PSM[[4]] + 
         ggtitle(label = NULL,
                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
-        xlim(-.2, .2)) +
+        xlim(-.2, .2) +
+        theme(legend.position = c(0.95, 0.95),
+              legend.background = element_rect(fill = "white", color = "black"))) +
      plot_layout(ncol = 1)
-   ) +
-  plot_layout(guides = "collect") & 
-  theme(legend.position = 'bottom',
-        legend.justification = "right",
-        legend.box.just = "right")
+   )
 ates_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ates_wip_norm_before_after_PSM.png",
        ates_wip_norm_after_PSM, width = 14, height = 20, units = "in", dpi = 300)
