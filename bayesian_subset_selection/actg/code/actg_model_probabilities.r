@@ -304,12 +304,87 @@ ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm_after_PSM
 #-------------------------------------------------------------------------------
 
 
-models_before_after_PSM <- 
-  (models_wip_norm) |
-  (models_wip_norm_after_PSM) +
-  plot_layout(guides = "collect") & 
+models_before_after_PSM <- ((models_wip + 
+                               ggtitle("Before PSM", subtitle = "Cauchy") +
+                               labs(x = "",
+                                    y = "") +
+                               ylim(c(0,.4))
+) /
+  (models_norm[[1]] + 
+     ggtitle(label = NULL,
+       subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[1])^2 * I[p^"(m)"]*")")
+     ) +
+     labs(x = "",
+          y = "") +
+     ylim(c(0,.85))
+  ) /
+  (models_norm[[2]] + 
+     ggtitle(label = NULL,
+       subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[2])^2 * I[p^"(m)"]*")")
+     ) +
+     labs(x = "",
+          y = "") +
+     ylim(c(0,.6))
+  ) /
+  (models_norm[[3]] + 
+     ggtitle(label = NULL,
+       subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[3])^2 * I[p^"(m)"]*")")
+     ) +
+     labs(x = "",
+          y = "") +
+     ylim(c(0,.6))
+  ) /
+  (models_norm[[4]] + 
+     ggtitle(label = NULL,
+       subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
+     ) +
+     labs(y = "") +
+     ylim(c(0,.4))
+  ) &
+  theme(legend.position = 'none')) |
+  (
+  (models_wip_after_PSM + 
+     ggtitle("After PSM", subtitle = "Cauchy") +
+     labs(x = "",
+          y = "") +
+     ylim(c(0,.4))
+  ) /
+    (models_norm_after_PSM[[1]] + 
+       ggtitle(label = NULL,
+         subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[1])^2 * I[p^"(m)"]*")")
+       ) +
+       labs(x = "",
+            y = "") +
+       ylim(c(0,.85))
+    ) /
+    (models_norm_after_PSM[[2]] + 
+       ggtitle(label = NULL,
+         subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[2])^2 * I[p^"(m)"]*")")
+       ) +
+       labs(x = "",
+            y = "") +
+       ylim(c(0,.6))
+    ) /
+    (models_norm_after_PSM[[3]] + 
+       ggtitle(label = NULL,
+         subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[3])^2 * I[p^"(m)"]*")")
+       ) +
+       labs(x = "",
+            y = "") +
+       ylim(c(0,.6))
+    ) /
+    (models_norm_after_PSM[[4]] + 
+       ggtitle(label = NULL,
+         subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
+       ) +
+       labs(y = "") +
+       ylim(c(0,.4))
+    )
+  ) +
+  plot_layout(guides = "collect") &
   theme(legend.position = 'bottom',
         legend.justification = "right",
         legend.box.just = "right")
+models_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/models_before_after_PSM.png",
        models_before_after_PSM, width = 16, height = 15, units = "in", dpi = 300)

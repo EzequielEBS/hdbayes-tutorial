@@ -113,9 +113,53 @@ ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm_after_PSM.pn
 #-------------------------------------------------------------------------------
 
 ates_wip_norm_after_PSM <- 
-  (ate_wip_norm + plot_layout(ncol = 1, guides = "collect") &
-     theme(legend.position = 'none')) |
-  (ate_wip_norm_after_PSM + plot_layout(ncol = 1)) +
+  ((ate_wip + 
+      ggtitle("Before PSM", subtitle = "Cauchy") + 
+      xlim(-.1, .1) + xlab("")) +
+     (ates_c0d0[[1]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+        xlim(-.1, .1) + xlab("")) +
+     (ates_c0d0[[2]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.1, .1) + xlab("")) +
+     (ates_c0d0[[3]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.1, .1) +
+        xlab("") 
+     ) +
+     (ates_c0d0[[4]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.1, .1)) +
+     plot_layout(ncol = 1) & 
+     theme(legend.position = 'none') 
+   ) |
+  ((ate_wip_after_PSM + 
+      ggtitle("After PSM", subtitle = "Cauchy") + 
+      xlim(-.2, .2) + xlab("")) +
+     (ates_c0d0_after_PSM[[1]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+        xlim(-.2, .2) + xlab("")) +
+     (ates_c0d0_after_PSM[[2]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.2, .2) + xlab("")) +
+     (ates_c0d0_after_PSM[[3]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.2, .2) +
+        xlab("")
+     ) +
+     (ates_c0d0_after_PSM[[4]] + 
+        ggtitle(label = NULL,
+                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) + 
+        xlim(-.2, .2)) +
+     plot_layout(ncol = 1)
+   ) +
   plot_layout(guides = "collect") & 
   theme(legend.position = 'bottom',
         legend.justification = "right",

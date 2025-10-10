@@ -834,13 +834,13 @@ roc_all_wip_norm <-
      style_roc(xlab = "")) +
   (plot_roc.curves.norm[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-     style_roc(xlab = "")) +
+     style_roc()) +
   (plot_roc.curves.norm[[4]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
   ) + plot_layout(ncol = 2)
 roc_all_wip_norm
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm.png",
-       roc_all_wip_norm, width = 14, height = 10.8, units = "in", dpi = 300)
+       roc_all_wip_norm, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0 <- 
   (plot_roc.curves.a0[[1]] + 
@@ -851,14 +851,14 @@ roc_all_a0 <-
      style_roc(xlab = "")) /
   (plot_roc.curves.a0[[3]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) + 
-     style_roc(xlab = "")) /
+     style_roc()) /
   (plot_roc.curves.a0[[4]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) 
   ) +
   plot_layout(ncol = 2)
 roc_all_a0
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0.png",
-       roc_all_a0, width = 14, height = 7.2, units = "in", dpi = 300)
+       roc_all_a0, width = 10, height = 7.2, units = "in", dpi = 300)
 
 roc_wip_norm_after_PSM <- 
   (plot_roc.wip_after_PSM +
@@ -913,14 +913,14 @@ roc_all_wip_norm_after_PSM <-
      style_roc(xlab = "")) +
   (plot_roc.curves.norm_after_PSM[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
+     style_roc()) +
   (plot_roc.curves.norm_after_PSM[[4]] +
    ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")"))
   ) +
   plot_layout(ncol = 2)
 roc_all_wip_norm_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm_after_PSM.png",
-       roc_all_wip_norm_after_PSM, width = 14, height = 10.8, units = "in", dpi = 300)
+       roc_all_wip_norm_after_PSM, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0_after_PSM <- 
   (plot_roc.curves.a0_after_PSM[[1]] + 
@@ -931,13 +931,13 @@ roc_all_a0_after_PSM <-
      style_roc(xlab = "")) +
   (plot_roc.curves.a0_after_PSM[[3]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) +
-     style_roc(xlab = "")) +
+     style_roc()) +
   (plot_roc.curves.a0_after_PSM[[4]] +
    ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")"))
   )
 roc_all_a0_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_after_PSM.png",
-       roc_all_a0_after_PSM, width = 14, height = 7.2, units = "in", dpi = 300)
+       roc_all_a0_after_PSM, width = 10, height = 7.2, units = "in", dpi = 300)
 
 
 #-------------------------------------------------------------------------------
@@ -979,14 +979,14 @@ ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_before_af
 
 pnew_a0_1_before_PSM <- plots_pnew_a0[[1]] +
   xlim(c(0,1)) +
-  # ggtitle("Before PSM") +
+  ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_a0_1_before_PSM$layers <- 
   pnew_a0_1_before_PSM$layers[-length(pnew_a0_1_before_PSM$layers)]
 pnew_a0_1_before_after_PSM <- (pnew_a0_1_before_PSM) | 
   (plots_pnew_a0_after_PSM[[1]] + 
-     xlim(c(0,1))
-     # ggtitle("After PSM")
+     xlim(c(0,1)) +
+     ggtitle("After PSM")
    )
 pnew_a0_1_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_1_before_after_PSM.png",
@@ -994,14 +994,14 @@ ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_1_before_
 
 pnew_a0_13_before_PSM <- plots_pnew_a0[[13]] +
   xlim(c(0,1)) +
-  # ggtitle("Before PSM") +
+  ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_a0_13_before_PSM$layers <- 
   pnew_a0_13_before_PSM$layers[-length(pnew_a0_13_before_PSM$layers)]
 pnew_a0_13_before_after_PSM <- (pnew_a0_13_before_PSM) | 
   (plots_pnew_a0_after_PSM[[13]] + 
-     xlim(c(0,1))
-     # ggtitle("After PSM")
+     xlim(c(0,1)) +
+     ggtitle("After PSM")
    )
 pnew_a0_13_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_13_before_after_PSM.png",
