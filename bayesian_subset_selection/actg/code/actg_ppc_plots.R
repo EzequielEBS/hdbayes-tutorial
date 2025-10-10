@@ -36,6 +36,7 @@ load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_
 
 # load libraries
 library(ggplot2)
+library(RColorBrewer)
 library(grid)
 
 # load data
@@ -232,10 +233,10 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "a01"    = "#66A8D0",
-        "a02"    = "#D06673",
-        "a03" = "#7f7f7f",
-        "a04" = "#D0C366"
+        "a01" = brewer.pal(4, "Dark2")[1],
+        "a02" = brewer.pal(4, "Dark2")[2],
+        "a03" = brewer.pal(4, "Dark2")[3],
+        "a04" = brewer.pal(4, "Dark2")[4]
       ),
       labels = c(
         "a01" = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
@@ -282,7 +283,7 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
-mc.cores = 10)
+mc.cores = 1)
 save(plots_pnew_a0, 
      file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData")
 
@@ -304,10 +305,10 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "a01"    = "#66A8D0",
-        "a02"    = "#D06673",
-        "a03" = "#7f7f7f",
-        "a04" = "#D0C366"
+        "a01" = brewer.pal(4, "Dark2")[1],
+        "a02" = brewer.pal(4, "Dark2")[2],
+        "a03" = brewer.pal(4, "Dark2")[3],
+        "a04" = brewer.pal(4, "Dark2")[4]
       ),
       labels = c(
         "a01" = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
@@ -355,7 +356,7 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
-mc.cores = 10)
+mc.cores = 1)
 
 save(plots_pnew_a0_after_PSM,
      file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
@@ -952,7 +953,7 @@ load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_
 
 pnew_1_before_PSM <- plots_pnew[[1]] +
   xlim(c(0,1)) +
-  # ggtitle("Before PSM") +
+  ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_1_before_PSM$layers <- pnew_1_before_PSM$layers[-length(pnew_1_before_PSM$layers)]
 pnew_1_before_after_PSM <- 
@@ -964,14 +965,14 @@ ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_1_before_aft
 
 pnew_13_before_PSM <- plots_pnew[[13]] +
   xlim(c(0,1)) +
-  # ggtitle("Before PSM") +
+  ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_13_before_PSM$layers <- 
   pnew_13_before_PSM$layers[-length(pnew_13_before_PSM$layers)]
 pnew_13_before_after_PSM <- (pnew_13_before_PSM) | 
   (plots_pnew_after_PSM[[13]] + 
-     xlim(c(0,1))
-     # ggtitle("After PSM")
+     xlim(c(0,1)) +
+     ggtitle("After PSM")
    )
 pnew_13_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_before_after_PSM.png",

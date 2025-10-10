@@ -99,7 +99,7 @@ models_wip_norm <- (models_wip +
                       ggtitle("Cauchy") +
                       labs(x = "",
                            y = "") +
-                      ylim(c(0,.4))
+                      ylim(c(0,1))
                     ) /
   (models_norm[[1]] + 
      ggtitle(
@@ -107,7 +107,7 @@ models_wip_norm <- (models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.85))
+     ylim(c(0,1))
    ) /
   (models_norm[[2]] + 
      ggtitle(
@@ -115,7 +115,7 @@ models_wip_norm <- (models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
    ) /
   (models_norm[[3]] + 
      ggtitle(
@@ -123,16 +123,19 @@ models_wip_norm <- (models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
      ) /
   (models_norm[[4]] + 
      ggtitle(
        bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
      ) +
      labs(y = "") +
-     ylim(c(0,.4))
-   ) &
-  theme(legend.position = 'none')
+     ylim(c(0,1))
+   ) +
+  plot_layout(guides = "collect")&
+  theme(legend.position = 'bottom',
+        legend.justification = "center",
+        legend.box.just = "center")
 models_wip_norm
 
 ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm.png",
@@ -259,7 +262,7 @@ models_wip_norm_after_PSM <- (models_wip_after_PSM +
                       ggtitle("Cauchy") +
                       labs(x = "",
                            y = "") +
-                        ylim(c(0,.4))
+                        ylim(c(0,1))
 ) /
   (models_norm_after_PSM[[1]] + 
      ggtitle(
@@ -267,7 +270,7 @@ models_wip_norm_after_PSM <- (models_wip_after_PSM +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.85))
+     ylim(c(0,1))
    ) /
   (models_norm_after_PSM[[2]] + 
      ggtitle(
@@ -275,7 +278,7 @@ models_wip_norm_after_PSM <- (models_wip_after_PSM +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
    ) /
   (models_norm_after_PSM[[3]] + 
      ggtitle(
@@ -283,16 +286,19 @@ models_wip_norm_after_PSM <- (models_wip_after_PSM +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
    ) /
   (models_norm_after_PSM[[4]] + 
      ggtitle(
        bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
      ) +
      labs(y = "") +
-     ylim(c(0,.4))
-     ) &
-  theme(legend.position = 'none')
+     ylim(c(0,1))
+     ) + 
+  plot_layout(guides = "collect")&
+  theme(legend.position = 'bottom',
+        legend.justification = "center",
+        legend.box.just = "center")
 models_wip_norm_after_PSM
 
 ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm_after_PSM.png",
@@ -308,7 +314,7 @@ models_before_after_PSM <- ((models_wip +
                                ggtitle("Before PSM", subtitle = "Cauchy") +
                                labs(x = "",
                                     y = "") +
-                               ylim(c(0,.4))
+                               ylim(c(0,1))
 ) /
   (models_norm[[1]] + 
      ggtitle(label = NULL,
@@ -316,7 +322,7 @@ models_before_after_PSM <- ((models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.85))
+     ylim(c(0,1))
   ) /
   (models_norm[[2]] + 
      ggtitle(label = NULL,
@@ -324,7 +330,7 @@ models_before_after_PSM <- ((models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
   ) /
   (models_norm[[3]] + 
      ggtitle(label = NULL,
@@ -332,14 +338,14 @@ models_before_after_PSM <- ((models_wip +
      ) +
      labs(x = "",
           y = "") +
-     ylim(c(0,.6))
+     ylim(c(0,1))
   ) /
   (models_norm[[4]] + 
      ggtitle(label = NULL,
        subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
      ) +
      labs(y = "") +
-     ylim(c(0,.4))
+     ylim(c(0,1))
   ) &
   theme(legend.position = 'none')) |
   (
@@ -347,7 +353,7 @@ models_before_after_PSM <- ((models_wip +
      ggtitle("After PSM", subtitle = "Cauchy") +
      labs(x = "",
           y = "") +
-     ylim(c(0,.4))
+     ylim(c(0,1))
   ) /
     (models_norm_after_PSM[[1]] + 
        ggtitle(label = NULL,
@@ -355,7 +361,7 @@ models_before_after_PSM <- ((models_wip +
        ) +
        labs(x = "",
             y = "") +
-       ylim(c(0,.85))
+       ylim(c(0,1))
     ) /
     (models_norm_after_PSM[[2]] + 
        ggtitle(label = NULL,
@@ -363,7 +369,7 @@ models_before_after_PSM <- ((models_wip +
        ) +
        labs(x = "",
             y = "") +
-       ylim(c(0,.6))
+       ylim(c(0,1))
     ) /
     (models_norm_after_PSM[[3]] + 
        ggtitle(label = NULL,
@@ -371,14 +377,14 @@ models_before_after_PSM <- ((models_wip +
        ) +
        labs(x = "",
             y = "") +
-       ylim(c(0,.6))
+       ylim(c(0,1))
     ) /
     (models_norm_after_PSM[[4]] + 
        ggtitle(label = NULL,
          subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
        ) +
        labs(y = "") +
-       ylim(c(0,.4))
+       ylim(c(0,1))
     )
   ) +
   plot_layout(guides = "collect") &
