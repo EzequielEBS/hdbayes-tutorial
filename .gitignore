@@ -59,3 +59,4 @@ bayesian_subset_selection/actg/samples/ppc_roc_curves_a0.RData
 bayesian_subset_selection/actg/samples/ppc_roc_curves_a0_after_PSM.RData
 bayesian_subset_selection/actg/samples/ppc_roc_curves_norm.RData
 bayesian_subset_selection/actg/samples/ppc_roc_curves_norm_after_PSM.RData
+bayesian_subset_selection/actg/code/aux_scripts/glm_pp_wip

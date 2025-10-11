@@ -353,14 +353,15 @@ models_before_after_PSM <- ((models_wip +
   (
     ((
       (models_wip_after_PSM + 
-         ggtitle("Cauchy") +
+         ggtitle("After PSM", subtitle = "Cauchy") +
          labs(x = "",
               y = "") +
          ylim(c(0,1))
       ) /
         (models_norm_after_PSM[[1]] + 
            ggtitle(
-             bquote("Normal" * "(" * 0 * ", " * .(c0[1])^2 * I[p^"(m)"]*")")
+             label = NULL,
+             subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[1])^2 * I[p^"(m)"]*")")
            ) +
            labs(x = "",
                 y = "") +
@@ -368,7 +369,8 @@ models_before_after_PSM <- ((models_wip +
         ) /
         (models_norm_after_PSM[[2]] + 
            ggtitle(
-             bquote("Normal" * "(" * 0 * ", " * .(c0[2])^2 * I[p^"(m)"]*")")
+             label = NULL,
+             subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[2])^2 * I[p^"(m)"]*")")
            ) +
            labs(x = "",
                 y = "") +
@@ -376,7 +378,8 @@ models_before_after_PSM <- ((models_wip +
         ) /
         (models_norm_after_PSM[[3]] + 
            ggtitle(
-             bquote("Normal" * "(" * 0 * ", " * .(c0[3])^2 * I[p^"(m)"]*")")
+             label = NULL,
+             subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[3])^2 * I[p^"(m)"]*")")
            ) +
            labs(x = "",
                 y = "") +
@@ -384,7 +387,8 @@ models_before_after_PSM <- ((models_wip +
         )) & theme(legend.position = "none")) /
       (models_norm_after_PSM[[4]] + 
          ggtitle(
-           bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
+           label = NULL,
+           subtitle = bquote("Normal" * "(" * 0 * ", " * .(c0[4])^2 * I[p^"(m)"]*")")
          ) +
          labs(y = "") +
          ylim(c(0,1)) +
@@ -394,4 +398,4 @@ models_before_after_PSM <- ((models_wip +
   )
 models_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/models_before_after_PSM.png",
-       models_before_after_PSM, width = 16, height = 15, units = "in", dpi = 300)
+       models_before_after_PSM, width = 16, height = 20, units = "in", dpi = 300)

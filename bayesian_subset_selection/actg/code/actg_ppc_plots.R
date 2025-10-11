@@ -38,6 +38,7 @@ load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_
 library(ggplot2)
 library(RColorBrewer)
 library(grid)
+library(wesanderson)
 
 # load data
 current_data <- actg036
@@ -56,7 +57,7 @@ c0 <- c(0.25, 0.5, 1, 2)
 a0_hyper <- list(c(1,1), c(2,2), c(1,10), c(10,1))
 
 #-------------------------------------------------------------------------------
-# Posterior predictive distributions
+# Prior predictive distributions
 #-------------------------------------------------------------------------------
 
 plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
@@ -79,11 +80,11 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "wip" = "black",
-        "c01"    = "#66A8D0",
-        "c02"    = "#D06673",
-        "c03" = "#7f7f7f",
-        "c04" = "#D0C366"
+        "wip" = brewer.pal(9, "Set1")[1],
+        "c01"    = brewer.pal(9, "Set1")[2],
+        "c02"    = brewer.pal(9, "Set1")[3],
+        "c03" = brewer.pal(9, "Set1")[4],
+        "c04" = brewer.pal(9, "Set1")[5]
       ),
       labels = c(
         "wip" = expression(Cauchy),
@@ -132,7 +133,7 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
-mc.cores = 4)
+mc.cores = 1)
 save(plots_pnew, 
      file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData")
 
@@ -157,11 +158,11 @@ plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "wip" = "black",
-        "c01"    = "#66A8D0",
-        "c02"    = "#D06673",
-        "c03" = "#7f7f7f",
-        "c04" = "#D0C366"
+        "wip" = brewer.pal(9, "Set1")[1],
+        "c01"    = brewer.pal(9, "Set1")[2],
+        "c02"    = brewer.pal(9, "Set1")[3],
+        "c03" = brewer.pal(9, "Set1")[4],
+        "c04" = brewer.pal(9, "Set1")[5]
       ),
       labels = c(
         "wip" = expression(Cauchy),
@@ -211,7 +212,7 @@ plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
-mc.cores = 8)
+mc.cores = 1)
 save(plots_pnew_after_PSM,
      file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData")
 
@@ -233,10 +234,10 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "a01" = brewer.pal(4, "Dark2")[1],
-        "a02" = brewer.pal(4, "Dark2")[2],
-        "a03" = brewer.pal(4, "Dark2")[3],
-        "a04" = brewer.pal(4, "Dark2")[4]
+        "a01" = "black",
+        "a02" = brewer.pal(9, "Set1")[7],
+        "a03" = brewer.pal(9, "Set1")[8],
+        "a04" = brewer.pal(9, "Set1")[9]
       ),
       labels = c(
         "a01" = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
@@ -305,10 +306,10 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
     scale_color_manual(
       name = NULL,
       values = c(
-        "a01" = brewer.pal(4, "Dark2")[1],
-        "a02" = brewer.pal(4, "Dark2")[2],
-        "a03" = brewer.pal(4, "Dark2")[3],
-        "a04" = brewer.pal(4, "Dark2")[4]
+        "a01" = "black",
+        "a02" = brewer.pal(9, "Set1")[7],
+        "a03" = brewer.pal(9, "Set1")[8],
+        "a04" = brewer.pal(9, "Set1")[9]
       ),
       labels = c(
         "a01" = bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")"),
@@ -360,6 +361,36 @@ mc.cores = 1)
 
 save(plots_pnew_a0_after_PSM,
      file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
+
+
+# Combine some plots for comparison
+
+
+pnew_1 <- plots_pnew[[1]] +
+  xlim(c(0,1)) +
+  xlab("") +
+  ggtitle("Observed outcome: 0") +
+  theme(legend.position = "none")
+pnew_1$layers <- pnew_1$layers[-length(pnew_1$layers)]
+pnew_a0_1 <- plots_pnew_a0[[1]] +
+  xlim(c(0,1)) +
+  theme(legend.position = "none")
+pnew_a0_1$layers <- pnew_a0_1$layers[-length(pnew_a0_1$layers)]
+
+pnew_13 <- plots_pnew[[13]] +
+  xlim(c(0,1)) +
+  xlab("") +
+  ggtitle("Observed outcome: 1") 
+pnew_13$layers <- pnew_13$layers[-length(pnew_13$layers)]
+pnew_a0_13 <- plots_pnew_a0[[13]] +
+  xlim(c(0,1))
+pnew_a0_13$layers <- pnew_a0_13$layers[-length(pnew_a0_13$layers)]
+
+(pnew_1 / pnew_a0_1) | (pnew_13 / pnew_a0_13)
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_all.png",
+       (pnew_1 / pnew_a0_1) | (pnew_13 / pnew_a0_13), 
+       width = 12, height = 10, units = "in", dpi = 300)
+
 
 
 #-------------------------------------------------------------------------------
@@ -953,18 +984,38 @@ load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_
 
 pnew_1_before_PSM <- plots_pnew[[1]] +
   xlim(c(0,1)) +
+  xlab("") +
   ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_1_before_PSM$layers <- pnew_1_before_PSM$layers[-length(pnew_1_before_PSM$layers)]
 pnew_1_before_after_PSM <- 
   (pnew_1_before_PSM) | 
-  (plots_pnew_after_PSM[[1]])
+  (plots_pnew_after_PSM[[1]] + 
+     xlim(c(0,1)) +
+     xlab("") +
+     ggtitle("After PSM")
+   )
 pnew_1_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_1_before_after_PSM.png",
-       pnew_1_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
+
+pnew_a0_1_before_PSM <- plots_pnew_a0[[1]] +
+  xlim(c(0,1)) +
+  theme(legend.position = "none")
+pnew_a0_1_before_PSM$layers <- 
+  pnew_a0_1_before_PSM$layers[-length(pnew_a0_1_before_PSM$layers)]
+pnew_a0_1_before_after_PSM <- (pnew_a0_1_before_PSM) | 
+  (plots_pnew_a0_after_PSM[[1]] + 
+     xlim(c(0,1)) 
+  )
+pnew_1_before_after_PSM / pnew_a0_1_before_after_PSM
+
+
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_1_before_after_PSM.png",
+       pnew_1_before_after_PSM / pnew_a0_1_before_after_PSM, 
+       width = 12, height = 10, units = "in", dpi = 300)
 
 pnew_13_before_PSM <- plots_pnew[[13]] +
   xlim(c(0,1)) +
+  xlab("") +
   ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_13_before_PSM$layers <- 
@@ -972,41 +1023,25 @@ pnew_13_before_PSM$layers <-
 pnew_13_before_after_PSM <- (pnew_13_before_PSM) | 
   (plots_pnew_after_PSM[[13]] + 
      xlim(c(0,1)) +
+     xlab("") +
      ggtitle("After PSM")
    )
 pnew_13_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_13_before_after_PSM.png",
-       pnew_13_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
-
-pnew_a0_1_before_PSM <- plots_pnew_a0[[1]] +
-  xlim(c(0,1)) +
-  ggtitle("Before PSM") +
-  theme(legend.position = "none")
-pnew_a0_1_before_PSM$layers <- 
-  pnew_a0_1_before_PSM$layers[-length(pnew_a0_1_before_PSM$layers)]
-pnew_a0_1_before_after_PSM <- (pnew_a0_1_before_PSM) | 
-  (plots_pnew_a0_after_PSM[[1]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM")
-   )
-pnew_a0_1_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_1_before_after_PSM.png",
-       pnew_a0_1_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
-
 pnew_a0_13_before_PSM <- plots_pnew_a0[[13]] +
   xlim(c(0,1)) +
-  ggtitle("Before PSM") +
   theme(legend.position = "none")
 pnew_a0_13_before_PSM$layers <- 
   pnew_a0_13_before_PSM$layers[-length(pnew_a0_13_before_PSM$layers)]
 pnew_a0_13_before_after_PSM <- (pnew_a0_13_before_PSM) | 
   (plots_pnew_a0_after_PSM[[13]] + 
-     xlim(c(0,1)) +
-     ggtitle("After PSM")
-   )
-pnew_a0_13_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_13_before_after_PSM.png",
-       pnew_a0_13_before_after_PSM, width = 12, height = 4.5, units = "in", dpi = 300)
+     xlim(c(0,1))
+  )
+pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM
+
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_13_before_after_PSM.png",
+       pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM,
+       width = 12, height = 10, units = "in", dpi = 300)
+
 
 roc_wip_norm_before_after_PSM <- 
   (roc_wip_norm + plot_layout(ncol = 1)) | 
