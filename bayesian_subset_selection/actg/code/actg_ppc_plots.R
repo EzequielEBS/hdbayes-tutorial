@@ -39,6 +39,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(grid)
 library(wesanderson)
+library(bayestestR)
 
 # load data
 current_data <- actg036
@@ -640,6 +641,46 @@ plot_roc.a0_after_PSM <- lapply(seq_along(roc.curve.a0_after_PSM), function(j) {
 })
 
 
+
+aucs.wip <- unlist(lapply(seq_along(roc.curves.wip), function(j) {
+  auc(roc.curves.wip[[j]])
+}))
+aucs.wip_after_PSM <- unlist(lapply(seq_along(roc.curves.wip_after_PSM), function(j) {
+  auc(roc.curves.wip_after_PSM[[j]])
+}))
+aucs.norm <- sapply(seq_along(roc.curves.norm),
+                    function(j) {
+                      unlist(lapply(seq_along(roc.curves.norm[[j]]), function(k) {
+                        auc(roc.curves.norm[[j]][[k]])
+                      }))
+                    }
+                    )
+  
+  unlist(lapply(seq_along(roc.curves.norm), function(j) {
+  auc(roc.curves.norm[[j]])
+}))
+aucs.norm_after_PSM <- sapply(seq_along(roc.curves.norm_after_PSM),
+                           function(j) {
+                             unlist(lapply(seq_along(roc.curves.norm_after_PSM[[j]]), function(k) {
+                               auc(roc.curves.norm_after_PSM[[j]][[k]])
+                             }))
+                           }
+)
+aucs.a0 <- sapply(seq_along(roc.curves.a0),
+                           function(j) {
+                             unlist(lapply(seq_along(roc.curves.a0[[j]]), function(k) {
+                               auc(roc.curves.a0[[j]][[k]])
+                             }))
+                           }
+)
+aucs.a0_after_PSM <- sapply(seq_along(roc.curves.a0_after_PSM),
+                           function(j) {
+                             unlist(lapply(seq_along(roc.curves.a0_after_PSM[[j]]), function(k) {
+                               auc(roc.curves.a0_after_PSM[[j]][[k]])
+                             }))
+                           }
+)
+  
 plot_roc.curves.wip <- ggplot(
   melt_roc(
     cbind(
@@ -653,6 +694,13 @@ plot_roc.curves.wip <- ggplot(
   ), 
   aes(d = D, m = M, fill = name)) + 
   geom_roc(labels = F, color = "#66A8D0") + 
+  annotate("label",
+           x = 0.65, y = 0.05,
+           label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                           mean(aucs.wip),
+                           bayestestR::ci(aucs.wip, ci = 0.9)$CI_low,
+                           bayestestR::ci(aucs.wip, ci = 0.9)$CI_high),
+           size = 4, fill = "white", color = "black") +
   theme_bw() +
   theme(legend.position = c(0.81, 0.73),
         legend.background = element_rect(fill = "white", color = "black")) +
@@ -666,6 +714,7 @@ plot_roc.curves.wip <- ggplot(
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
   style_roc()
+plot_roc.curves.wip
 
 plot_roc.curves.wip_after_PSM <- ggplot(
   melt_roc(
@@ -680,6 +729,13 @@ plot_roc.curves.wip_after_PSM <- ggplot(
   ), 
   aes(d = D, m = M, fill = name)) + 
   geom_roc(labels = F, color = "#66A8D0") + 
+  annotate("label",
+           x = 0.65, y = 0.05,
+           label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                           mean(aucs.wip_after_PSM),
+                           bayestestR::ci(aucs.wip_after_PSM, ci = 0.9)$CI_low,
+                           bayestestR::ci(aucs.wip_after_PSM, ci = 0.9)$CI_high),
+           size = 4, fill = "white", color = "black") +
   theme_bw() +
   theme(legend.position = c(0.81, 0.73),
         legend.background = element_rect(fill = "white", color = "black")) +
@@ -708,6 +764,13 @@ plot_roc.curves.norm <- lapply(seq_along(roc.curves.norm), function(j) {
     ), 
     aes(d = D, m = M, fill = name)) + 
     geom_roc(labels = F, color = "#66A8D0") + 
+    annotate("label",
+             x = 0.65, y = 0.05,
+             label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                             mean(aucs.norm[,j]),
+                             bayestestR::ci(aucs.norm[,j], ci = 0.9)$CI_low,
+                             bayestestR::ci(aucs.norm[,j], ci = 0.9)$CI_high),
+             size = 4, fill = "white", color = "black") +
     theme_bw() +
     theme(legend.position = c(0.81, 0.73),
           legend.background = element_rect(fill = "white", color = "black")) +
@@ -737,6 +800,13 @@ plot_roc.curves.norm_after_PSM <- lapply(seq_along(roc.curves.norm_after_PSM), f
     ), 
     aes(d = D, m = M, fill = name)) + 
     geom_roc(labels = F, color = "#66A8D0") + 
+    annotate("label",
+             x = 0.65, y = 0.05,
+             label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                             mean(aucs.norm_after_PSM[,j]),
+                             bayestestR::ci(aucs.norm_after_PSM[,j], ci = 0.9)$CI_low,
+                             bayestestR::ci(aucs.norm_after_PSM[,j], ci = 0.9)$CI_high),
+             size = 4, fill = "white", color = "black") +
     theme_bw() +
     theme(legend.position = c(0.81, 0.73),
           legend.background = element_rect(fill = "white", color = "black")) +
@@ -766,6 +836,13 @@ plot_roc.curves.a0 <- lapply(seq_along(roc.curves.a0), function(j) {
     ), 
     aes(d = D, m = M, fill = name)) + 
     geom_roc(labels = F, color = "#66A8D0") + 
+    annotate("label",
+             x = 0.65, y = 0.05,
+             label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                             mean(aucs.a0[,j]),
+                             bayestestR::ci(aucs.a0[,j], ci = 0.9)$CI_low,
+                             bayestestR::ci(aucs.a0[,j], ci = 0.9)$CI_high),
+             size = 4, fill = "white", color = "black") +
     theme_bw() +
     theme(legend.position = c(0.81, 0.73),
           legend.background = element_rect(fill = "white", color = "black")) +
@@ -795,6 +872,13 @@ plot_roc.curves.a0_after_PSM <- lapply(seq_along(roc.curves.a0_after_PSM), funct
     ), 
     aes(d = D, m = M, fill = name)) + 
     geom_roc(labels = F, color = "#66A8D0") + 
+    annotate("label",
+             x = 0.65, y = 0.05,
+             label = sprintf("Average AUC = %.3f (%.3f–%.3f)",
+                             mean(aucs.a0_after_PSM[,j]),
+                             bayestestR::ci(aucs.a0_after_PSM[,j], ci = 0.9)$CI_low,
+                             bayestestR::ci(aucs.a0_after_PSM[,j], ci = 0.9)$CI_high),
+             size = 4, fill = "white", color = "black") +
     theme_bw() +
     theme(legend.position = c(0.81, 0.73),
           legend.background = element_rect(fill = "white", color = "black")) +
@@ -814,45 +898,48 @@ plot_roc.curves.a0_after_PSM <- lapply(seq_along(roc.curves.a0_after_PSM), funct
 ## Combine plots
 
 
-roc_wip_norm <- 
-  (plot_roc.wip +
-     ggtitle("Cauchy") +
-     style_roc(xlab = "")) +
-  (plot_roc.norm[[1]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.norm[[2]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-     style_roc(xlab = "")) +
-  (plot_roc.norm[[3]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-     style_roc(xlab = "")
-   ) +
-  (plot_roc.norm[[4]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
-  ) +
-  plot_layout(ncol = 2)
-roc_wip_norm
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm.png",
-       roc_wip_norm, width = 14, height = 10.8, units = "in", dpi = 300)
+# roc_wip_norm <- 
+#   (plot_roc.wip +
+#      ggtitle("Cauchy") +
+#      style_roc(xlab = "")) +
+#   (plot_roc.norm[[1]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#      style_roc(ylab = "", 
+#                xlab = "")) +
+#   (plot_roc.norm[[2]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+#      style_roc(xlab = "")) +
+#   (plot_roc.norm[[3]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+#      style_roc(ylab = "")
+#    ) +
+#   (plot_roc.norm[[4]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
+#   ) +
+#   plot_layout(ncol = 2)
+# roc_wip_norm
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm.png",
+#        roc_wip_norm, width = 14, height = 10.8, units = "in", dpi = 300)
 
-roc_a0 <- 
-  (plot_roc.a0[[1]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.a0[[2]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) + 
-     style_roc(xlab = "")) +
-  (plot_roc.a0[[3]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) + 
-     style_roc(xlab = "")) +
-  (plot_roc.a0[[4]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) 
-  ) +
-  plot_layout(ncol = 2)
-roc_a0
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0.png",
-       roc_a0, width = 14, height = 7.2, units = "in", dpi = 300)
+# roc_a0 <- 
+#   (plot_roc.a0[[1]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
+#      style_roc(xlab = "")) +
+#   (plot_roc.a0[[2]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) + 
+#      style_roc(ylab = "", 
+#                xlab = "")) +
+#   (plot_roc.a0[[3]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) + 
+#      style_roc(xlab = "")) +
+#   (plot_roc.a0[[4]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
+#      style_roc(ylab = "")
+#   ) +
+#   plot_layout(ncol = 2)
+# roc_a0
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_a0.png",
+#        roc_a0, width = 14, height = 7.2, units = "in", dpi = 300)
 
 roc_all_wip_norm <- 
   (plot_roc.curves.wip +
@@ -860,18 +947,19 @@ roc_all_wip_norm <-
      style_roc(xlab = "")) +
   (plot_roc.curves.norm[[1]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
+     style_roc(ylab = "", 
+               xlab = "")) +
   (plot_roc.curves.norm[[2]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
      style_roc(xlab = "")) +
   (plot_roc.curves.norm[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-     style_roc()) +
+     style_roc(ylab = "")) +
   (plot_roc.curves.norm[[4]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
   ) + plot_layout(ncol = 2)
 roc_all_wip_norm
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm.png",
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm.png",
        roc_all_wip_norm, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0 <- 
@@ -880,57 +968,62 @@ roc_all_a0 <-
      style_roc(xlab = "")) /
   (plot_roc.curves.a0[[2]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) + 
-     style_roc(xlab = "")) /
+     style_roc(ylab = "", 
+               xlab = "")) /
   (plot_roc.curves.a0[[3]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) + 
      style_roc()) /
   (plot_roc.curves.a0[[4]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) 
+     ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
+     style_roc(ylab = "")
   ) +
   plot_layout(ncol = 2)
 roc_all_a0
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0.png",
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0.png",
        roc_all_a0, width = 10, height = 7.2, units = "in", dpi = 300)
 
-roc_wip_norm_after_PSM <- 
-  (plot_roc.wip_after_PSM +
-     ggtitle("Cauchy") +
-     style_roc(xlab = "")
-  ) +
-  (plot_roc.norm_after_PSM[[1]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.norm_after_PSM[[2]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.norm_after_PSM[[3]] + 
-     ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.norm_after_PSM[[4]] +
-   ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")"))
-  ) +
-  plot_layout(ncol = 2)
-roc_wip_norm_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm_after_PSM.png",
-       roc_wip_norm_after_PSM, width = 14, height = 10.8, units = "in", dpi = 300)
+# roc_wip_norm_after_PSM <- 
+#   (plot_roc.wip_after_PSM +
+#      ggtitle("Cauchy") +
+#      style_roc(xlab = "")
+#   ) +
+#   (plot_roc.norm_after_PSM[[1]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#      style_roc(ylab = "", 
+#                xlab = "")) +
+#   (plot_roc.norm_after_PSM[[2]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
+#      style_roc(xlab = "")) +
+#   (plot_roc.norm_after_PSM[[3]] + 
+#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
+#      style_roc(ylab = "")) +
+#   (plot_roc.norm_after_PSM[[4]] +
+#    ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")"))
+#   ) +
+#   plot_layout(ncol = 2)
+# roc_wip_norm_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm_after_PSM.png",
+#        roc_wip_norm_after_PSM, width = 14, height = 10.8, units = "in", dpi = 300)
 
-roc_a0_after_PSM <- 
-  (plot_roc.a0_after_PSM[[1]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.a0_after_PSM[[2]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.a0_after_PSM[[3]] + 
-     ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) +
-     style_roc(xlab = "")) +
-  (plot_roc.a0_after_PSM[[4]] +
-   ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")"))
-  ) +
-  plot_layout(ncol = 2)
-roc_a0_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0_after_PSM.png",
-       roc_a0_after_PSM, width = 14, height = 7.2, units = "in", dpi = 300)
+# roc_a0_after_PSM <- 
+#   (plot_roc.a0_after_PSM[[1]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
+#      style_roc(xlab = "")) +
+#   (plot_roc.a0_after_PSM[[2]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) +
+#      style_roc(ylab = "", 
+#                xlab = "")) +
+#   (plot_roc.a0_after_PSM[[3]] + 
+#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")"))
+#      ) +
+#   (plot_roc.a0_after_PSM[[4]] +
+#    ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
+#      style_roc(ylab = "")
+#   ) +
+#   plot_layout(ncol = 2)
+# roc_a0_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_a0_after_PSM.png",
+#        roc_a0_after_PSM, width = 14, height = 7.2, units = "in", dpi = 300)
 
 roc_all_wip_norm_after_PSM <- 
   (plot_roc.curves.wip_after_PSM +
@@ -939,19 +1032,20 @@ roc_all_wip_norm_after_PSM <-
   ) +
   (plot_roc.curves.norm_after_PSM[[1]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-     style_roc(xlab = "")) +
+     style_roc(ylab = "", 
+               xlab = "")) +
   (plot_roc.curves.norm_after_PSM[[2]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
      style_roc(xlab = "")) +
   (plot_roc.curves.norm_after_PSM[[3]] + 
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-     style_roc()) +
+     style_roc(ylab = "")) +
   (plot_roc.curves.norm_after_PSM[[4]] +
    ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")"))
   ) +
   plot_layout(ncol = 2)
 roc_all_wip_norm_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm_after_PSM.png",
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm_after_PSM.png",
        roc_all_wip_norm_after_PSM, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0_after_PSM <- 
@@ -960,15 +1054,17 @@ roc_all_a0_after_PSM <-
      style_roc(xlab = "")) +
   (plot_roc.curves.a0_after_PSM[[2]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) +
-     style_roc(xlab = "")) +
+     style_roc(ylab = "", 
+               xlab = "")) +
   (plot_roc.curves.a0_after_PSM[[3]] + 
      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) +
      style_roc()) +
   (plot_roc.curves.a0_after_PSM[[4]] +
-   ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")"))
+   ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
+     style_roc(ylab = "")
   )
 roc_all_a0_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_after_PSM.png",
+ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0_after_PSM.png",
        roc_all_a0_after_PSM, width = 10, height = 7.2, units = "in", dpi = 300)
 
 
@@ -1042,31 +1138,115 @@ ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_13_before_after_
        pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM,
        width = 12, height = 10, units = "in", dpi = 300)
 
+# Roc plots before and after PSM
 
-roc_wip_norm_before_after_PSM <- 
-  (roc_wip_norm + plot_layout(ncol = 1)) | 
-  (roc_wip_norm_after_PSM + plot_layout(ncol = 1))
-roc_wip_norm_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_norm_before_after_PSM.png",
-       roc_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
-
-roc_all_wip_norm_before_after_PSM <-
-  (roc_all_wip_norm + plot_layout(ncol = 1)) | 
-  (roc_all_wip_norm_after_PSM + plot_layout(ncol = 1))
-roc_all_wip_norm_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_all_wip_norm_before_after_PSM.png",
-       roc_all_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
-
-roc_a0_before_after_PSM <-
-  (roc_a0 + plot_layout(ncol = 1)) | 
-  (roc_a0_after_PSM + plot_layout(ncol = 1))
-roc_a0_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0_before_after_PSM.png",
-       roc_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)
-
-roc_all_a0_before_after_PSM <-
-  (roc_all_a0 + plot_layout(ncol = 1)) | 
-  (roc_all_a0_after_PSM + plot_layout(ncol = 1))
-roc_all_a0_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_before_after_PSM.png",
-       roc_all_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)
+# roc_wip_norm_before_after_PSM <- 
+#   ((plot_roc.wip +
+#       ggtitle(label = "Before PSM",
+#               subtitle = "Cauchy") +
+#       style_roc(xlab = "")) +
+#      (plot_roc.norm[[1]] + 
+#         ggtitle(label = NULL,
+#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#         style_roc(xlab = "")) +
+#      (plot_roc.norm[[2]] + 
+#         ggtitle(label = NULL,
+#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+#         style_roc(xlab = "")) +
+#      (plot_roc.norm[[3]] + 
+#         ggtitle(label = NULL,
+#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+#         style_roc(xlab = "")
+#      ) +
+#      (plot_roc.norm[[4]] + 
+#         ggtitle(label = NULL,
+#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
+#      ) + 
+#      plot_layout(ncol = 1)) | 
+#   ((plot_roc.wip_after_PSM +
+#       ggtitle(label = "After PSM",
+#               subtitle = "Cauchy") +
+#       style_roc(ylab = "", 
+#                 xlab = "")
+#   ) +
+#     (plot_roc.norm_after_PSM[[1]] + 
+#        ggtitle(label = NULL,
+#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.norm_after_PSM[[2]] + 
+#        ggtitle(label = NULL,
+#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.norm_after_PSM[[3]] + 
+#        ggtitle(label = NULL,
+#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.norm_after_PSM[[4]] +
+#        ggtitle(label = NULL,
+#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "")
+#     ) + 
+#     plot_layout(ncol = 1))
+# roc_wip_norm_before_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm_before_after_PSM.png",
+#        roc_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
+# 
+# roc_all_wip_norm_before_after_PSM <-
+#   ((plot_roc.curves.wip +
+#       ggtitle("Cauchy") +
+#       style_roc(xlab = "")) +
+#      (plot_roc.curves.norm[[1]] + 
+#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#         style_roc(xlab = "")) +
+#      (plot_roc.curves.norm[[2]] + 
+#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
+#         style_roc(xlab = "")) +
+#      (plot_roc.curves.norm[[3]] + 
+#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
+#         style_roc(xlab = "")) +
+#      (plot_roc.curves.norm[[4]] + 
+#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
+#      ) + 
+#      plot_layout(ncol = 1)) | 
+#   ((plot_roc.curves.wip_after_PSM +
+#       ggtitle("Cauchy") +
+#       style_roc(ylab = "", 
+#                 xlab = "")
+#   ) +
+#     (plot_roc.curves.norm_after_PSM[[1]] + 
+#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.curves.norm_after_PSM[[2]] + 
+#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.curves.norm_after_PSM[[3]] + 
+#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "", 
+#                  xlab = "")) +
+#     (plot_roc.curves.norm_after_PSM[[4]] +
+#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) +
+#        style_roc(ylab = "")
+#     ) + 
+#     plot_layout(ncol = 1))
+# roc_all_wip_norm_before_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm_before_after_PSM.png",
+#        roc_all_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
+# 
+# roc_a0_before_after_PSM <-
+#   (roc_a0 + plot_layout(ncol = 1)) | 
+#   (roc_a0_after_PSM + plot_layout(ncol = 1))
+# roc_a0_before_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0_before_after_PSM.png",
+#        roc_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)
+# 
+# roc_all_a0_before_after_PSM <-
+#   (roc_all_a0 + plot_layout(ncol = 1)) | 
+#   (roc_all_a0_after_PSM + plot_layout(ncol = 1))
+# roc_all_a0_before_after_PSM
+# ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_before_after_PSM.png",
+#        roc_all_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)
