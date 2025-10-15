@@ -14,6 +14,7 @@ get_covariates <- function(x) {
   paste(x, collapse = ", ")
 }
 
+# function to elicit beta prior parameters from mean and variance or cv
 elicit_beta_mean_cv <- function(m0, v0 = NULL, cv = 1) {
   if (!is.null(v0)) {
     a <- -(m0 * v0 + m0 ^ 3 - m0 ^ 2) / v0
@@ -29,6 +30,7 @@ elicit_beta_mean_cv <- function(m0, v0 = NULL, cv = 1) {
   return(list(a = a, b = b))
 }
 
+# function to compute prior model probabilities
 logp0 <- function(formula,
                   ...) {
   hdbayes::glm.npp.lognc(
@@ -37,6 +39,7 @@ logp0 <- function(formula,
   )
 }
 
+# function to compute log-normalizing constant for a0
 logncfun <- function(a0,
                      ...){
   hdbayes::glm.npp.lognc(
@@ -45,6 +48,7 @@ logncfun <- function(a0,
   )
 }
 
+# function to compute posterior samples of beta for a given model
 post_beta <- function(formula, 
                       c0, 
                       data,
@@ -80,6 +84,15 @@ post_beta <- function(formula,
   )
 }
 
+# function to compute posterior model probabilities
+post_models <- function(logp0_models, logml_models) {
+  logp0_models <- sapply(logp0_models, function(x) x[2])
+  logml_models <- unlist(data.frame(do.call(rbind, logml_models))$logml)
+  post_model <- exp(logml_models + logp0_models -
+                      logSumExp(logml_models + logp0_models))
+}
+
+# function to compute model probabilities
 samples_models <- function(data,
                         outcome,
                         family,
@@ -93,13 +106,11 @@ samples_models <- function(data,
                         num_cores = 10) {
   current_data <- data[[1]]
   hist_data <- data[[2]]
-  
-  # create list of formulas
+
   covariates <- colnames(current_data)[colnames(current_data) != outcome]
   pset <- powerset(covariates)
   formulas <- lapply(pset, create_formula, outcome = outcome)
   
-  # get covariates from models
   covariates_models <- lapply(pset, get_covariates)
   
   cl <- parallel::makeCluster(num_cores)
@@ -171,15 +182,8 @@ samples_models <- function(data,
               df_post_ord = df_post_ord))
 }
 
-post_models <- function(logp0_models, logml_models) {
-  logp0_models <- sapply(logp0_models, function(x) x[2])
-  logml_models <- unlist(data.frame(do.call(rbind, logml_models))$logml)
-  post_model <- exp(logml_models + logp0_models -
-                      logSumExp(logml_models + logp0_models))
-}
-
+# function to compute predictions for a given treatment arm
 predict_ <- function(data, outcome, trt, family, beta_post, arm){
-  # cov_data <- colnames(data)[!(colnames(data) %in% c(outcome, trt))]
   if (arm == 1) {
     data[[trt]] <- 1
   } else if (arm == 0) {
@@ -208,6 +212,7 @@ predict_ <- function(data, outcome, trt, family, beta_post, arm){
   return(pred)
 }
 
+# function to compute mean outcome for a given treatment arm
 mean_models_arm <- function(data, outcome, trt, family, beta_post, arm){
   pred <- predict_(data, outcome, trt, family, beta_post, arm)
   mean_models <- lapply(pred,
@@ -218,14 +223,10 @@ mean_models_arm <- function(data, outcome, trt, family, beta_post, arm){
                           })
                         }
   )
-  # mean_models <- lapply(pred, rowMeans)
   return(do.call(cbind, mean_models))
 }
 
-# mean_arm <- function(post_models, mean_arm_models){
-#   mean_arm_models %*% post_models
-# }
-
+# function to compute BMA samples
 bma <- function(x, df_post, n_samples = 1000){
   ks <- sample(1:nrow(df_post), n_samples, replace = TRUE, prob = df_post$post_model)
   samples <- lapply(ks, function(k) {
@@ -235,6 +236,7 @@ bma <- function(x, df_post, n_samples = 1000){
   return(do.call(rbind, samples))
 }
 
+# function to plot ATE
 plot_ate <- function(samples){
   mean_models_ctrl <- mean_models_arm(current_data, 
                                       "outcome", 
@@ -286,7 +288,6 @@ plot_ate <- function(samples){
   
   # Define colors for mean, median, and quartiles
   stats_colors <- c("90% \nBCI" = blended_color,
-                    
                     "Density" = "skyblue",
                     "ATE = 0" = "black",
                     "OR = 1" = "black"
@@ -294,9 +295,7 @@ plot_ate <- function(samples){
   
   # Plot using ggplot2
   bma_ate <- ggplot() +
-    # Full density curve
-    # geom_density(data = df_bma, aes(x = value), color = "skyblue", fill = "skyblue", alpha = 0.5) +
-    geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 
+     geom_area(data = ate_density_df %>% filter(x <= ci_ate_90_lower + 
                                                  (ci_ate_90_lower - min(ate_density_df$x))*0.007), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
@@ -304,37 +303,14 @@ plot_ate <- function(samples){
                                                  (max(ate_density_df$x) - ci_ate_90_upper)*0.007), 
               aes(x = x, y = y, fill = "Density"), color = "black",
               alpha = 0.7) +
-    
-    # # Highlight 95% HDI region
     geom_area(data = ate_density_90, 
               aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
               alpha = 0.7) +
-    # 
-    # # Highlight 90% HDI region
-    # geom_area(data = ate_density_90, aes(x = x, y = y, fill = "90% \nBCI", colour = "Density"), alpha = 0.7) +
-    
-    # # Add vertical dashed lines for 95% HDI
-    # geom_vline(aes(xintercept = ci_95_lower, color = "95% BCI"), linetype = "dashed", size = 1) +
-    # geom_vline(aes(xintercept = ci_95_upper, color = "95% BCI"), linetype = "dashed", size = 1) +
-    
-    # Add vertical dashed lines for 90% BCI
-    # geom_vline(aes(xintercept = ci_ate_90_lower, color = "90% BCI"), linetype = "dashed", size = 1) +
-    # geom_vline(aes(xintercept = ci_ate_90_upper, color = "90% BCI"), linetype = "dashed", size = 1) +
-    
-    # Add lines for mean, median, and quartiles
     geom_vline(aes(xintercept = 0, color = "ATE = 0"), linetype = "solid", size = 1) + 
-    # geom_vline(aes(xintercept = median_value, color = "Median"), linetype = "solid", size = 1) + 
-    # geom_vline(aes(xintercept = q1_value, color = "Q1"), linetype = "dotted", size = 1) + 
-    # geom_vline(aes(xintercept = q3_value, color = "Q3"), linetype = "dotted", size = 1) +
-    
-    # Add a legend for both color and fill
     scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
     scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
-    
-    # Add labels
     labs(title = "",
          x = "Average treatment effect (ATE)", y = "", color = "") +
-    
     theme_bw() +
     theme(legend.position = c(.95, .95),
           legend.justification = c("right", "top"),
@@ -344,9 +320,9 @@ plot_ate <- function(samples){
           panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 16),        # Base text size
-          axis.title = element_text(size = 18),  # Axis titles
-          axis.text = element_text(size = 16),   # Axis tick labels
+    theme(text = element_text(size = 16),        
+          axis.title = element_text(size = 18),  
+          axis.text = element_text(size = 16),   
           legend.title = element_text(size = 18),
           legend.text = element_text(size = 16))
   bma_ate

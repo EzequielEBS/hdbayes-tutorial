@@ -1,3 +1,7 @@
+#-------------------------------------------------------------------------------
+# Generate prior predictive checks plots
+#-------------------------------------------------------------------------------
+
 # load files
 load("bayesian_subset_selection/actg/samples/ppc_pnew_wip.RData")
 load("bayesian_subset_selection/actg/samples/ppc_pnew_wip_after_PSM.RData")
@@ -104,12 +108,12 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
     annotation_custom(
       grid::textGrob(
         label = paste0("Obs outcome: ", current_data$outcome[i]),
-        x = unit(0.81, "npc"),   # 81% from left
-        y = unit(0.96, "npc"),   # 73% from bottom
+        x = unit(0.81, "npc"),   
+        y = unit(0.96, "npc"),   
         gp = gpar(
-          col = "black",         # text color
+          col = "black",         
           fontsize = 10,
-          fill = "white"         # background fill
+          fill = "white"         
         )
       )
     ) +
@@ -120,9 +124,9 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
           plot.background = element_rect(fill = "white", color = NA)
     ) +
     xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -182,12 +186,12 @@ plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
   annotation_custom(
     grid::textGrob(
       label = paste0("Obs outcome: ", current_data$outcome[i]),
-      x = unit(0.81, "npc"),   # 81% from left
-      y = unit(0.96, "npc"),   # 73% from bottom
+      x = unit(0.81, "npc"),  
+      y = unit(0.96, "npc"),  
       gp = gpar(
-        col = "black",         # text color
+        col = "black",        
         fontsize = 10,
-        fill = "white"         # background fill
+        fill = "white"        
       )
     )
   ) +
@@ -198,9 +202,9 @@ plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
           plot.background = element_rect(fill = "white", color = NA)
     ) +
     xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),       
+          axis.title = element_text(size = 10), 
+          axis.text = element_text(size = 10),  
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -255,12 +259,12 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
     annotation_custom(
       grid::textGrob(
         label = paste0("Obs outcome: ", current_data$outcome[i]),
-        x = unit(0.81, "npc"),   # 81% from left
-        y = unit(0.96, "npc"),   # 73% from bottom
+        x = unit(0.81, "npc"),   
+        y = unit(0.96, "npc"),   
         gp = gpar(
-          col = "black",         # text color
+          col = "black",         
           fontsize = 10,
-          fill = "white"         # background fill
+          fill = "white"         
         )
       )
     ) +
@@ -271,9 +275,9 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
           plot.background = element_rect(fill = "white", color = NA)
     ) +
     xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -327,12 +331,12 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
     annotation_custom(
       grid::textGrob(
         label = paste0("Obs outcome: ", current_data$outcome[i]),
-        x = unit(0.81, "npc"),   # 81% from left
-        y = unit(0.96, "npc"),   # 73% from bottom
+        x = unit(0.81, "npc"),   
+        y = unit(0.96, "npc"),   
         gp = gpar(
-          col = "black",         # text color
+          col = "black",
           fontsize = 10,
-          fill = "white"         # background fill
+          fill = "white"         
         )
       )
     ) +
@@ -343,9 +347,9 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
           plot.background = element_rect(fill = "white", color = NA)
     ) +
     xlim(c(0,1)) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -432,9 +436,9 @@ plot_roc.wip <- ggplot(
   theme(panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
   ) +
-  theme(text = element_text(size = 10),        # Base text size
-        axis.title = element_text(size = 10),  # Axis titles
-        axis.text = element_text(size = 10),   # Axis tick labels
+  theme(text = element_text(size = 10),        
+        axis.title = element_text(size = 10),  
+        axis.text = element_text(size = 10),   
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
@@ -474,9 +478,9 @@ plot_roc.wip_after_PSM <- ggplot(
   theme(panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
   ) +
-  theme(text = element_text(size = 10),        # Base text size
-        axis.title = element_text(size = 10),  # Axis titles
-        axis.text = element_text(size = 10),   # Axis tick labels
+  theme(text = element_text(size = 10),        
+        axis.title = element_text(size = 10),  
+        axis.text = element_text(size = 10),   
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
@@ -514,9 +518,9 @@ plot_roc.norm <- lapply(seq_along(roc.curve.norm), function(j) {
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -553,9 +557,9 @@ plot_roc.norm_after_PSM <- lapply(seq_along(roc.curve.norm_after_PSM), function(
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -592,9 +596,9 @@ plot_roc.a0 <- lapply(seq_along(roc.curve.a0), function(j) {
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -631,9 +635,9 @@ plot_roc.a0_after_PSM <- lapply(seq_along(roc.curve.a0_after_PSM), function(j) {
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -641,7 +645,7 @@ plot_roc.a0_after_PSM <- lapply(seq_along(roc.curve.a0_after_PSM), function(j) {
 })
 
 
-
+# compute aucs
 aucs.wip <- unlist(lapply(seq_along(roc.curves.wip), function(j) {
   auc(roc.curves.wip[[j]])
 }))
@@ -680,7 +684,7 @@ aucs.a0_after_PSM <- sapply(seq_along(roc.curves.a0_after_PSM),
                              }))
                            }
 )
-  
+
 plot_roc.curves.wip <- ggplot(
   melt_roc(
     cbind(
@@ -707,9 +711,9 @@ plot_roc.curves.wip <- ggplot(
   theme(panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
   ) +
-  theme(text = element_text(size = 10),        # Base text size
-        axis.title = element_text(size = 10),  # Axis titles
-        axis.text = element_text(size = 10),   # Axis tick labels
+  theme(text = element_text(size = 10),        
+        axis.title = element_text(size = 10),  
+        axis.text = element_text(size = 10),   
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
@@ -742,9 +746,9 @@ plot_roc.curves.wip_after_PSM <- ggplot(
   theme(panel.background = element_rect(fill = "white", color = NA),
         plot.background = element_rect(fill = "white", color = NA)
   ) +
-  theme(text = element_text(size = 10),        # Base text size
-        axis.title = element_text(size = 10),  # Axis titles
-        axis.text = element_text(size = 10),   # Axis tick labels
+  theme(text = element_text(size = 10),        
+        axis.title = element_text(size = 10),  
+        axis.text = element_text(size = 10),   
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
@@ -777,9 +781,9 @@ plot_roc.curves.norm <- lapply(seq_along(roc.curves.norm), function(j) {
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),       
+          axis.title = element_text(size = 10), 
+          axis.text = element_text(size = 10),  
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -813,9 +817,9 @@ plot_roc.curves.norm_after_PSM <- lapply(seq_along(roc.curves.norm_after_PSM), f
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),       
+          axis.title = element_text(size = 10), 
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -849,9 +853,9 @@ plot_roc.curves.a0 <- lapply(seq_along(roc.curves.a0), function(j) {
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -885,9 +889,9 @@ plot_roc.curves.a0_after_PSM <- lapply(seq_along(roc.curves.a0_after_PSM), funct
     theme(panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA)
     ) +
-    theme(text = element_text(size = 10),        # Base text size
-          axis.title = element_text(size = 10),  # Axis titles
-          axis.text = element_text(size = 10),   # Axis tick labels
+    theme(text = element_text(size = 10),        
+          axis.title = element_text(size = 10),  
+          axis.text = element_text(size = 10),   
           legend.title = element_text(size = 10),
           legend.text = element_text(size = 10),
           strip.text = element_text(size = 10)) +
@@ -896,50 +900,6 @@ plot_roc.curves.a0_after_PSM <- lapply(seq_along(roc.curves.a0_after_PSM), funct
 
 
 ## Combine plots
-
-
-# roc_wip_norm <- 
-#   (plot_roc.wip +
-#      ggtitle("Cauchy") +
-#      style_roc(xlab = "")) +
-#   (plot_roc.norm[[1]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#      style_roc(ylab = "", 
-#                xlab = "")) +
-#   (plot_roc.norm[[2]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-#      style_roc(xlab = "")) +
-#   (plot_roc.norm[[3]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-#      style_roc(ylab = "")
-#    ) +
-#   (plot_roc.norm[[4]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
-#   ) +
-#   plot_layout(ncol = 2)
-# roc_wip_norm
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm.png",
-#        roc_wip_norm, width = 14, height = 10.8, units = "in", dpi = 300)
-
-# roc_a0 <- 
-#   (plot_roc.a0[[1]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
-#      style_roc(xlab = "")) +
-#   (plot_roc.a0[[2]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) + 
-#      style_roc(ylab = "", 
-#                xlab = "")) +
-#   (plot_roc.a0[[3]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")")) + 
-#      style_roc(xlab = "")) +
-#   (plot_roc.a0[[4]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
-#      style_roc(ylab = "")
-#   ) +
-#   plot_layout(ncol = 2)
-# roc_a0
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_a0.png",
-#        roc_a0, width = 14, height = 7.2, units = "in", dpi = 300)
 
 roc_all_wip_norm <- 
   (plot_roc.curves.wip +
@@ -982,48 +942,6 @@ roc_all_a0
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0.png",
        roc_all_a0, width = 10, height = 7.2, units = "in", dpi = 300)
 
-# roc_wip_norm_after_PSM <- 
-#   (plot_roc.wip_after_PSM +
-#      ggtitle("Cauchy") +
-#      style_roc(xlab = "")
-#   ) +
-#   (plot_roc.norm_after_PSM[[1]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#      style_roc(ylab = "", 
-#                xlab = "")) +
-#   (plot_roc.norm_after_PSM[[2]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
-#      style_roc(xlab = "")) +
-#   (plot_roc.norm_after_PSM[[3]] + 
-#      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-#      style_roc(ylab = "")) +
-#   (plot_roc.norm_after_PSM[[4]] +
-#    ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")"))
-#   ) +
-#   plot_layout(ncol = 2)
-# roc_wip_norm_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm_after_PSM.png",
-#        roc_wip_norm_after_PSM, width = 14, height = 10.8, units = "in", dpi = 300)
-
-# roc_a0_after_PSM <- 
-#   (plot_roc.a0_after_PSM[[1]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[1]][1])*", "*.(a0_hyper[[1]][2])*")")) +
-#      style_roc(xlab = "")) +
-#   (plot_roc.a0_after_PSM[[2]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[2]][1])*", "*.(a0_hyper[[2]][2])*")")) +
-#      style_roc(ylab = "", 
-#                xlab = "")) +
-#   (plot_roc.a0_after_PSM[[3]] + 
-#      ggtitle(bquote("Beta"*"("*.(a0_hyper[[3]][1])*", "*.(a0_hyper[[3]][2])*")"))
-#      ) +
-#   (plot_roc.a0_after_PSM[[4]] +
-#    ggtitle(bquote("Beta"*"("*.(a0_hyper[[4]][1])*", "*.(a0_hyper[[4]][2])*")")) +
-#      style_roc(ylab = "")
-#   ) +
-#   plot_layout(ncol = 2)
-# roc_a0_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_a0_after_PSM.png",
-#        roc_a0_after_PSM, width = 14, height = 7.2, units = "in", dpi = 300)
 
 roc_all_wip_norm_after_PSM <- 
   (plot_roc.curves.wip_after_PSM +
@@ -1137,116 +1055,3 @@ pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM
 ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_13_before_after_PSM.png",
        pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM,
        width = 12, height = 10, units = "in", dpi = 300)
-
-# Roc plots before and after PSM
-
-# roc_wip_norm_before_after_PSM <- 
-#   ((plot_roc.wip +
-#       ggtitle(label = "Before PSM",
-#               subtitle = "Cauchy") +
-#       style_roc(xlab = "")) +
-#      (plot_roc.norm[[1]] + 
-#         ggtitle(label = NULL,
-#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#         style_roc(xlab = "")) +
-#      (plot_roc.norm[[2]] + 
-#         ggtitle(label = NULL,
-#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-#         style_roc(xlab = "")) +
-#      (plot_roc.norm[[3]] + 
-#         ggtitle(label = NULL,
-#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-#         style_roc(xlab = "")
-#      ) +
-#      (plot_roc.norm[[4]] + 
-#         ggtitle(label = NULL,
-#                 subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
-#      ) + 
-#      plot_layout(ncol = 1)) | 
-#   ((plot_roc.wip_after_PSM +
-#       ggtitle(label = "After PSM",
-#               subtitle = "Cauchy") +
-#       style_roc(ylab = "", 
-#                 xlab = "")
-#   ) +
-#     (plot_roc.norm_after_PSM[[1]] + 
-#        ggtitle(label = NULL,
-#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.norm_after_PSM[[2]] + 
-#        ggtitle(label = NULL,
-#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.norm_after_PSM[[3]] + 
-#        ggtitle(label = NULL,
-#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.norm_after_PSM[[4]] +
-#        ggtitle(label = NULL,
-#                subtitle = bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "")
-#     ) + 
-#     plot_layout(ncol = 1))
-# roc_wip_norm_before_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_wip_norm_before_after_PSM.png",
-#        roc_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
-# 
-# roc_all_wip_norm_before_after_PSM <-
-#   ((plot_roc.curves.wip +
-#       ggtitle("Cauchy") +
-#       style_roc(xlab = "")) +
-#      (plot_roc.curves.norm[[1]] + 
-#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#         style_roc(xlab = "")) +
-#      (plot_roc.curves.norm[[2]] + 
-#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) + 
-#         style_roc(xlab = "")) +
-#      (plot_roc.curves.norm[[3]] + 
-#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) + 
-#         style_roc(xlab = "")) +
-#      (plot_roc.curves.norm[[4]] + 
-#         ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
-#      ) + 
-#      plot_layout(ncol = 1)) | 
-#   ((plot_roc.curves.wip_after_PSM +
-#       ggtitle("Cauchy") +
-#       style_roc(ylab = "", 
-#                 xlab = "")
-#   ) +
-#     (plot_roc.curves.norm_after_PSM[[1]] + 
-#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[1])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.curves.norm_after_PSM[[2]] + 
-#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[2])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.curves.norm_after_PSM[[3]] + 
-#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[3])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "", 
-#                  xlab = "")) +
-#     (plot_roc.curves.norm_after_PSM[[4]] +
-#        ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) +
-#        style_roc(ylab = "")
-#     ) + 
-#     plot_layout(ncol = 1))
-# roc_all_wip_norm_before_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm_before_after_PSM.png",
-#        roc_all_wip_norm_before_after_PSM, width = 12, height = 20, units = "in", dpi = 300)
-# 
-# roc_a0_before_after_PSM <-
-#   (roc_a0 + plot_layout(ncol = 1)) | 
-#   (roc_a0_after_PSM + plot_layout(ncol = 1))
-# roc_a0_before_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_a0_before_after_PSM.png",
-#        roc_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)
-# 
-# roc_all_a0_before_after_PSM <-
-#   (roc_all_a0 + plot_layout(ncol = 1)) | 
-#   (roc_all_a0_after_PSM + plot_layout(ncol = 1))
-# roc_all_a0_before_after_PSM
-# ggsave("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_roc_all_a0_before_after_PSM.png",
-#        roc_all_a0_before_after_PSM, width = 12, height = 16, units = "in", dpi = 300)

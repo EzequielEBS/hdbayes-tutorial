@@ -1,3 +1,7 @@
+# ------------------------------------------------------------------------------
+# Sample from the posterior distribution of a0 under different priors
+# ------------------------------------------------------------------------------
+
 library(hdbayes)
 library(parallel)
 library(matrixStats)
@@ -23,8 +27,7 @@ a0_hyper <- list(c(1,1), c(2,2), c(1,10), c(10,1))
 iter_warmup <- 1000
 iter_sampling <- 2500
 formula <- outcome ~ age + treatment + cd4
-a0      <- seq(0, 1, length.out = 21) # for demonstration, change it to a large number in practice
-## wrapper to obtain log normalizing constant in parallel package
+a0      <- seq(0, 1, length.out = 21)
 logncfun.wip <- function(a0, ...){
   glm.npp.lognc.wip(
     formula = formula, family = family, a0 = a0, histdata = hist_data,

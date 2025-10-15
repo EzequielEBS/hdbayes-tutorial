@@ -1,3 +1,7 @@
+#-------------------------------------------------------------------------------
+# Sample from the NPP prior under different settings
+#-------------------------------------------------------------------------------
+
 source("bayesian_subset_selection/actg/code/aux_scripts/get_stan_data.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
@@ -31,8 +35,7 @@ lambda0 <- 1
 iter_warmup <- 1000
 iter_sampling <- 2500
 formula <- outcome ~ age + treatment + cd4
-a0      <- seq(0, 1, length.out = 21) # for demonstration, change it to a large number in practice
-## wrapper to obtain log normalizing constant in parallel package
+a0      <- seq(0, 1, length.out = 21)
 logncfun.wip <- function(a0, ...){
   glm.npp.lognc.wip(
       formula = formula, family = family, a0 = a0, histdata = hist_data,
@@ -120,7 +123,6 @@ draws.c0 <- lapply(seq_along(c0), function(i) {
     wip            = 0
   )
   
-  ## fit model in cmdstanr
   fit.norm <- glm_npp_prior_wip$sample(
     data = standat.norm,
     iter_warmup = iter_sampling, iter_sampling = iter_warmup, chains = 4
@@ -158,7 +160,6 @@ draws.a0 <- lapply(seq_along(a0_hyper), function(i) {
     wip            = 0
   )
   
-  ## fit model in cmdstanr
   fit.norm <- glm_npp_prior_wip$sample(
     data = standat.norm,
     iter_warmup = iter_sampling, iter_sampling = iter_warmup, chains = 4
@@ -194,8 +195,7 @@ lambda0 <- 1
 iter_warmup <- 1000
 iter_sampling <- 2500
 formula <- outcome ~ age + treatment + cd4
-a0      <- seq(0, 1, length.out = 21) # for demonstration, change it to a large number in practice
-## wrapper to obtain log normalizing constant in parallel package
+a0      <- seq(0, 1, length.out = 21)
 logncfun.wip <- function(a0, ...){
   glm.npp.lognc.wip(
     formula = formula, family = family, a0 = a0, histdata = hist_data,
@@ -284,7 +284,6 @@ draws.c0_after_PSM <- lapply(seq_along(c0), function(i) {
     wip            = 0
   )
   
-  ## fit model in cmdstanr
   fit.norm <- glm_npp_prior_wip$sample(
     data = standat.norm,
     iter_warmup = iter_sampling, iter_sampling = iter_warmup, chains = 4
@@ -323,7 +322,6 @@ draws.a0_after_PSM <- lapply(seq_along(a0_hyper), function(i) {
     wip            = 0
   )
   
-  ## fit model in cmdstanr
   fit.norm <- glm_npp_prior_wip$sample(
     data = standat.norm,
     iter_warmup = iter_sampling, iter_sampling = iter_warmup, chains = 4

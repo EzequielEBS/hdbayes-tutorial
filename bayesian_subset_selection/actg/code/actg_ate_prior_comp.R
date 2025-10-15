@@ -1,8 +1,14 @@
+#---------------------------------------------------------------------------------------
+# Make ATE plots under different priors
+#---------------------------------------------------------------------------------------
+
+# Load data
 load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_wip.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_wip_after_PSM.RData")
 
+# load libraries
 library(ggplot2)
 library(MCMCpack)
 library(bayestestR)
@@ -11,11 +17,14 @@ library(hdbayes)
 library(dplyr)
 library(tidyverse)
 
+# load functions
 source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
 
+# define data
 current_data <- actg036
 hist_data <- actg019
 
+# normalize age and cd4
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
 current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
@@ -25,11 +34,12 @@ hist_data$age <- (hist_data$age - mean(hist_data$age)) /
 hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
   (2*sd(hist_data$cd4))
 
-
-family <- binomial(link = "logit")
-ate_wip <- plot_ate(post_samples_wip)
-
+# define hyperparameters
 c0 <- c(0.25, 0.5, 1, 2)
+family <- binomial(link = "logit")
+
+# create ATE plots
+ate_wip <- plot_ate(post_samples_wip)
 ates_c0d0 <- lapply(post_samples_c0d0, plot_ate)
 
 
@@ -79,11 +89,7 @@ hist_data$age <- (hist_data$age - mean(hist_data$age)) /
 hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
   (2*sd(hist_data$cd4))
 
-
-family <- binomial(link = "logit")
 ate_wip_after_PSM <- plot_ate(post_samples_wip_after_PSM)
-
-c0 <- c(0.25, 0.5, 1, 2)
 ates_c0d0_after_PSM <- lapply(post_samples_c0d0_after_PSM, plot_ate)
 
 

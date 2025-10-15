@@ -1,3 +1,8 @@
+#--------------------------------------------------------------------------------
+# Compare model probabilities under different priors
+#--------------------------------------------------------------------------------
+
+# load samples
 load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_wip.RData")

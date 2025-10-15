@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------------------
+# This script generates posterior plots for a0 before and after PSM
+#-------------------------------------------------------------------------------
+
+# load posterior samples
 load("bayesian_subset_selection/actg/samples/post_samples_a0_wip.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_a0_wip_after_PSM.RData")
 load("bayesian_subset_selection/actg/samples/post_samples_a0_norm.RData")

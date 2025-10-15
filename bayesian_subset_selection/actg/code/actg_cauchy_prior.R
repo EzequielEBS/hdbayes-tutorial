@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------------------
+# Sample models with Cauchy prior
+#-------------------------------------------------------------------------------
+
+# load libraries and functions
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
 source("bayesian_subset_selection/actg/code/aux_scripts/glm_logml_npp_wip.r")
@@ -15,6 +20,7 @@ library(dplyr)
 library(ggplot2)
 library(patchwork)
 
+# define data
 current_data <- actg036
 hist_data <- actg019
 
@@ -27,6 +33,7 @@ hist_data$age <- (hist_data$age - mean(hist_data$age)) /
 hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
   (2*sd(hist_data$cd4))
 
+# set parameters
 a0_seq <- seq(0, 1, length.out = 21)
 data <- list(current_data, hist_data)
 family <- binomial(link = "logit")
@@ -43,6 +50,7 @@ formulas <- lapply(pset, create_formula, outcome = "outcome")
 # get covariates from models
 covariates_models <- lapply(pset, get_covariates)
 
+# functions to fit models
 logp0 <- function(formula) {
   glm.npp.lognc.wip(
     formula,
@@ -91,7 +99,7 @@ post_beta <- function(formula) {
 }
 
 
-
+# fit models in parallel
 logp0_models <- mclapply(
   X = formulas,
   FUN = logp0,
@@ -144,7 +152,7 @@ xtable::xtable(df_post_ord, digits = 3)
 current_data <- actg036
 hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
 
-# normalise data
+# normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
 current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /

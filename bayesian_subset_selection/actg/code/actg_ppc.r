@@ -1,3 +1,7 @@
+#-------------------------------------------------------------------------------
+# Prior predictive distributions 
+#-------------------------------------------------------------------------------
+
 load("bayesian_subset_selection/actg/samples/draws_npp_c0.RData")
 load("bayesian_subset_selection/actg/samples/draws_npp_c0_after_PSM.RData")
 load("bayesian_subset_selection/actg/samples/draws_npp_wip.RData")
@@ -29,13 +33,6 @@ hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
 data <- list(current_data, hist_data)
 family <- binomial(link = "logit")
 formula <- outcome ~ age + treatment + cd4
-
-blended_rgb <- round(colMeans(rbind(
-  c(135, 206, 235),
-  c(70, 130, 180)
-)))
-
-blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
 
 Xnew        <- stats::model.matrix(formula, current_data)
 nsim <- 1000

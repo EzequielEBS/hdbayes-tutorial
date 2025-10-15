@@ -1,3 +1,7 @@
+#-------------------------------------------------------------------------------
+# Sensitivity analyses for hyperparameters
+#-------------------------------------------------------------------------------
+
 # load libraries
 library(hdbayes)
 library(parallel)
@@ -28,7 +32,7 @@ family <- binomial(link = "logit")
 iter_warmup <- 1000
 iter_sampling <- 2500
 
-#sensitivity analyses for c0
+#sensitivity analyses for beta hyperparameters
 c0 <- c(0.25, 0.5, 1, 2)
 d0 <- c(0.25, 0.5, 1, 2)
 delta0 <- 1
@@ -65,8 +69,9 @@ best_model_c0d0$ml <- log(best_model_c0d0$ml)
 
 xtable::xtable(best_model_c0d0, digits = 3)
 
-
+#-------------------------------------------------------------------------------
 # After PSM
+#-------------------------------------------------------------------------------
 
 current_data <- actg036
 hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
