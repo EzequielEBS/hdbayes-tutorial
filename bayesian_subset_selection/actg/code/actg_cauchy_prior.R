@@ -150,7 +150,7 @@ xtable::xtable(df_post_ord, digits = 3)
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
+hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
@@ -232,26 +232,6 @@ logp0_models <- mclapply(
   X = formulas,
   FUN = logp0,
   mc.cores = 14
-)
-
-formula <- formulas[[1]]
-a0.lognc <- lapply(a0_seq, 
-                   logncfun.wip, 
-                   formula = formula
-)
-a0.lognc <- data.frame(do.call(rbind, a0.lognc))
-fit <- glm.npp.wip(formula, 
-                   data = list(current_data,
-                               hist_data),
-                   family = family,
-                   a0.lognc = a0.lognc$a0,
-                   lognc = matrix(a0.lognc$lognc, ncol = 1),
-                   a0.shape1 = delta0,
-                   a0.shape2 = lambda0,
-                   iter_warmup = iter_warmup,
-                   iter_sampling = iter_sampling, 
-                   chains = 4, 
-                   refresh = 0
 )
 
 post_betam  <- mclapply(

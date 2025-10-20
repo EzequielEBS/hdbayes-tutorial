@@ -657,12 +657,7 @@ aucs.norm <- sapply(seq_along(roc.curves.norm),
                       unlist(lapply(seq_along(roc.curves.norm[[j]]), function(k) {
                         auc(roc.curves.norm[[j]][[k]])
                       }))
-                    }
-                    )
-  
-  unlist(lapply(seq_along(roc.curves.norm), function(j) {
-  auc(roc.curves.norm[[j]])
-}))
+                    })
 aucs.norm_after_PSM <- sapply(seq_along(roc.curves.norm_after_PSM),
                            function(j) {
                              unlist(lapply(seq_along(roc.curves.norm_after_PSM[[j]]), function(k) {

@@ -177,7 +177,7 @@ save(draws.a0, file = "bayesian_subset_selection/actg/samples/draws_npp_a0.RData
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
+hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -271,8 +271,8 @@ draws.c0_after_PSM <- lapply(seq_along(c0), function(i) {
     formula        = formula,
     family         = family,
     data.list      = list(hist_data),
-    a0.lognc       = a0.lognc.c0[[i]]$a0,
-    lognc          =  matrix(a0.lognc.c0[[i]]$a0, ncol = 1),
+    a0.lognc       = a0.lognc.c0_after_PSM[[i]]$a0,
+    lognc          =  matrix(a0.lognc.c0_after_PSM[[i]]$a0, ncol = 1),
     offset.list    = NULL,
     beta.sd        = c0_val,
     disp.mean      = NULL,

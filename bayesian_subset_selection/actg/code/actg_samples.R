@@ -76,7 +76,7 @@ save(bma_trt, file = "bayesian_subset_selection/actg/samples/bma_trt.RData")
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM.rds")
+hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
