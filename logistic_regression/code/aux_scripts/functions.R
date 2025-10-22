@@ -200,15 +200,9 @@ predict_ <- function(data, outcome, trt, family, beta_post, arm){
                    beta %*% cov_mat
                  }
   )
-  if (family$link == "logit") {
-    pred <- lapply(prod, function(df) {
-      apply(df, 2, plogis)
-    })
-  } else if (family$link == "probit") {
-    pred <- lapply(prod, function(df) {
-      apply(df, 2, pnorm)
-    })
-  }
+  pred <- lapply(prod, function(df) {
+    apply(df, 2, family$linkinv)
+  })
   return(pred)
 }
 

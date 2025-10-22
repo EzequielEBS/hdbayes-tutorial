@@ -64,3 +64,5 @@ logistic_regression/code/aux_scripts/glm_npp_posterior
 logistic_regression/code/aux_scripts/glm_npp_prior
 logistic_regression/code/aux_scripts/glm_npp_prior_wip
 logistic_regression/chapman/
+logistic_regression/archive/
+logistic_regression/vignettes/*.html

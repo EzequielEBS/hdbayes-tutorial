@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Here we describe the analysis perfomed in the section 3.3 of the paper.
+Here we describe the analysis performed in the section 3.3 of the paper.
 We start by defining useful functions to compute all subsets of models:
 
 ```{r aux_functions, cache = TRUE}
