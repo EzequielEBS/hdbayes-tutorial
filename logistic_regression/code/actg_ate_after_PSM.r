@@ -1,0 +1,310 @@
+#---------------------------------------------------------------------------------------
+# This script generates plots for the posterior distribution of the ATE and odds ratio
+# after propensity score matching (PSM) using Bayesian model averaging (BMA).
+#---------------------------------------------------------------------------------------
+
+# load libraries
+library(bayestestR)
+library(ggplot2)
+library(dplyr)
+library(MCMCpack)
+library(patchwork)
+library(reshape2)
+library(hdbayes)
+
+# load auxiliary functions
+source("logistic_regression/code/aux_scripts/functions.R")
+
+# load samples
+load("logistic_regression/samples/post_samples_after_PSM.RData")
+load("logistic_regression/samples/mean_models_ctrl_after_PSM.RData")
+load("logistic_regression/samples/mean_models_trt_after_PSM.RData")
+load("logistic_regression/samples/bma_ctrl_after_PSM.RData")
+load("logistic_regression/samples/bma_trt_after_PSM.RData")
+
+# Define colors
+blended_rgb <- round(colMeans(rbind(
+  c(135, 206, 235),
+  c(70, 130, 180)
+)))
+blended_color <- rgb(blended_rgb[1], blended_rgb[2], blended_rgb[3], maxColorValue = 255)
+stats_colors <- c("90% \nBCI" = blended_color,
+                  
+                  "Density" = "skyblue",
+                  "ATE = 0" = "black",
+                  "OR = 1" = "black"
+)
+
+# build BMA dataframe
+df_bma_after_PSM <- data.frame(
+  value = bma_trt_after_PSM - bma_ctrl_after_PSM
+)
+
+# Compute credibility intervals for the ATE
+ci_bma_90_after_PSM <- bayestestR::ci(df_bma_after_PSM$value, ci = 0.90)
+ci_ate_90_lower_after_PSM <- ci_bma_90_after_PSM$CI_low
+ci_ate_90_upper_after_PSM <- ci_bma_90_after_PSM$CI_high
+
+# Compute density for the entire dataset
+ate_density_data_after_PSM <- density(df_bma_after_PSM$value) 
+ate_density_df_after_PSM <- data.frame(x = ate_density_data_after_PSM$x, 
+                                       y = ate_density_data_after_PSM$y) 
+
+# Filter density data for the HDI regions
+ate_density_90_after_PSM <- ate_density_df_after_PSM %>% 
+  filter(x >= ci_ate_90_lower_after_PSM & x <= ci_ate_90_upper_after_PSM)
+
+# Plot using ggplot2
+bma_ate_after_PSM <- ggplot() +
+  geom_area(data = ate_density_df_after_PSM %>% 
+              filter(x <= ci_ate_90_lower_after_PSM + 
+                       (ci_ate_90_lower_after_PSM - 
+                          min(ate_density_df_after_PSM$x))*0.007), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = ate_density_df_after_PSM %>% 
+              filter(x >= ci_ate_90_upper_after_PSM - 
+                       (max(ate_density_df_after_PSM$x) - 
+                          ci_ate_90_upper_after_PSM)*0.007), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = ate_density_90_after_PSM, 
+            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
+            alpha = 0.7) +
+  geom_vline(aes(xintercept = 0, color = "ATE = 0"), linetype = "solid", size = 1) + 
+  scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
+  scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
+  labs(title = "",
+       x = "Average treatment effect (ATE)", y = "", color = "") +
+  theme_bw() +
+  theme(legend.position = c(.95, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6),
+        legend.background = element_rect(fill = "white", color = "black"),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA)
+  ) +
+  theme(text = element_text(size = 16),        
+        axis.title = element_text(size = 18),  
+        axis.text = element_text(size = 16),   
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
+# save the plot
+ggsave("logistic_regression/figures/bma_ate_after_PSM.png",
+       bma_ate_after_PSM, width = 8, height = 6, units = "in", dpi = 300)
+
+# create BMA data frames
+df_bma_arm_after_PSM <- data.frame(
+  value = c(bma_ctrl_after_PSM, bma_trt_after_PSM),
+  group = c(rep("ctrl", length(bma_ctrl_after_PSM)), 
+            rep("trt", length(bma_trt_after_PSM)))
+)
+
+# create odds ratio dataframe
+df_or_after_PSM <- data.frame(or = bma_trt_after_PSM / (1-bma_trt_after_PSM) / 
+                      bma_ctrl_after_PSM / (1-bma_ctrl_after_PSM))
+
+# compute credibility intervals for the odds ratio
+ci_or_after_PSM_90 <- bayestestR::ci(df_or_after_PSM$or, ci = 0.90)
+ci_or_after_PSM_90_lower <- ci_or_after_PSM_90$CI_low
+ci_or_after_PSM_90_upper <- ci_or_after_PSM_90$CI_high
+
+# Compute density for the entire dataset
+or_density_data_after_PSM <- density(df_or_after_PSM$or) 
+or_density_df_after_PSM <- data.frame(x = or_density_data_after_PSM$x, y = or_density_data_after_PSM$y) # Convert to data frame
+
+# Filter density data for the HDI regions
+or_density_90_after_PSM <- or_density_df_after_PSM %>% filter(x >= ci_or_after_PSM_90_lower & x <= ci_or_after_PSM_90_upper)
+
+# Plot the density of the odds ratio
+plot_or_after_PSM <- ggplot() +
+  geom_area(data = or_density_df_after_PSM %>% 
+              filter(x <= ci_or_after_PSM_90_lower + 
+                       (ci_or_after_PSM_90_lower - 
+                        min(or_density_df_after_PSM$x))*0.01), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = or_density_df_after_PSM %>% 
+              filter(x >= ci_or_after_PSM_90_upper - 
+                       (max(or_density_df_after_PSM$x) - 
+                          ci_or_after_PSM_90_upper)*0.005), 
+            aes(x = x, y = y, fill = "Density"), color = "black",
+            alpha = 0.7) +
+  geom_area(data = or_density_90_after_PSM, 
+            aes(x = x, y = y, fill = "90% \nBCI"), color = "black",
+            alpha = 0.7) +
+  geom_vline(aes(xintercept = 1, colour = "OR = 1"), linetype = "dotted", size = 1)  +
+  labs(title = "",
+       x = "Odds ratio", y = "") +
+  scale_fill_manual(name = NULL, values = stats_colors, breaks = c("90% \nBCI")) +
+  scale_color_manual(name = NULL, values = stats_colors, guide = NULL) +
+  theme_bw() +
+  theme(legend.position = c(.95, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6),
+        legend.background = element_rect(fill = "white", color = "black"),
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background = element_rect(fill = "white", color = NA)
+  ) +
+  theme(text = element_text(size = 16),        
+        axis.title = element_text(size = 18),  
+        axis.text = element_text(size = 16),   
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
+# Save plot
+ggsave("logistic_regression/figures/posterior_distribution_or_after_PSM.png",
+       plot_or_after_PSM, width = 10, height = 7, units = "in", dpi = 300)
+
+# put or and bma_ate together
+bma_ate_or_after_PSM <- (bma_ate_after_PSM + theme(legend.position = "none")) + 
+  plot_or_after_PSM + plot_layout(ncol = 2) &
+  theme(
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text  = element_text(size = 14)
+  )
+# save the plot
+ggsave("logistic_regression/figures/bma_ate_or_after_PSM.png",
+       bma_ate_or_after_PSM, width = 14, height = 8, units = "in", dpi = 300)
+
+#---------------------------------------------------------------------------------------
+# Plot means by arm
+#---------------------------------------------------------------------------------------
+
+
+# Convert matrices to dataframes and reshape them
+df_mean_models_ctrl_after_PSM <- as.data.frame(mean_models_ctrl_after_PSM)
+df_mean_models_trt_after_PSM <- as.data.frame(mean_models_trt_after_PSM)
+# Get model names
+models_after_PSM <- post_samples_after_PSM$df_post$model
+# Define titles for plots
+titles_post_after_PSM <- models_after_PSM
+# Add identifiers for matrices
+df_mean_models_ctrl_after_PSM$arm <- "Ctrl"
+df_mean_models_trt_after_PSM$arm <- "Trt"
+# Combine the data
+df_mean_models_after_PSM <- rbind(
+  melt(df_mean_models_ctrl_after_PSM, id.vars = "arm"),
+  melt(df_mean_models_trt_after_PSM, id.vars = "arm")
+)
+# Map variable names to titles
+df_mean_models_after_PSM$variable <- titles_post_after_PSM[match(df_mean_models_after_PSM$variable, 
+                                             paste0("V", 1:(ncol(df_mean_models_ctrl_after_PSM)-1)), 
+                                             nomatch = 0)]
+# Create annotation dataframe to add probabilities
+ann_after_PSM <- data.frame(
+  variable = titles_post_after_PSM, 
+  x = rep(0.12, length(titles_post_after_PSM)),
+  y = rep(35, length(titles_post_after_PSM)), 
+  label = paste("Prob:", 
+                format(round(post_samples_after_PSM$df_post$post_model, digits = 3), nsmall = 3))
+)
+# Plot 
+plot_means_arm_after_PSM <- ggplot(df_mean_models_after_PSM, aes(x = value, fill = arm)) +
+  geom_density(alpha = 0.6, position = "identity", color = "black") +
+  facet_wrap(~ factor(variable, levels = titles_post_after_PSM), 
+             scales = "fixed",
+             ncol = 3) +
+  geom_label(
+    data = ann_after_PSM,
+    aes(x, y, label = label),
+    inherit.aes = FALSE,
+    fill = "white",   
+    color = "black",  
+    hjust = 0
+  ) +
+  labs(
+    title = "",
+    x = "Average effect",
+    y = "",
+    fill = "Arm"
+  ) +
+  scale_fill_manual(values = c("#66A8D0", "#D08E66")) +
+  xlim(floor(range(df_mean_models_after_PSM$value)*1e3)/1e3) +
+  theme_bw() +
+  theme(
+    legend.position = c(0.97, 0.05),
+    legend.justification = c(1, 0),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(fill = "white", color = "black"),
+  ) +
+  theme(text = element_text(size = 12),       
+        axis.title = element_text(size = 14),  
+        axis.text = element_text(size = 12),   
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        strip.text = element_text(size = 11))
+# Save plot
+ggsave("logistic_regression/figures/posterior_distribution_means_by_arm_after_PSM.png",
+       plot_means_arm_after_PSM, width = 11, height = 14, units = "in", dpi = 300)
+
+#---------------------------------------------------------------------------------------
+# Plot or by arm
+#---------------------------------------------------------------------------------------
+
+# Compute odds ratios for each model
+df_mean_models_or_after_PSM <- as.data.frame(
+  do.call(cbind,
+          lapply(1:(ncol(df_mean_models_trt_after_PSM)-1), function(j) {
+            or <- df_mean_models_trt_after_PSM[,j]/(1-df_mean_models_trt_after_PSM[,j]) / 
+              df_mean_models_ctrl_after_PSM[,j]/(1-df_mean_models_ctrl_after_PSM[,j])
+          })
+  )
+)
+# Reshape the data
+df_mean_models_or_after_PSM <- melt(df_mean_models_or_after_PSM)
+# Map variable names to titles
+df_mean_models_or_after_PSM$variable <- titles_post_after_PSM[match(df_mean_models_or_after_PSM$variable, 
+                                                paste0("V", 1:(ncol(df_mean_models_trt_after_PSM)-1)), 
+                                                nomatch = 0)]
+# Create annotation dataframe to add probabilities
+ann_or_after_PSM <- df_mean_models_or_after_PSM %>%
+  group_by(variable) %>%
+  summarise(
+    x = 1.8,          
+    y = max(density(value)$y) - max(density(value)$y)/5
+  )
+ann_or_after_PSM <- merge(ann_or_after_PSM, 
+                data.frame(label = paste("Prob:", 
+                                         format(round(post_samples_after_PSM$df_post$post_model, digits = 3), nsmall = 3)),
+                           variable = post_samples_after_PSM$df_post$model),
+                by = "variable")
+# Plot
+plot_or_models_after_PSM <- ggplot(df_mean_models_or_after_PSM, aes(x = value)) +
+  geom_density(alpha = 0.6, position = "identity", fill = "#66A8D0") +
+  geom_vline(aes(xintercept = 1), linetype = "dotted", size = 1) +
+  facet_wrap(~ factor(variable, levels = titles_post_after_PSM), 
+             scales = "free_y",
+             ncol = 3) +  
+  geom_label(
+    data = ann_or_after_PSM,
+    aes(x, y, label = label),
+    inherit.aes = FALSE,
+    fill = "white",   
+    color = "black",  
+    hjust = 0
+  ) +
+  labs(
+    title = "",
+    x = "Odds ratio",
+    y = ""
+  ) +
+  xlim(floor(range(df_mean_models_or_after_PSM$value)*1e3)/1e3) +
+  theme_bw() +
+  theme(
+    legend.position = c(0.95, 0.05),   
+    legend.justification = c(1, 0),
+    legend.title = element_text(size = 10),
+    legend.background = element_rect(fill = "white", color = "black"),
+  ) +
+  theme(text = element_text(size = 12),        
+        axis.title = element_text(size = 14),  
+        axis.text = element_text(size = 12),   
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        strip.text = element_text(size = 11))
+# Save plot
+ggsave("logistic_regression/figures/posterior_distribution_or_by_model_after_PSM.png",
+       plot_or_models_after_PSM, width = 11, height = 14, units = "in", dpi = 300)

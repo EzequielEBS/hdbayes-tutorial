@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Variable Selection</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Variable Selection</h1>
+
+
+
+<p>Here we describe the analysis perfomed in the section 3.3 of the
+paper. We start by defining useful functions to compute all subsets of
+models:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># function to compute power set</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>powerset <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  sets <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(x)), <span class="cf">function</span>(i) <span class="fu">combn</span>(x, i, <span class="at">simplify =</span> F))</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="fu">unlist</span>(sets, <span class="at">recursive =</span> F)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># function to create formula</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>create_formula <span class="ot">&lt;-</span> <span class="cf">function</span>(x, outcome) {</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="fu">paste</span>(outcome, <span class="st">&quot;~&quot;</span>, <span class="at">sep =</span> <span class="st">&quot; &quot;</span>), <span class="fu">paste</span>(x, <span class="at">collapse =</span> <span class="st">&quot;+&quot;</span>)))</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>}</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># function to get covariates from models</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>get_covariates <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="fu">paste</span>(x, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>}</span></code></pre></div>
+<p>Then to compute useful quantities for all models, we define the
+following functions. The first one computes the prior probability of a
+model; the second one computes the log-normalizing constant for <span class="math inline">\(a_0\)</span>; and the third one computes posterior
+samples of beta for a given model.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>logp0 <span class="ot">&lt;-</span> <span class="cf">function</span>(formula,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                  ...) {</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  hdbayes<span class="sc">::</span><span class="fu">glm.npp.lognc</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">formula =</span> formula,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    ...</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  )</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>}</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># function to compute log-normalizing constant for a0</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>logncfun <span class="ot">&lt;-</span> <span class="cf">function</span>(a0,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>                     ...){</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  hdbayes<span class="sc">::</span><span class="fu">glm.npp.lognc</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="at">a0 =</span> a0,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    ...</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  )</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>}</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co"># function to compute posterior samples of beta for a given model</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>post_beta <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, </span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>                      c0, </span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>                      data,</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>                      family,</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>                      delta0,</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>                      lambda0,</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>                      iter_warmup,</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>                      iter_sampling) {</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  a0.lognc <span class="ot">&lt;-</span> <span class="fu">lapply</span>(a0_seq, </span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>                     logncfun, </span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>                     <span class="at">formula =</span> formula, </span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>                     <span class="at">family =</span> family, </span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>                     <span class="at">histdata =</span> data[[<span class="dv">2</span>]], </span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>                     <span class="at">iter_warmup =</span> iter_warmup,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>                     <span class="at">iter_sampling =</span> iter_sampling, </span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>                     <span class="at">chains =</span> <span class="dv">4</span>, </span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>                     <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>                     <span class="at">beta.sd =</span> c0</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  )</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  a0.lognc <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">do.call</span>(rbind, a0.lognc))</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> hdbayes<span class="sc">::</span><span class="fu">glm.npp</span>(formula, </span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>                          <span class="at">data =</span> data,</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>                          <span class="at">family =</span> family,</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>                          <span class="at">a0.lognc =</span> a0.lognc<span class="sc">$</span>a0,</span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>                          <span class="at">lognc =</span> <span class="fu">matrix</span>(a0.lognc<span class="sc">$</span>lognc, <span class="at">ncol =</span> <span class="dv">1</span>),</span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>                          <span class="at">a0.shape1 =</span> delta0,</span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a>                          <span class="at">a0.shape2 =</span> lambda0,</span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>                          <span class="at">iter_warmup =</span> iter_warmup,</span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>                          <span class="at">iter_sampling =</span> iter_sampling, </span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>                          <span class="at">chains =</span> <span class="dv">4</span>, </span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a>                          <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a>                          <span class="at">beta.sd =</span> c0</span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>  )</span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>}</span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co"># function to compute posterior model probabilities</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>post_models <span class="ot">&lt;-</span> <span class="cf">function</span>(logp0_models, logml_models) {</span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a>  logp0_models <span class="ot">&lt;-</span> <span class="fu">sapply</span>(logp0_models, <span class="cf">function</span>(x) x[<span class="dv">2</span>])</span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>  logml_models <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">data.frame</span>(<span class="fu">do.call</span>(rbind, logml_models))<span class="sc">$</span>logml)</span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>  post_model <span class="ot">&lt;-</span> <span class="fu">exp</span>(logml_models <span class="sc">+</span> logp0_models <span class="sc">-</span></span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a>                      <span class="fu">logSumExp</span>(logml_models <span class="sc">+</span> logp0_models))</span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>}</span></code></pre></div>
+<p>Finally, we put everything together to compute the posterior
+probabilities of all models. The <em>logp0_models</em> object contains
+the log-marginial likelihoods of all models based on historical data
+<span class="math inline">\(D_0\)</span>, i.e., <span class="math inline">\(Z_m(D_0) = \int L(\boldsymbol{\beta}^{(m)} | D_0)
+\pi_0 \left(\boldsymbol{\beta}^{(m)} \mid d_0 \right)
+d\beta^{(m)}\)</span>; the <em>post_betam</em> object contains the
+posterior samples of beta for all models; the <em>logml_models</em>
+object contains the log-marginal likelihoods of all models, i.e., <span class="math inline">\(Z_m(D) \equiv p(D | m) = \int
+L(\boldsymbol{\beta}^{(m)} | D) \pi\left(\beta^{(m)}, a_0 \mid
+D_0\right) d\beta^{(m)} da_0\)</span>; and the <em>df_post_ord</em>
+object contains a data frame with prior probabilities, marginal
+likelihoods, and posterior probabilities of all models ordered by
+posterior probability.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>samples_models <span class="ot">&lt;-</span> <span class="cf">function</span>(data,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                        outcome,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                        family,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                        a0_seq,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                        c0,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                        d0,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                        delta0,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                        lambda0,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>                        iter_warmup,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>                        iter_sampling,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>                        <span class="at">num_cores =</span> <span class="dv">10</span>) {</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  current_data <span class="ot">&lt;-</span> data[[<span class="dv">1</span>]]</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  hist_data <span class="ot">&lt;-</span> data[[<span class="dv">2</span>]]</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  covariates <span class="ot">&lt;-</span> <span class="fu">colnames</span>(current_data)[<span class="fu">colnames</span>(current_data) <span class="sc">!=</span> outcome]</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  pset <span class="ot">&lt;-</span> <span class="fu">powerset</span>(covariates)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  formulas <span class="ot">&lt;-</span> <span class="fu">lapply</span>(pset, create_formula, <span class="at">outcome =</span> outcome)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  </span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  covariates_models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(pset, get_covariates)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  </span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  cl <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">makeCluster</span>(num_cores)</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="fu">on.exit</span>(parallel<span class="sc">::</span><span class="fu">stopCluster</span>(cl))</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  parallel<span class="sc">::</span><span class="fu">clusterExport</span>(cl, <span class="at">varlist =</span> <span class="fu">c</span>(<span class="st">&#39;a0_seq&#39;</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>                                          <span class="st">&#39;family&#39;</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>                                          <span class="st">&#39;data&#39;</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>                                          <span class="st">&#39;c0&#39;</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>                                          <span class="st">&#39;d0&#39;</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>                                          <span class="st">&#39;delta0&#39;</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>                                          <span class="st">&#39;lambda0&#39;</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>                                          <span class="st">&#39;iter_warmup&#39;</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>                                          <span class="st">&#39;iter_sampling&#39;</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>                                          <span class="st">&#39;logncfun&#39;</span>),</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>                          <span class="at">envir =</span> <span class="fu">environment</span>()</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>  )</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  </span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>  logp0_models <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(</span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>    <span class="at">cl =</span> cl,</span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>    <span class="at">X =</span> formulas,</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>    <span class="at">fun =</span> logp0,</span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>    <span class="at">family =</span> family,</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>    <span class="at">histdata =</span> hist_data,</span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>    <span class="at">a0 =</span> <span class="dv">1</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>    <span class="at">iter_warmup =</span> iter_warmup,</span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>    <span class="at">iter_sampling =</span> iter_sampling,</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>    <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>    <span class="at">refresh =</span> <span class="dv">0</span>,</span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>    <span class="at">beta.sd =</span> d0</span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>  )</span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>  post_betam  <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(</span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>    <span class="at">cl =</span> cl,</span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>    <span class="at">X =</span> formulas,</span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>    <span class="at">fun =</span> post_beta,</span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>    <span class="at">c0 =</span> c0, </span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a>    <span class="at">data =</span> data,</span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>    <span class="at">family =</span> family,</span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>    <span class="at">delta0 =</span> delta0,</span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>    <span class="at">lambda0 =</span> lambda0,</span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>    <span class="at">iter_warmup =</span> iter_warmup,</span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>    <span class="at">iter_sampling =</span> iter_sampling</span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>  )</span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>  logml_models <span class="ot">&lt;-</span> <span class="fu">parLapply</span>(</span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>    <span class="at">cl =</span> cl,</span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>    <span class="at">X =</span> post_betam,</span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>    <span class="at">fun =</span> hdbayes<span class="sc">::</span>glm.logml.npp</span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a>  )</span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a>  prior_models <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">sapply</span>(logp0_models, <span class="cf">function</span>(x) x[<span class="dv">2</span>]) <span class="sc">-</span></span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a>                        <span class="fu">logSumExp</span>(<span class="fu">sapply</span>(logp0_models, <span class="cf">function</span>(x) x[<span class="dv">2</span>]))</span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a>  )</span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a>  post_models <span class="ot">&lt;-</span> <span class="fu">post_models</span>(logp0_models, logml_models)</span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a></span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a>  df_post <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">model =</span> <span class="fu">unlist</span>(covariates_models),</span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a>                        <span class="at">prior_model =</span> prior_models,</span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a>                        <span class="at">ml =</span> <span class="fu">exp</span>(<span class="fu">unlist</span>(<span class="fu">data.frame</span>(<span class="fu">do.call</span>(rbind, logml_models))<span class="sc">$</span>logml)),</span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a>                        <span class="at">post_model =</span> post_models</span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a>  )</span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a></span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a>  df_post_ord <span class="ot">&lt;-</span> df_post[<span class="fu">order</span>(df_post<span class="sc">$</span>post_model, <span class="at">decreasing =</span> <span class="cn">TRUE</span>),]</span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a>  <span class="fu">rownames</span>(df_post_ord) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(df_post_ord)</span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">logp0_models =</span> logp0_models,</span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a>              <span class="at">post_betam =</span> post_betam,</span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a>              <span class="at">logml_models =</span> logml_models,</span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a>              <span class="at">df_post =</span> df_post,</span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a>              <span class="at">df_post_ord =</span> df_post_ord))</span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a>}</span></code></pre></div>
+<p>Now we can run the analysis for the example in the paper. We start by
+loading the libraries and the data.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># load libraries</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(hdbayes)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; </span><span class="al">NOTE</span><span class="co">: hdbayes depends on the R package cmdstanr, which is not available on CRAN.</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;       The cmdstanr package may be installed at https://mc-stan.org/cmdstanr/.</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">library</span>(parallel)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">library</span>(matrixStats)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">library</span>(MCMCpack)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; Loading required package: coda</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Loading required package: MASS</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; ##</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; ## Markov Chain Monte Carlo Package (MCMCpack)</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; ## Copyright (C) 2003-2025 Andrew D. Martin, Kevin M. Quinn, and Jong Hee Park</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; ##</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; ## Support provided by the U.S. National Science Foundation</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; ## (Grants SES-0350646 and SES-0350613)</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; ##</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co"># define data</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>current_data <span class="ot">&lt;-</span> actg036</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>hist_data <span class="ot">&lt;-</span> actg019</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co"># normalize data</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>current_data<span class="sc">$</span>age <span class="ot">&lt;-</span> (current_data<span class="sc">$</span>age <span class="sc">-</span> <span class="fu">mean</span>(current_data<span class="sc">$</span>age)) <span class="sc">/</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  (<span class="dv">2</span><span class="sc">*</span><span class="fu">sd</span>(current_data<span class="sc">$</span>age))</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>current_data<span class="sc">$</span>cd4 <span class="ot">&lt;-</span> (current_data<span class="sc">$</span>cd4 <span class="sc">-</span> <span class="fu">mean</span>(current_data<span class="sc">$</span>cd4)) <span class="sc">/</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  (<span class="dv">2</span><span class="sc">*</span><span class="fu">sd</span>(current_data<span class="sc">$</span>cd4))</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>hist_data<span class="sc">$</span>age <span class="ot">&lt;-</span> (hist_data<span class="sc">$</span>age <span class="sc">-</span> <span class="fu">mean</span>(hist_data<span class="sc">$</span>age)) <span class="sc">/</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  (<span class="dv">2</span><span class="sc">*</span><span class="fu">sd</span>(hist_data<span class="sc">$</span>age))</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>hist_data<span class="sc">$</span>cd4 <span class="ot">&lt;-</span> (hist_data<span class="sc">$</span>cd4 <span class="sc">-</span> <span class="fu">mean</span>(hist_data<span class="sc">$</span>cd4)) <span class="sc">/</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>  (<span class="dv">2</span><span class="sc">*</span><span class="fu">sd</span>(hist_data<span class="sc">$</span>cd4))</span></code></pre></div>
+<p>Then we define the parameters for the analysis.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># set parameters</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>delta0 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>lambda0 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>a0_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">21</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">list</span>(current_data, hist_data)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>family <span class="ot">&lt;-</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>c0 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>d0 <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>iter_warmup <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>iter_sampling <span class="ot">&lt;-</span> <span class="dv">2500</span></span></code></pre></div>
+<p>Lastly, we run the analysis and show the results.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>post_samples <span class="ot">&lt;-</span> <span class="fu">samples_models</span>(<span class="at">data =</span> data,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                               <span class="at">outcome =</span> <span class="st">&quot;outcome&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                               <span class="at">family =</span> family,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                               <span class="at">a0_seq =</span> a0_seq,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                               <span class="at">c0 =</span> c0,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                               <span class="at">d0 =</span> d0,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                               <span class="at">delta0 =</span> delta0,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                               <span class="at">lambda0 =</span> lambda0,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                               <span class="at">iter_warmup =</span> iter_warmup,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                               <span class="at">iter_sampling =</span> iter_sampling,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>                               <span class="at">num_cores =</span> <span class="dv">14</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>post_samples<span class="sc">$</span>df_post_ord</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;                        model  prior_model           ml   post_model</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; 1        age, treatment, cd4 5.390269e-01 3.181176e-16 5.583211e-01</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; 2  age, treatment, race, cd4 2.552731e-01 2.866967e-16 2.382943e-01</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 3             treatment, cd4 1.001849e-01 3.141013e-16 1.024609e-01</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; 4       treatment, race, cd4 4.877409e-02 2.783564e-16 4.420550e-02</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; 5                   age, cd4 3.172818e-02 3.174395e-16 3.279383e-02</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; 6             age, race, cd4 1.484527e-02 2.902738e-16 1.403078e-02</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; 7                        cd4 6.449237e-03 3.271694e-16 6.870161e-03</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; 8                  race, cd4 3.159292e-03 2.937525e-16 3.021742e-03</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; 9             age, treatment 3.172613e-04 9.795570e-19 1.011889e-06</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 10      age, treatment, race 1.534698e-04 8.754145e-19 4.374441e-07</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; 11                 treatment 4.214342e-05 6.688512e-19 9.177940e-08</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; 12                       age 1.591105e-05 7.983328e-19 4.135889e-08</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; 13           treatment, race 2.135470e-05 5.903771e-19 4.104960e-08</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; 14                 age, race 7.547119e-06 7.283331e-19 1.789770e-08</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; 15                      race 1.222143e-06 5.089484e-19 2.025264e-09</span></span></code></pre></div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
