@@ -10,7 +10,7 @@ library(MCMCpack)
 library(ggplot2)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 current_data <- actg036
 hist_data <- actg019
@@ -54,9 +54,9 @@ post_samples_c0d0 <- lapply(seq_along(c0), function(i) {
 })
 
 save(post_samples_c0d0, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
+     file = "logistic_regression/samples/post_samples_c0d0.RData")
 
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
+load("logistic_regression/samples/post_samples_c0d0.RData")
 
 best_model_c0d0 <- do.call(rbind,lapply(post_samples_c0d0, function(post) {
   post$df_post_ord[1,]
@@ -74,7 +74,7 @@ xtable::xtable(best_model_c0d0, digits = 3)
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -115,9 +115,9 @@ post_samples_c0d0_after_PSM <- lapply(seq_along(c0), function(i) {
 })
 
 save(post_samples_c0d0_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
+     file = "logistic_regression/samples/post_samples_c0d0_after_PSM.RData")
 
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
+load("logistic_regression/samples/post_samples_c0d0_after_PSM.RData")
 
 best_model_c0d0_after_PSM <- do.call(rbind,lapply(post_samples_c0d0_after_PSM, function(post) {
   post$df_post_ord[1,]

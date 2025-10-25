@@ -8,14 +8,19 @@ This repository contains the code, data, and figures used in the paper *From pri
 
 ```
 .
-├── bayesian_subset_selection/                 
-|   ├── actg/
-|   |   ├── archive/                    # Old files
-|   |   ├── code/                       # Scripts
-|   |   ├── data/                       # Data used in the analysis
-|   |   ├── results/                    # Figures 
-├── method_comparison/                  # Code to compare covariate effects under different priors
+├── logistic_regression/                # Bayesian logistic regression example with ACTG data              
+|   ├── code/                       
+|   ├── data/                       
+|   ├── figures/                    
+|   ├── samples/
+|   ├── vignettes/
+|   ├── figures/ 
+|   └── README.md
+|
+├── method_comparison/                  # Compare covariate effects under different priors with ACTG data
+|             
 ├── .gitignore
+|
 └── README.md
 ```
 

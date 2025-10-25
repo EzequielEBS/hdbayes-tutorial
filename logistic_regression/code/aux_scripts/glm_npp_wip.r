@@ -283,7 +283,7 @@ glm.npp.wip = function(
   #   package = "hdbayes"
   # )
   glm_npp_posterior = 
-    cmdstanr::cmdstan_model("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_posterior.stan")
+    cmdstanr::cmdstan_model("logistic_regression/code/aux_scripts/glm_npp_posterior.stan")
   
   ## fit model in cmdstanr
   fit = glm_npp_posterior$sample(data = standat,

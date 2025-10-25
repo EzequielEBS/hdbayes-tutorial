@@ -3,10 +3,10 @@
 #-------------------------------------------------------------------------------
 
 # load posterior samples
-load("bayesian_subset_selection/actg/samples/post_samples_a0_wip.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_a0_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_a0_norm.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_a0_norm_after_PSM.RData")
+load("logistic_regression/samples/post_samples_a0_wip.RData")
+load("logistic_regression/samples/post_samples_a0_wip_after_PSM.RData")
+load("logistic_regression/samples/post_samples_a0_norm.RData")
+load("logistic_regression/samples/post_samples_a0_norm_after_PSM.RData")
 
 # load libraries
 library(ggplot2)
@@ -268,6 +268,6 @@ plot_before_after_PSM <-
 
 plot_before_after_PSM
 
-ggsave("bayesian_subset_selection/actg/results/figures/post_a0_before_after_PSM.png",
+ggsave("logistic_regression/figures/post_a0_before_after_PSM.png",
        plot_before_after_PSM, 
        width = 14, height = 20, units = "in", dpi = 300)

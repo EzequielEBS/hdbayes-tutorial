@@ -3,10 +3,10 @@
 #---------------------------------------------------------------------------------------
 
 # Load data
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_wip.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_wip_after_PSM.RData")
+load("logistic_regression/samples/post_samples_c0d0.RData")
+load("logistic_regression/samples/post_samples_wip.RData")
+load("logistic_regression/samples/post_samples_c0d0_after_PSM.RData")
+load("logistic_regression/samples/post_samples_wip_after_PSM.RData")
 
 # load libraries
 library(ggplot2)
@@ -18,7 +18,7 @@ library(dplyr)
 library(tidyverse)
 
 # load functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 # define data
 current_data <- actg036
@@ -69,7 +69,7 @@ ate_wip_norm <-
   plot_layout(ncol = 2) 
 ate_wip_norm
 
-ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm.png",
+ggsave("logistic_regression/figures/ate_wip_norm.png",
        ate_wip_norm, 
        width = 14, height = 15, units = "in", dpi = 300)
 
@@ -78,7 +78,7 @@ ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm.png",
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -119,7 +119,7 @@ ate_wip_norm_after_PSM <-
   plot_layout(ncol = 2)
 ate_wip_norm_after_PSM
 
-ggsave("bayesian_subset_selection/actg/results/figures/ate_wip_norm_after_PSM.png",
+ggsave("logistic_regression/figures/ate_wip_norm_after_PSM.png",
        ate_wip_norm_after_PSM, width = 14, height = 15, units = "in", dpi = 300)
 
 #-------------------------------------------------------------------------------
@@ -178,5 +178,5 @@ ates_wip_norm_after_PSM <-
      plot_layout(ncol = 1)
    )
 ates_wip_norm_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ates_wip_norm_before_after_PSM.png",
+ggsave("logistic_regression/figures/ates_wip_norm_before_after_PSM.png",
        ates_wip_norm_after_PSM, width = 14, height = 20, units = "in", dpi = 300)

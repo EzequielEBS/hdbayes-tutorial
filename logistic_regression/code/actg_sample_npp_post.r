@@ -62,7 +62,7 @@ draws.a0.post.wip <- sapply(seq_along(a0_hyper), function(i) {
   fit$a0_hist_1
 })
 save(draws.a0.post.wip, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_a0_wip.RData")
+     file = "logistic_regression/samples/post_samples_a0_wip.RData")
 
 logncfun <- function(a0, ...){
   glm.npp.lognc(
@@ -101,14 +101,14 @@ draws.a0.post.norm <- lapply(seq_along(c0), function(j) {
 })
 
 save(draws.a0.post.norm, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_a0_norm.RData")
+     file = "logistic_regression/samples/post_samples_a0_norm.RData")
 
 # ------------------------------------------------------------------------------
 # After PSM
 # ------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -146,7 +146,7 @@ draws.a0.post.wip_after_PSM <- sapply(seq_along(a0_hyper), function(i) {
 })
 
 save(draws.a0.post.wip_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_a0_wip_after_PSM.RData")
+     file = "logistic_regression/samples/post_samples_a0_wip_after_PSM.RData")
 
 draws.a0.post.norm_after_PSM <- lapply(seq_along(c0), function(j) {
   a0.lognc <- lapply(
@@ -177,4 +177,4 @@ draws.a0.post.norm_after_PSM <- lapply(seq_along(c0), function(j) {
 })
 
 save(draws.a0.post.norm_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_a0_norm_after_PSM.RData")
+     file = "logistic_regression/samples/post_samples_a0_norm_after_PSM.RData")

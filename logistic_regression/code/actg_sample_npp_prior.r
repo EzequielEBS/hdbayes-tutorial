@@ -2,12 +2,12 @@
 # Sample from the NPP prior under different settings
 #-------------------------------------------------------------------------------
 
-source("bayesian_subset_selection/actg/code/aux_scripts/get_stan_data.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_logml_npp_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/data_checks.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/expfam_loglik.r")
+source("logistic_regression/code/aux_scripts/get_stan_data.r")
+source("logistic_regression/code/aux_scripts/glm_npp_lognc_wip.r")
+source("logistic_regression/code/aux_scripts/glm_npp_wip.r")
+source("logistic_regression/code/aux_scripts/glm_logml_npp_wip.r")
+source("logistic_regression/code/aux_scripts/data_checks.r")
+source("logistic_regression/code/aux_scripts/expfam_loglik.r")
 
 library(hdbayes)
 library(parallel)
@@ -78,7 +78,7 @@ pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
 draws.wip <- fit.wip$draws(format = 'draws_df', variables = pars) %>%
   select(all_of(pars))
 
-save(draws.wip, file = "bayesian_subset_selection/actg/samples/draws_npp_wip.RData")
+save(draws.wip, file = "logistic_regression/samples/draws_npp_wip.RData")
 
 ## sample normal
 
@@ -133,7 +133,7 @@ draws.c0 <- lapply(seq_along(c0), function(i) {
     select(all_of(pars))
 })
 
-save(draws.c0, file = "bayesian_subset_selection/actg/samples/draws_npp_c0.RData")
+save(draws.c0, file = "logistic_regression/samples/draws_npp_c0.RData")
 
 ## sample for different a0 priors
 
@@ -170,14 +170,14 @@ draws.a0 <- lapply(seq_along(a0_hyper), function(i) {
     select(all_of(pars))
 })
 
-save(draws.a0, file = "bayesian_subset_selection/actg/samples/draws_npp_a0.RData")
+save(draws.a0, file = "logistic_regression/samples/draws_npp_a0.RData")
 
 #-------------------------------------------------------------------------------
 # After PSM
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -239,7 +239,7 @@ draws.wip_after_PSM <- fit.wip_after_PSM$draws(format = 'draws_df', variables = 
   select(all_of(pars))
 
 save(draws.wip_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/draws_npp_wip_after_PSM.RData")
+     file = "logistic_regression/samples/draws_npp_wip_after_PSM.RData")
 
 ## sample normal
 
@@ -295,7 +295,7 @@ draws.c0_after_PSM <- lapply(seq_along(c0), function(i) {
 })
 
 save(draws.c0_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/draws_npp_c0_after_PSM.RData")
+     file = "logistic_regression/samples/draws_npp_c0_after_PSM.RData")
 
 ## sample for different a0 priors
 
@@ -333,4 +333,4 @@ draws.a0_after_PSM <- lapply(seq_along(a0_hyper), function(i) {
 })
 
 save(draws.a0_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/draws_npp_a0_after_PSM.RData")
+     file = "logistic_regression/samples/draws_npp_a0_after_PSM.RData")

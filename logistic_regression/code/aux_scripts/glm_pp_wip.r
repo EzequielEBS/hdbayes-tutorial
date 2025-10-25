@@ -198,7 +198,7 @@ glm.pp.wip = function(
   #   package = "hdbayes"
   # )
   glm_pp = 
-    cmdstanr::cmdstan_model("bayesian_subset_selection/actg/code/aux_scripts/glm_pp_wip.stan")
+    cmdstanr::cmdstan_model("logistic_regression/code/aux_scripts/glm_pp_wip.stan")
   
   
   ## fit model in cmdstanr

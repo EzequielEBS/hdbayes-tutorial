@@ -3,12 +3,12 @@
 #--------------------------------------------------------------------------------
 
 # load samples
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_c0d0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_wip.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/post_samples.RData")
-load("bayesian_subset_selection/actg/samples/post_samples_after_PSM.RData")
+load("logistic_regression/samples/post_samples_c0d0.RData")
+load("logistic_regression/samples/post_samples_c0d0_after_PSM.RData")
+load("logistic_regression/samples/post_samples_wip.RData")
+load("logistic_regression/samples/post_samples_wip_after_PSM.RData")
+load("logistic_regression/samples/post_samples.RData")
+load("logistic_regression/samples/post_samples_after_PSM.RData")
 
 # load libraries
 library(bayestestR)
@@ -144,7 +144,7 @@ models_wip_norm <- ((
    )
 models_wip_norm
 
-ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm.png",
+ggsave("logistic_regression/figures/models_wip_norm.png",
        models_wip_norm, width = 10, height = 15, units = "in", dpi = 300)
 
 df_norm <- post_samples$df_post_ord %>%
@@ -308,7 +308,7 @@ models_wip_norm_after_PSM <- ((
      )
 models_wip_norm_after_PSM
 
-ggsave("bayesian_subset_selection/actg/results/figures/models_wip_norm_after_PSM.png",
+ggsave("logistic_regression/figures/models_wip_norm_after_PSM.png",
        models_wip_norm_after_PSM, width = 10, height = 15, units = "in", dpi = 300)
 
 
@@ -402,5 +402,5 @@ models_before_after_PSM <- ((models_wip +
       )
   )
 models_before_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/models_before_after_PSM.png",
+ggsave("logistic_regression/figures/models_before_after_PSM.png",
        models_before_after_PSM, width = 16, height = 20, units = "in", dpi = 300)

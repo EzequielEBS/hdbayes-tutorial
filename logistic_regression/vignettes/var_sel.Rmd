@@ -1,0 +1,253 @@
+---
+title: "Variable selection"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{var_sel}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Here we describe the analysis performed in the section 3.3.1 of the paper.
+We start by defining useful functions to compute all subsets of models:
+
+```{r aux_functions, cache = TRUE}
+# function to compute power set
+powerset <- function(x) {
+  sets <- lapply(1:(length(x)), function(i) combn(x, i, simplify = F))
+  unlist(sets, recursive = F)
+}
+
+# function to create formula
+create_formula <- function(x, outcome) {
+  as.formula(paste(paste(outcome, "~", sep = " "), paste(x, collapse = "+")))
+}
+
+# function to get covariates from models
+get_covariates <- function(x) {
+  paste(x, collapse = ", ")
+}
+```
+
+Then to compute useful quantities for all models, we define the following functions. The first one computes the prior probability of a model; the second one computes the log-normalizing constant for $a_0$; the third one computes posterior samples of beta for a given model; and the last one computes posterior model probabilities.
+
+```{r model_priors, cache = TRUE}
+logp0 <- function(formula,
+                  ...) {
+  hdbayes::glm.npp.lognc(
+    formula = formula,
+    ...
+  )
+}
+
+# function to compute log-normalizing constant for a0
+logncfun <- function(a0,
+                     ...){
+  hdbayes::glm.npp.lognc(
+    a0 = a0,
+    ...
+  )
+}
+
+# function to compute posterior samples of beta for a given model
+post_beta <- function(formula, 
+                      c0, 
+                      data,
+                      family,
+                      delta0,
+                      lambda0,
+                      iter_warmup,
+                      iter_sampling) {
+  a0.lognc <- lapply(a0_seq, 
+                     logncfun, 
+                     formula = formula, 
+                     family = family, 
+                     histdata = data[[2]], 
+                     iter_warmup = iter_warmup,
+                     iter_sampling = iter_sampling, 
+                     chains = 4, 
+                     refresh = 0,
+                     beta.sd = c0
+  )
+  a0.lognc <- data.frame(do.call(rbind, a0.lognc))
+  fit <- hdbayes::glm.npp(formula, 
+                          data = data,
+                          family = family,
+                          a0.lognc = a0.lognc$a0,
+                          lognc = matrix(a0.lognc$lognc, ncol = 1),
+                          a0.shape1 = delta0,
+                          a0.shape2 = lambda0,
+                          iter_warmup = iter_warmup,
+                          iter_sampling = iter_sampling, 
+                          chains = 4, 
+                          refresh = 0,
+                          beta.sd = c0
+  )
+}
+
+# function to compute posterior model probabilities
+post_models <- function(logp0_models, logml_models) {
+  logp0_models <- sapply(logp0_models, function(x) x[2])
+  logml_models <- unlist(data.frame(do.call(rbind, logml_models))$logml)
+  post_model <- exp(logml_models + logp0_models -
+                      logSumExp(logml_models + logp0_models))
+}
+```
+
+Finally, we put everything together to compute the posterior probabilities of all models. The **logp0_models** object contains the log-marginial likelihoods of all models based on historical data $D_0$, i.e., $Z_m(D_0) = \int L(\boldsymbol{\beta}^{(m)} | D_0) \pi_0 \left(\boldsymbol{\beta}^{(m)} \mid d_0 \right) d\beta^{(m)}$; the **post_betam** object contains the posterior samples of beta for all models; the **logml_models** object contains the log-marginal likelihoods of all models, i.e., $Z_m(D) \equiv p(D | m) = \int L(\boldsymbol{\beta}^{(m)} | D) \pi\left(\beta^{(m)}, a_0 \mid D_0\right) d\beta^{(m)} da_0$; and the **df_post_ord** object contains a data frame with prior probabilities, marginal likelihoods, and posterior probabilities of all models ordered by posterior probability.
+
+```{r post_models, cache = TRUE}
+samples_models <- function(data,
+                        outcome,
+                        family,
+                        a0_seq,
+                        c0,
+                        d0,
+                        delta0,
+                        lambda0,
+                        iter_warmup,
+                        iter_sampling,
+                        num_cores = 10) {
+  current_data <- data[[1]]
+  hist_data <- data[[2]]
+
+  covariates <- colnames(current_data)[colnames(current_data) != outcome]
+  pset <- powerset(covariates)
+  formulas <- lapply(pset, create_formula, outcome = outcome)
+  
+  covariates_models <- lapply(pset, get_covariates)
+  
+  cl <- parallel::makeCluster(num_cores)
+  on.exit(parallel::stopCluster(cl))
+  parallel::clusterExport(cl, varlist = c('a0_seq',
+                                          'family',
+                                          'data',
+                                          'c0',
+                                          'd0',
+                                          'delta0',
+                                          'lambda0',
+                                          'iter_warmup',
+                                          'iter_sampling',
+                                          'logncfun'),
+                          envir = environment()
+  )
+  
+  logp0_models <- parallel::parLapply(
+    cl = cl,
+    X = formulas,
+    fun = logp0,
+    family = family,
+    histdata = hist_data,
+    a0 = 1,
+    iter_warmup = iter_warmup,
+    iter_sampling = iter_sampling,
+    chains = 4,
+    refresh = 0,
+    beta.sd = d0
+  )
+
+  post_betam  <- parallel::parLapply(
+    cl = cl,
+    X = formulas,
+    fun = post_beta,
+    c0 = c0, 
+    data = data,
+    family = family,
+    delta0 = delta0,
+    lambda0 = lambda0,
+    iter_warmup = iter_warmup,
+    iter_sampling = iter_sampling
+  )
+
+  logml_models <- parallel::parLapply(
+    cl = cl,
+    X = post_betam,
+    fun = hdbayes::glm.logml.npp
+  )
+
+  prior_models <- exp(sapply(logp0_models, function(x) x[2]) -
+                        logSumExp(sapply(logp0_models, function(x) x[2]))
+  )
+
+  post_models <- post_models(logp0_models, logml_models)
+
+  df_post <- data.frame(model = unlist(covariates_models),
+                        prior_model = prior_models,
+                        ml = exp(unlist(data.frame(do.call(rbind, logml_models))$logml)),
+                        post_model = post_models
+  )
+
+  df_post_ord <- df_post[order(df_post$post_model, decreasing = TRUE),]
+  rownames(df_post_ord) <- 1:nrow(df_post_ord)
+  return(list(logp0_models = logp0_models,
+              post_betam = post_betam,
+              logml_models = logml_models,
+              df_post = df_post,
+              df_post_ord = df_post_ord))
+}
+```
+
+Now we can run the analysis for the example in the paper. We start by loading the libraries and the data.
+
+```{r load_data, cache = TRUE, warning=FALSE, message=FALSE}
+# load libraries
+library(hdbayes)
+library(parallel)
+library(matrixStats)
+library(MCMCpack)
+
+# define data
+current_data <- actg036
+hist_data <- actg019
+
+# normalize data
+current_data$age <- (current_data$age - mean(current_data$age)) /
+  (2*sd(current_data$age))
+current_data$cd4 <- (current_data$cd4 - mean(current_data$cd4)) /
+  (2*sd(current_data$cd4))
+hist_data$age <- (hist_data$age - mean(hist_data$age)) /
+  (2*sd(hist_data$age))
+hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
+  (2*sd(hist_data$cd4))
+```
+
+Then we define the parameters for the analysis.
+
+```{r define_params, cache = TRUE}
+# set parameters
+delta0 <- 1
+lambda0 <- 1
+a0_seq <- seq(0, 1, length.out = 21)
+data <- list(current_data, hist_data)
+family <- binomial(link = "logit")
+c0 <- 1
+d0 <- 1
+iter_warmup <- 1000
+iter_sampling <- 2500
+```
+
+Lastly, we run the analysis and show the results.
+
+```{r run_analysis, cache = TRUE}
+post_samples <- samples_models(data = data,
+                               outcome = "outcome",
+                               family = family,
+                               a0_seq = a0_seq,
+                               c0 = c0,
+                               d0 = d0,
+                               delta0 = delta0,
+                               lambda0 = lambda0,
+                               iter_warmup = iter_warmup,
+                               iter_sampling = iter_sampling,
+                               num_cores = 14)
+```
+
+```{r results, cache = TRUE}
+post_samples$df_post_ord
+```

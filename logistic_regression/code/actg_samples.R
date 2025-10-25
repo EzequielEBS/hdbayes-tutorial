@@ -9,7 +9,7 @@ library(matrixStats)
 library(MCMCpack)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 # define data
 current_data <- actg036
@@ -65,18 +65,18 @@ bma_ctrl <- bma(mean_models_ctrl, post_samples$df_post, 10000)
 bma_trt <- bma(mean_models_trt, post_samples$df_post, 10000)
 
 # save results
-save(post_samples, file = "bayesian_subset_selection/actg/samples/post_samples.RData")
-save(mean_models_ctrl, file = "bayesian_subset_selection/actg/samples/mean_models_ctrl.RData")
-save(mean_models_trt, file = "bayesian_subset_selection/actg/samples/mean_models_trt.RData")
-save(bma_ctrl, file = "bayesian_subset_selection/actg/samples/bma_ctrl.RData")
-save(bma_trt, file = "bayesian_subset_selection/actg/samples/bma_trt.RData")
+save(post_samples, file = "logistic_regression/samples/post_samples.RData")
+save(mean_models_ctrl, file = "logistic_regression/samples/mean_models_ctrl.RData")
+save(mean_models_trt, file = "logistic_regression/samples/mean_models_trt.RData")
+save(bma_ctrl, file = "logistic_regression/samples/bma_ctrl.RData")
+save(bma_trt, file = "logistic_regression/samples/bma_trt.RData")
 
 #-------------------------------------------------------------------------------
 # Sample after PSM 
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
@@ -131,12 +131,12 @@ bma_trt_after_PSM <- bma(mean_models_trt_after_PSM,
                          post_samples_after_PSM$df_post, 10000)
 
 save(post_samples_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_after_PSM.RData")
+     file = "logistic_regression/samples/post_samples_after_PSM.RData")
 save(mean_models_ctrl_after_PSM,
-     file = "bayesian_subset_selection/actg/samples/mean_models_ctrl_after_PSM.RData")
+     file = "logistic_regression/samples/mean_models_ctrl_after_PSM.RData")
 save(mean_models_trt_after_PSM,
-     file = "bayesian_subset_selection/actg/samples/mean_models_trt_after_PSM.RData")
+     file = "logistic_regression/samples/mean_models_trt_after_PSM.RData")
 save(bma_ctrl_after_PSM,
-     file = "bayesian_subset_selection/actg/samples/bma_ctrl_after_PSM.RData")
+     file = "logistic_regression/samples/bma_ctrl_after_PSM.RData")
 save(bma_trt_after_PSM,
-     file = "bayesian_subset_selection/actg/samples/bma_trt_after_PSM.RData")
+     file = "logistic_regression/samples/bma_trt_after_PSM.RData")

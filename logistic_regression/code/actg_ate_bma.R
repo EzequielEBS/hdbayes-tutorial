@@ -13,14 +13,14 @@ library(reshape2)
 library(hdbayes)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 # load samples
-load("bayesian_subset_selection/actg/samples/post_samples.RData")
-load("bayesian_subset_selection/actg/samples/mean_models_ctrl.RData")
-load("bayesian_subset_selection/actg/samples/mean_models_trt.RData")
-load("bayesian_subset_selection/actg/samples/bma_ctrl.RData")
-load("bayesian_subset_selection/actg/samples/bma_trt.RData")
+load("logistic_regression/samples/post_samples.RData")
+load("logistic_regression/samples/mean_models_ctrl.RData")
+load("logistic_regression/samples/mean_models_trt.RData")
+load("logistic_regression/samples/bma_ctrl.RData")
+load("logistic_regression/samples/bma_trt.RData")
 
 # Define colors
 blended_rgb <- round(colMeans(rbind(
@@ -91,7 +91,7 @@ bma_ate <- ggplot() +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16))
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate.png",
+ggsave("logistic_regression/figures/bma_ate.png",
        bma_ate, width = 8, height = 6, units = "in", dpi = 300)
 
 # create BMA data frames
@@ -152,7 +152,7 @@ plot_or <- ggplot() +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16))
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or.png",
+ggsave("logistic_regression/figures/posterior_distribution_or.png",
        plot_or, width = 10, height = 7, units = "in", dpi = 300)
 
 # put or and bma_ate together
@@ -164,7 +164,7 @@ bma_ate_or <- (bma_ate + theme(legend.position = "none")) +
     legend.text  = element_text(size = 14)
   )
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_or.png",
+ggsave("logistic_regression/figures/bma_ate_or.png",
        bma_ate_or, width = 14, height = 8, units = "in", dpi = 300)
 
 # summary of the BMA
@@ -309,9 +309,9 @@ plot_means_arm_top6 <- ggplot(df_mean_models %>%
         strip.text = element_text(size = 16))
 
 # Save plots
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm.png",
+ggsave("logistic_regression/figures/posterior_distribution_means_by_arm.png",
        plot_means_arm, width = 11, height = 14, units = "in", dpi = 300)
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_top6.png",
+ggsave("logistic_regression/figures/posterior_distribution_means_by_arm_top6.png",
        plot_means_arm_top6, width = 14, height = 8, units = "in", dpi = 300)
 
 #---------------------------------------------------------------------------------------
@@ -380,5 +380,5 @@ plot_or_models <- ggplot(df_mean_models_or, aes(x = value)) +
         legend.text = element_text(size = 12),
         strip.text = element_text(size = 11))
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_by_model.png",
+ggsave("logistic_regression/figures/posterior_distribution_or_by_model.png",
        plot_or_models, width = 11, height = 14, units = "in", dpi = 300)

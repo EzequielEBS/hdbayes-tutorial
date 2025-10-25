@@ -13,14 +13,14 @@ library(reshape2)
 library(hdbayes)
 
 # load auxiliary functions
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 # load samples
-load("bayesian_subset_selection/actg/samples/post_samples_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/mean_models_ctrl_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/mean_models_trt_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/bma_ctrl_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/bma_trt_after_PSM.RData")
+load("logistic_regression/samples/post_samples_after_PSM.RData")
+load("logistic_regression/samples/mean_models_ctrl_after_PSM.RData")
+load("logistic_regression/samples/mean_models_trt_after_PSM.RData")
+load("logistic_regression/samples/bma_ctrl_after_PSM.RData")
+load("logistic_regression/samples/bma_trt_after_PSM.RData")
 
 # Define colors
 blended_rgb <- round(colMeans(rbind(
@@ -91,7 +91,7 @@ bma_ate_after_PSM <- ggplot() +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16))
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_after_PSM.png",
+ggsave("logistic_regression/figures/bma_ate_after_PSM.png",
        bma_ate_after_PSM, width = 8, height = 6, units = "in", dpi = 300)
 
 # create BMA data frames
@@ -154,7 +154,7 @@ plot_or_after_PSM <- ggplot() +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16))
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_after_PSM.png",
+ggsave("logistic_regression/figures/posterior_distribution_or_after_PSM.png",
        plot_or_after_PSM, width = 10, height = 7, units = "in", dpi = 300)
 
 # put or and bma_ate together
@@ -166,7 +166,7 @@ bma_ate_or_after_PSM <- (bma_ate_after_PSM + theme(legend.position = "none")) +
     legend.text  = element_text(size = 14)
   )
 # save the plot
-ggsave("bayesian_subset_selection/actg/results/figures/bma_ate_or_after_PSM.png",
+ggsave("logistic_regression/figures/bma_ate_or_after_PSM.png",
        bma_ate_or_after_PSM, width = 14, height = 8, units = "in", dpi = 300)
 
 #---------------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ plot_means_arm_after_PSM <- ggplot(df_mean_models_after_PSM, aes(x = value, fill
         legend.text = element_text(size = 12),
         strip.text = element_text(size = 11))
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_means_by_arm_after_PSM.png",
+ggsave("logistic_regression/figures/posterior_distribution_means_by_arm_after_PSM.png",
        plot_means_arm_after_PSM, width = 11, height = 14, units = "in", dpi = 300)
 
 #---------------------------------------------------------------------------------------
@@ -306,5 +306,5 @@ plot_or_models_after_PSM <- ggplot(df_mean_models_or_after_PSM, aes(x = value)) 
         legend.text = element_text(size = 12),
         strip.text = element_text(size = 11))
 # Save plot
-ggsave("bayesian_subset_selection/actg/results/figures/posterior_distribution_or_by_model_after_PSM.png",
+ggsave("logistic_regression/figures/posterior_distribution_or_by_model_after_PSM.png",
        plot_or_models_after_PSM, width = 11, height = 14, units = "in", dpi = 300)

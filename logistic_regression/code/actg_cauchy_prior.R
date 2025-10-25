@@ -3,13 +3,13 @@
 #-------------------------------------------------------------------------------
 
 # load libraries and functions
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_lognc_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_npp_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_logml_npp_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/glm_pp_wip.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/data_checks.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/expfam_loglik.r")
-source("bayesian_subset_selection/actg/code/aux_scripts/functions.R")
+source("logistic_regression/code/aux_scripts/glm_npp_lognc_wip.r")
+source("logistic_regression/code/aux_scripts/glm_npp_wip.r")
+source("logistic_regression/code/aux_scripts/glm_logml_npp_wip.r")
+source("logistic_regression/code/aux_scripts/glm_pp_wip.r")
+source("logistic_regression/code/aux_scripts/data_checks.r")
+source("logistic_regression/code/aux_scripts/expfam_loglik.r")
+source("logistic_regression/code/aux_scripts/functions.R")
 
 library(hdbayes)
 library(parallel)
@@ -140,7 +140,7 @@ post_samples_wip <- list(logp0_models = logp0_models,
      df_post_ord = df_post_ord)
 
 save(post_samples_wip, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_wip.RData")
+     file = "logistic_regression/samples/post_samples_wip.RData")
 
 xtable::xtable(df_post_ord, digits = 3)
 
@@ -150,7 +150,7 @@ xtable::xtable(df_post_ord, digits = 3)
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("bayesian_subset_selection/actg/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
@@ -268,6 +268,6 @@ post_samples_wip_after_PSM <- list(logp0_models = logp0_models,
                          df_post_ord = df_post_ord)
 
 save(post_samples_wip_after_PSM, 
-     file = "bayesian_subset_selection/actg/samples/post_samples_wip_after_PSM.RData")
+     file = "logistic_regression/samples/post_samples_wip_after_PSM.RData")
 
 xtable::xtable(df_post_ord, digits = 3)

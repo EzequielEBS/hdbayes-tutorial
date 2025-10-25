@@ -3,40 +3,40 @@
 #-------------------------------------------------------------------------------
 
 # load files
-load("bayesian_subset_selection/actg/samples/ppc_pnew_wip.RData")
-load("bayesian_subset_selection/actg/samples/ppc_pnew_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_pnew_norm.RData")
-load("bayesian_subset_selection/actg/samples/ppc_pnew_norm_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_pnew_a0.RData")
-load("bayesian_subset_selection/actg/samples/ppc_pnew_a0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_wip.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_norm.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_norm_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_a0.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curve_a0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_wip.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_norm.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_norm_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_a0.RData")
-load("bayesian_subset_selection/actg/samples/ppc_roc_curves_a0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_wip.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_norm.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_norm_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_a0.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_auc_a0_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_wip.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_wip_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_norm.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_norm_after_PSM.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_a0.RData")
-load("bayesian_subset_selection/actg/samples/ppc_ci_roc_a0_after_PSM.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
+load("logistic_regression/samples/ppc_pnew_wip.RData")
+load("logistic_regression/samples/ppc_pnew_wip_after_PSM.RData")
+load("logistic_regression/samples/ppc_pnew_norm.RData")
+load("logistic_regression/samples/ppc_pnew_norm_after_PSM.RData")
+load("logistic_regression/samples/ppc_pnew_a0.RData")
+load("logistic_regression/samples/ppc_pnew_a0_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curve_wip.RData")
+load("logistic_regression/samples/ppc_roc_curve_wip_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curve_norm.RData")
+load("logistic_regression/samples/ppc_roc_curve_norm_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curve_a0.RData")
+load("logistic_regression/samples/ppc_roc_curve_a0_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curves_wip.RData")
+load("logistic_regression/samples/ppc_roc_curves_wip_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curves_norm.RData")
+load("logistic_regression/samples/ppc_roc_curves_norm_after_PSM.RData")
+load("logistic_regression/samples/ppc_roc_curves_a0.RData")
+load("logistic_regression/samples/ppc_roc_curves_a0_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_auc_wip.RData")
+load("logistic_regression/samples/ppc_ci_auc_wip_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_auc_norm.RData")
+load("logistic_regression/samples/ppc_ci_auc_norm_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_auc_a0.RData")
+load("logistic_regression/samples/ppc_ci_auc_a0_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_roc_wip.RData")
+load("logistic_regression/samples/ppc_ci_roc_wip_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_roc_norm.RData")
+load("logistic_regression/samples/ppc_ci_roc_norm_after_PSM.RData")
+load("logistic_regression/samples/ppc_ci_roc_a0.RData")
+load("logistic_regression/samples/ppc_ci_roc_a0_after_PSM.RData")
+load("logistic_regression/figures/ppc/plots_pnew.RData")
+load("logistic_regression/figures/ppc/plots_pnew_after_PSM.RData")
+load("logistic_regression/figures/ppc_a0/plots_pnew_a0.RData")
+load("logistic_regression/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
 
 # load libraries
 library(ggplot2)
@@ -134,13 +134,13 @@ plots_pnew <- mclapply(1:nrow(pnew.wip), function(i){
       x = "Probability of event",
       y = "",
     )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_", i, ".png")
+  filename <- paste0("logistic_regression/figures/ppc/ppc_pnew_", i, ".png")
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
 mc.cores = 1)
 save(plots_pnew, 
-     file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData")
+     file = "logistic_regression/figures/ppc/plots_pnew.RData")
 
 
 plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
@@ -212,14 +212,14 @@ plots_pnew_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
       x = "Probability of event",
       y = "",
     )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc/ppc_pnew_", 
+  filename <- paste0("logistic_regression/figures/ppc/ppc_pnew_", 
                      i, "_after_PSM.png")
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
 mc.cores = 1)
 save(plots_pnew_after_PSM,
-     file = "bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData")
+     file = "logistic_regression/figures/ppc/plots_pnew_after_PSM.RData")
 
 
 plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
@@ -285,13 +285,13 @@ plots_pnew_a0 <- mclapply(1:nrow(pnew.wip), function(i){
       x = "Probability of event",
       y = "",
     )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_", i, ".png")
+  filename <- paste0("logistic_regression/figures/ppc_a0/ppc_pnew_", i, ".png")
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
 },
 mc.cores = 1)
 save(plots_pnew_a0, 
-     file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData")
+     file = "logistic_regression/figures/ppc_a0/plots_pnew_a0.RData")
 
 
 plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
@@ -357,7 +357,7 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
       x = "Probability of event",
       y = "",
     )
-  filename <- paste0("bayesian_subset_selection/actg/results/figures/ppc_a0/ppc_pnew_", 
+  filename <- paste0("logistic_regression/figures/ppc_a0/ppc_pnew_", 
                      i, "_after_PSM.png")
   ggsave(filename, plot = plot, width = 6, height = 4, units = "in", dpi = 300)
   return(plot)
@@ -365,7 +365,7 @@ plots_pnew_a0_after_PSM <- mclapply(1:nrow(pnew.wip_after_PSM), function(i){
 mc.cores = 1)
 
 save(plots_pnew_a0_after_PSM,
-     file = "bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
+     file = "logistic_regression/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
 
 
 # Combine some plots for comparison
@@ -392,7 +392,7 @@ pnew_a0_13 <- plots_pnew_a0[[13]] +
 pnew_a0_13$layers <- pnew_a0_13$layers[-length(pnew_a0_13$layers)]
 
 (pnew_1 / pnew_a0_1) | (pnew_13 / pnew_a0_13)
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_all.png",
+ggsave("logistic_regression/figures/ppc_all.png",
        (pnew_1 / pnew_a0_1) | (pnew_13 / pnew_a0_13), 
        width = 12, height = 10, units = "in", dpi = 300)
 
@@ -444,7 +444,7 @@ plot_roc.wip <- ggplot(
         strip.text = element_text(size = 10)) +
   style_roc()
 
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip.png",
+ggsave("logistic_regression/figures/ppc/ppc_roc_wip.png",
        plot = plot_roc.wip, width = 7.5, height = 4, units = "in", dpi = 300)
 
 
@@ -485,7 +485,7 @@ plot_roc.wip_after_PSM <- ggplot(
         legend.text = element_text(size = 10),
         strip.text = element_text(size = 10)) +
   style_roc()
-ggsave("bayesian_subset_selection/actg/results/figures/ppc/ppc_roc_wip_after_PSM.png",
+ggsave("logistic_regression/figures/ppc/ppc_roc_wip_after_PSM.png",
        plot = plot_roc.wip_after_PSM, width = 7.5, height = 4, units = "in", dpi = 300)
 
 plot_roc.norm <- lapply(seq_along(roc.curve.norm), function(j) {
@@ -914,7 +914,7 @@ roc_all_wip_norm <-
      ggtitle(bquote("Normal" * "(" * 0 * "," * .(c0[4])^2 * I[p^"(m)"]*")")) 
   ) + plot_layout(ncol = 2)
 roc_all_wip_norm
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm.png",
+ggsave("logistic_regression/figures/ppc_roc_all_wip_norm.png",
        roc_all_wip_norm, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0 <- 
@@ -934,7 +934,7 @@ roc_all_a0 <-
   ) +
   plot_layout(ncol = 2)
 roc_all_a0
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0.png",
+ggsave("logistic_regression/figures/ppc_roc_all_a0.png",
        roc_all_a0, width = 10, height = 7.2, units = "in", dpi = 300)
 
 
@@ -958,7 +958,7 @@ roc_all_wip_norm_after_PSM <-
   ) +
   plot_layout(ncol = 2)
 roc_all_wip_norm_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_wip_norm_after_PSM.png",
+ggsave("logistic_regression/figures/ppc_roc_all_wip_norm_after_PSM.png",
        roc_all_wip_norm_after_PSM, width = 10, height = 10.8, units = "in", dpi = 300)
 
 roc_all_a0_after_PSM <- 
@@ -977,7 +977,7 @@ roc_all_a0_after_PSM <-
      style_roc(ylab = "")
   )
 roc_all_a0_after_PSM
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0_after_PSM.png",
+ggsave("logistic_regression/figures/ppc_roc_all_a0_after_PSM.png",
        roc_all_a0_after_PSM, width = 10, height = 7.2, units = "in", dpi = 300)
 
 
@@ -986,10 +986,10 @@ ggsave("bayesian_subset_selection/actg/results/figures/ppc_roc_all_a0_after_PSM.
 #-------------------------------------------------------------------------------
 
 
-load("bayesian_subset_selection/actg/results/figures/ppc/plots_pnew.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc/plots_pnew_after_PSM.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0.RData")
-load("bayesian_subset_selection/actg/results/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
+load("logistic_regression/figures/ppc/plots_pnew.RData")
+load("logistic_regression/figures/ppc/plots_pnew_after_PSM.RData")
+load("logistic_regression/figures/ppc_a0/plots_pnew_a0.RData")
+load("logistic_regression/figures/ppc_a0/plots_pnew_a0_after_PSM.RData")
 
 pnew_1_before_PSM <- plots_pnew[[1]] +
   xlim(c(0,1)) +
@@ -1018,7 +1018,7 @@ pnew_a0_1_before_after_PSM <- (pnew_a0_1_before_PSM) |
 pnew_1_before_after_PSM / pnew_a0_1_before_after_PSM
 
 
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_1_before_after_PSM.png",
+ggsave("logistic_regression/figures/ppc_pnew_1_before_after_PSM.png",
        pnew_1_before_after_PSM / pnew_a0_1_before_after_PSM, 
        width = 12, height = 10, units = "in", dpi = 300)
 
@@ -1047,6 +1047,6 @@ pnew_a0_13_before_after_PSM <- (pnew_a0_13_before_PSM) |
   )
 pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM
 
-ggsave("bayesian_subset_selection/actg/results/figures/ppc_pnew_13_before_after_PSM.png",
+ggsave("logistic_regression/figures/ppc_pnew_13_before_after_PSM.png",
        pnew_13_before_after_PSM / pnew_a0_13_before_after_PSM,
        width = 12, height = 10, units = "in", dpi = 300)
