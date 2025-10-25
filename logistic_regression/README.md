@@ -42,7 +42,7 @@ logistic_regression/
 
 | Vignette | Description |
 |-----------|--------------|
-| [`vignettes/var_sel.Rmd`](logistic_regression/vignettes/var_sel.Rmd) | Explains how to compute the quantities from the variable selection approach (section 3.3.1). |
-| [`vignettes/ate.Rmd`](logistic_regression/vignettes/ate.Rmd) | Explains how to compute posterior samples from ATE by using model probabilities and BMA (section 3.3.2). |
-| [`vignettes/ppc.Rmd`](logistic_regression/vignettes/ppc.Rmd) | Explains how to perform prior predicitive checks (PPC) (section 3.3.3). |
+| [`vignettes/var_sel.Rmd`](vignettes/var_sel.Rmd) | Explains how to compute the quantities from the variable selection approach (section 3.3.1). |
+| [`vignettes/ate.Rmd`](vignettes/ate.Rmd) | Explains how to compute posterior samples from ATE by using model probabilities and BMA (section 3.3.2). |
+| [`vignettes/ppc.Rmd`](vignettes/ppc.Rmd) | Explains how to perform prior predicitive checks (PPC) (section 3.3.3). |
 
