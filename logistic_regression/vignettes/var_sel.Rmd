@@ -1,5 +1,5 @@
 ---
-title: "Variable Selection"
+title: "Variable selection"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{var_sel}
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Here we describe the analysis performed in the section 3.3 of the paper.
+Here we describe the analysis performed in the section 3.3.1 of the paper.
 We start by defining useful functions to compute all subsets of models:
 
 ```{r aux_functions, cache = TRUE}
@@ -35,7 +35,7 @@ get_covariates <- function(x) {
 }
 ```
 
-Then to compute useful quantities for all models, we define the following functions. The first one computes the prior probability of a model; the second one computes the log-normalizing constant for $a_0$; and the third one computes posterior samples of beta for a given model.
+Then to compute useful quantities for all models, we define the following functions. The first one computes the prior probability of a model; the second one computes the log-normalizing constant for $a_0$; the third one computes posterior samples of beta for a given model; and the last one computes posterior model probabilities.
 
 ```{r model_priors, cache = TRUE}
 logp0 <- function(formula,
@@ -100,7 +100,7 @@ post_models <- function(logp0_models, logml_models) {
 }
 ```
 
-Finally, we put everything together to compute the posterior probabilities of all models. The *logp0_models* object contains the log-marginial likelihoods of all models based on historical data $D_0$, i.e., $Z_m(D_0) = \int L(\boldsymbol{\beta}^{(m)} | D_0) \pi_0 \left(\boldsymbol{\beta}^{(m)} \mid d_0 \right) d\beta^{(m)}$; the *post_betam* object contains the posterior samples of beta for all models; the *logml_models* object contains the log-marginal likelihoods of all models, i.e., $Z_m(D) \equiv p(D | m) = \int L(\boldsymbol{\beta}^{(m)} | D) \pi\left(\beta^{(m)}, a_0 \mid D_0\right) d\beta^{(m)} da_0$; and the *df_post_ord* object contains a data frame with prior probabilities, marginal likelihoods, and posterior probabilities of all models ordered by posterior probability.
+Finally, we put everything together to compute the posterior probabilities of all models. The **logp0_models** object contains the log-marginial likelihoods of all models based on historical data $D_0$, i.e., $Z_m(D_0) = \int L(\boldsymbol{\beta}^{(m)} | D_0) \pi_0 \left(\boldsymbol{\beta}^{(m)} \mid d_0 \right) d\beta^{(m)}$; the **post_betam** object contains the posterior samples of beta for all models; the **logml_models** object contains the log-marginal likelihoods of all models, i.e., $Z_m(D) \equiv p(D | m) = \int L(\boldsymbol{\beta}^{(m)} | D) \pi\left(\beta^{(m)}, a_0 \mid D_0\right) d\beta^{(m)} da_0$; and the **df_post_ord** object contains a data frame with prior probabilities, marginal likelihoods, and posterior probabilities of all models ordered by posterior probability.
 
 ```{r post_models, cache = TRUE}
 samples_models <- function(data,
@@ -138,7 +138,7 @@ samples_models <- function(data,
                           envir = environment()
   )
   
-  logp0_models <- parLapply(
+  logp0_models <- parallel::parLapply(
     cl = cl,
     X = formulas,
     fun = logp0,
@@ -152,7 +152,7 @@ samples_models <- function(data,
     beta.sd = d0
   )
 
-  post_betam  <- parLapply(
+  post_betam  <- parallel::parLapply(
     cl = cl,
     X = formulas,
     fun = post_beta,
@@ -165,7 +165,7 @@ samples_models <- function(data,
     iter_sampling = iter_sampling
   )
 
-  logml_models <- parLapply(
+  logml_models <- parallel::parLapply(
     cl = cl,
     X = post_betam,
     fun = hdbayes::glm.logml.npp
@@ -195,7 +195,7 @@ samples_models <- function(data,
 
 Now we can run the analysis for the example in the paper. We start by loading the libraries and the data.
 
-```{r load_data, cache = TRUE}
+```{r load_data, cache = TRUE, warning=FALSE, message=FALSE}
 # load libraries
 library(hdbayes)
 library(parallel)
@@ -246,5 +246,8 @@ post_samples <- samples_models(data = data,
                                iter_warmup = iter_warmup,
                                iter_sampling = iter_sampling,
                                num_cores = 14)
+```
+
+```{r results, cache = TRUE}
 post_samples$df_post_ord
 ```

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 Here we describe how to use the model probabilities to estimate the average treatment effect (ATE) as in section 3.3.2 of the paper.
-First, we define auxiliary functions to compute marginal means for treatment arms and apply them across models via Bayesian model averaging (BMA).
+First, we define auxiliary functions to compute marginal means for treatment arms and apply them across models via Bayesian model averaging (BMA). The first function computes predictions for a given treatment arm; the second function computes marginal means for a given treatment arm; and the last function computes BMA samples.
 
 ```{r aux_ate_functions, cache = TRUE}
 # function to compute predictions for a given treatment arm

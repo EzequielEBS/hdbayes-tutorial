@@ -66,3 +66,5 @@ logistic_regression/code/aux_scripts/glm_npp_prior_wip
 logistic_regression/chapman/
 logistic_regression/archive/
 logistic_regression/vignettes/*.html
+logistic_regression/vignettes/ate_files/
+logistic_regression/vignettes/ppc_files/
