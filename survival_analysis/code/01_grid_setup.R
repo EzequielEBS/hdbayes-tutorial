@@ -1,7 +1,7 @@
-## -----------------------------------------------------------------------------
-## Set up a grid of model and prior combinations for running the real data analysis
-## on the computing cluster.
-## -----------------------------------------------------------------------------
+###################################################################################
+# Set up a grid of model and prior combinations for running the real data analysis
+# on the computing cluster.
+###################################################################################
 
 library(dplyr)
 
