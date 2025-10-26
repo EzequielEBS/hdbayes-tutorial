@@ -2,7 +2,7 @@
 library(dplyr)
 
 # Directory to save the grid
-save.dir <- 'data'
+save.dir <- 'code'
 
 # Specify models and priors to be evaluated in the analysis
 # "PWE" corresponds to the PWEPH model and "CurePWE" to the CurePWEPH model in the manuscript
