@@ -3,11 +3,11 @@ library(MCMCpack)
 # Estimand: Treatment effect = difference in two-year relapse-free survival probability:
 # P(T > 2 | A = 1) - P(T > 2 | A = 0), where A is the treatment indicator (0 = control, 1 = treatment).
 
-#' Predict survival probability at t years for a single arm A, S(t | A), under a PWEPH model (with non-PSIPP priors).
+#' Predict survival probability at t years for a single arm a, S_a(t), under a PWEPH model (with non-PSIPP priors).
 #' 
 #' Uses posterior draws from a PWEPH model fit to a single arm (treated or untreated). The treatment indicator
 #' is not a covariate here since each arm is fit separately. The arm-specific posterior parameter estimates are
-#' applied to the covariates from all subjects in \code{data} to predict S(t | A).
+#' applied to the covariates from all subjects in \code{data} to predict S_a(t).
 #'
 #' @param t                 time at which to evaluate survival probability.
 #' @param post.samples      posterior draws from a PWEPH model fit under various priors (other than PSIPP), with 
@@ -28,7 +28,8 @@ get.surv.prob.pwe <- function(
   
   # Build covariate matrix X for all subjects
   X         = as.matrix( data[, colnames(stan.data$X1)] )
-  # Obtain posterior draws of parameters
+  
+  # Obtain posterior draws of model parameters
   beta      = suppressWarnings(
     as.matrix( post.samples[, colnames(X), drop=F] )
   )
@@ -60,8 +61,8 @@ get.surv.prob.pwe <- function(
   }
   cumhaz = cumhaz * exp(eta)
 
-  # Subject-specific survival probability at time t for each posterior draw of parameters
-  S      = exp( -cumhaz ) # number of posterior draws x number of subjects in `data`
+  # Subject-specific survival probability at time t for each posterior draw
+  S      = exp( -cumhaz ) # [number of posterior draws x number of subjects in `data`]
   
   # Use Bayesian bootstrap method 
   # For each posterior draw, average the predicted t-year survival probabilities over subjects
@@ -72,7 +73,8 @@ get.surv.prob.pwe <- function(
   return(surv)
 }
 
-#' Predict S(t | A) for a PWEPH model under PSIPP priors (stratified hazards, no covariates in the outcome model).
+
+#' Predict survival probability at t years for a single arm a, S_a(t), under a PWEPH model with PSIPP.
 #' 
 #' Uses posterior draws from a PWEPH model fit under PSIPP, which yields stratum-specific baseline hazards. The
 #' outcome model has no covariates.
@@ -108,7 +110,7 @@ get.surv.prob.pwe.psipp <- function(
     cumhaz = sapply(1:K, function(k){
       lambda = lambdaMat[, paste0("basehaz", "_stratum_", k, "[", 1:J, "]"), drop = F]
 
-      # Compute cumulative baseline hazard at breakpoints
+      # Compute cumulative baseline hazard at each interval
       cumblhaz = apply(lambda, 1, function(x){
         as.numeric( cumsum( x[1:(J-1)] * ( breaks[2:J] - breaks[1:(J-1)] ) ) )
       })
@@ -124,8 +126,8 @@ get.surv.prob.pwe.psipp <- function(
     cumhaz = lambdaMat * (t - breaks[interval.id])
   }
 
-  # Stratum-specific survival probability at time t for each posterior draw of parameters
-  S    = exp( -cumhaz ) # number of posterior draws x number of strata
+  # Stratum-specific survival probability at time t for each posterior draw
+  S    = exp( -cumhaz ) # [number of posterior draws x number of strata]
   # Average across strata (equal weights)
   surv = rowMeans(S)
 
