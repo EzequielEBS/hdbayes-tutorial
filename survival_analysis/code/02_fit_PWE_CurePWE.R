@@ -120,11 +120,6 @@ if ( model.id == "PWE" ){
       get.loglik = T,
       chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
     )
-    # Compute the corresponding marginal likelihood
-    res.logml <- pwe.logml.stratified.pp(
-      d,
-      chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-    )
 
   }else {
     if ( prior.id == "ref" ){
@@ -138,8 +133,6 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.post(d)
 
     }else if( prior.id == "pp" ){
       # Power prior with fixed a0 = 0.5
@@ -153,12 +146,7 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.pp(
-        d,
-        chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-
+      
     }else if( prior.id == "bhm" ){
       # Bayesian hierarchical model
       d <- pwe.bhm(
@@ -170,11 +158,6 @@ if ( model.id == "PWE" ){
         base.hazard.mean = 0, base.hazard.sd = 10,
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.map(
-        d,
-        chains = chains, iter_warmup = iter_warmup + 3000, iter_sampling = iter_sampling
       )
 
     }else if( prior.id == "cp" ){
@@ -189,11 +172,6 @@ if ( model.id == "PWE" ){
         slab.mean = 0, slab.sd = 5,
         base.hazard.mean = 0, base.hazard.sd = 10,
         get.loglik = T,
-        chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.commensurate(
-        d,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
 
@@ -231,8 +209,6 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.npp(d)
 
     }else if( prior.id == "leap" ){
       # Latent exchangeability prior
@@ -246,11 +222,6 @@ if ( model.id == "PWE" ){
         base.hazard.mean = 0, base.hazard.sd = 10,
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-      # Compute the corresponding marginal likelihood
-      res.logml <- pwe.logml.leap(
-        d,
-        chains = chains, iter_warmup = iter_warmup + 3000, iter_sampling = iter_sampling
       )
 
     }else{
@@ -276,12 +247,7 @@ if ( model.id == "PWE" ){
       get.loglik = T,
       chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
     )
-    # Compute the corresponding marginal likelihood
-    res.logml <- curepwe.logml.stratified.pp(
-      d,
-      chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-    )
-
+    
   }else {
     if ( prior.id == "ref" ){
       # Vague prior (using current data only)
@@ -295,9 +261,7 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.post(d)
-
+      
     }else if( prior.id == "pp" ){
       # Power prior with a0 = 0.5
       d <- curepwe.pp(
@@ -309,11 +273,6 @@ if ( model.id == "PWE" ){
         base.hazard.mean = 0, base.hazard.sd = 10,
         logit.pcured.mean = 0, logit.pcured.sd = 3,
         get.loglik = T,
-        chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.pp(
-        d,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
 
@@ -330,11 +289,6 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.map(
-        d,
-        chains = chains, iter_warmup = iter_warmup + 3000, iter_sampling = iter_sampling
-      )
 
     }else if( prior.id == "cp" ){
       # Commensurate prior 
@@ -349,11 +303,6 @@ if ( model.id == "PWE" ){
         base.hazard.mean = 0, base.hazard.sd = 10,
         logit.pcured.mean = 0, logit.pcured.sd = 3,
         get.loglik = T,
-        chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
-      )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.commensurate(
-        d,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
 
@@ -393,8 +342,6 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.npp(d)
 
     }else if( prior.id == "leap" ){
       # Latent exchangeability prior
@@ -410,11 +357,6 @@ if ( model.id == "PWE" ){
         get.loglik = T,
         chains = chains, iter_warmup = iter_warmup, iter_sampling = iter_sampling
       )
-      # Compute the corresponding marginal likelihood
-      res.logml <- curepwe.logml.leap(
-        d,
-        chains = chains, iter_warmup = iter_warmup + 3000, iter_sampling = iter_sampling
-      )
 
     }else{
       stop("prior.id incorrect")
@@ -423,7 +365,7 @@ if ( model.id == "PWE" ){
 
 }
 
-################################# Method comparison metric (ELPD) #################################
+################################# Model-comparison metric (elpd) #################################
 # Extract pointwise log-likelihood matrix
 loglik <- suppressWarnings(
   d %>%
@@ -437,9 +379,7 @@ res.loo <- loo::loo(loglik)
 res <- list(
   'scen'      = scen
   , 'draws'     = d
-  , 'logml'     = res.logml$logml
   , 'res.loo'   = res.loo
-  , 'res.logml' = res.logml
 )
 
 if ( prior.id == "psipp" ){
