@@ -25,8 +25,6 @@ grid        <- readRDS("code/grid.rds") %>%
   dplyr::select(!arm)
 
 # Locate fitted result files
-# Note: we only need the filenames here; individual fit objects will be loaded
-# on demand and discarded to conserve memory. The compiled object is saved at the end.
 results.dir <- "results"
 file.list   <- list.files(results.dir, pattern = ".rds")
 
@@ -190,5 +188,4 @@ res.all <- c(res,
              list(elpd.tab.trt = elpd.tab.trt,
                   elpd.tab.ctl = elpd.tab.ctl)
 )
-saveRDS(res.all,
-        "Results/compiled_analysis_results.rds")
+save(res.all, file = "results/compiled_results/compiled_analysis_results.rds")
