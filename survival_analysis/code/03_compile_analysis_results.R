@@ -188,4 +188,4 @@ res.all <- c(res,
              list(elpd.tab.trt = elpd.tab.trt,
                   elpd.tab.ctl = elpd.tab.ctl)
 )
-save(res.all, file = "results/compiled_results/compiled_analysis_results.rds")
+saveRDS(res.all, file = "results/compiled_results/compiled_analysis_results.rds")
