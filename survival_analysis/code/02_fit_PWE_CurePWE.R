@@ -13,7 +13,7 @@ library(survival)
 library(loo)
 library(posterior)
 
-## MCMC/Sampling parameters
+# MCMC/Sampling parameters
 iter_warmup   <- 5000
 iter_sampling <- 25000
 chains        <- 1
