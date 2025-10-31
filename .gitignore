@@ -68,3 +68,4 @@ logistic_regression/archive/
 logistic_regression/vignettes/*.html
 logistic_regression/vignettes/ate_files/
 logistic_regression/vignettes/ppc_files/
+/survival_analysis/results
