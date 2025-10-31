@@ -18,7 +18,13 @@ This repository contains the code, data, and figures used in the paper *From pri
 |   └── README.md
 |
 ├── method_comparison/                  # Compare covariate effects under different priors with ACTG data
-|             
+|
+├── survival_analysis/                  # Bayesian survival analysis example with the E1684 and E1690 trials
+|   ├── code/                       
+|   ├── figures/                        
+|   ├── report/ 
+|   └── README.md
+|
 ├── .gitignore
 |
 └── README.md
