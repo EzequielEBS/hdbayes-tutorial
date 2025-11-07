@@ -56,7 +56,7 @@ curr <- curr %>% filter(treatment == arm.id)
 hist <- hist %>% filter(treatment == arm.id)
 data.list <- list(curr, hist)
 
-# main survival formula for PWE/CurePWE (covariates aligned with manuscript)
+# Main survival formula for PWE/CurePWE (covariates aligned with manuscript)
 fmla       <- survival::Surv(failtime, failcens) ~ sex + cage + node_bin
 # for psipp, the outcome model is intercept-only;
 # the covariates enter via the model for estimating the propensity scores (PS)

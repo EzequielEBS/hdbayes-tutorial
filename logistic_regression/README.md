@@ -21,11 +21,12 @@ logistic_regression/
 │   ├── actg_post_a0_plots.r            # Generates posterior plots for a0 before and after PSM under different priors
 │   ├── actg_ppc.r                      # Generates prior predictive distributions 
 │   ├── actg_ppc_plots.r                # Generates prior predictive checks plots
+│   ├── actg_PSM.r                      # Conducts propensity score matching (PSM)
 │   ├── actg_sample_npp_post.r          # Samples from the posterior distribution of a0 under different priors
 │   ├── actg_sample_npp_prior.r         # Samples from the NPP prior under different settings
 │   └── actg_samples.r                  # Generates posterior model probabilities and ATE useful quantities
 │
-├── data/                               # Store data after Propensity Score Matching (PSM)
+├── data/                               # Store data after PSM
 │
 ├── figures/                            # Store generated figures 
 │
