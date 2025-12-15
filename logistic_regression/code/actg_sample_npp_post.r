@@ -39,7 +39,7 @@ ncores <- detectCores() - 1
 a0.lognc.wip <- mclapply(
   X = a0, FUN = logncfun.wip, iter_warmup = 1000,
   iter_sampling = 2500, chains = 4,
-  mc.cores = ncores
+  mc.cores = 1
 )
 a0.lognc.wip <- data.frame( do.call(rbind, a0.lognc.wip) )
 
@@ -108,7 +108,7 @@ save(draws.a0.post.norm,
 # ------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -122,7 +122,7 @@ hist_data$cd4 <- (hist_data$cd4 - mean(hist_data$cd4)) /
 a0.lognc.wip_after_PSM <- mclapply(
   X = a0, FUN = logncfun.wip, iter_warmup = 1000,
   iter_sampling = 2500, chains = 4,
-  mc.cores = ncores
+  mc.cores = 1
 )
 a0.lognc.wip_after_PSM <- data.frame( do.call(rbind, a0.lognc.wip_after_PSM) )
 

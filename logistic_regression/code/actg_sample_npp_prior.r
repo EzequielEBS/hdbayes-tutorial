@@ -76,7 +76,7 @@ fit.wip <- glm_npp_prior_wip$sample(
 
 pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
 draws.wip <- fit.wip$draws(format = 'draws_df', variables = pars) %>%
-  select(all_of(pars))
+  dplyr::select(all_of(pars))
 
 save(draws.wip, file = "logistic_regression/samples/draws_npp_wip.RData")
 
@@ -177,7 +177,7 @@ save(draws.a0, file = "logistic_regression/samples/draws_npp_a0.RData")
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))
@@ -207,7 +207,7 @@ ncores <- detectCores() - 1
 a0.lognc.wip_after_PSM <- mclapply(
   X = a0, FUN = logncfun.wip, iter_warmup = 1000,
   iter_sampling = 2500, chains = 4,
-  mc.cores = ncores
+  mc.cores = 1
 )
 a0.lognc.wip_after_PSM <- data.frame( do.call(rbind, a0.lognc.wip_after_PSM) )
 
@@ -236,7 +236,7 @@ fit.wip_after_PSM <- glm_npp_prior_wip$sample(
 
 pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
 draws.wip_after_PSM <- fit.wip_after_PSM$draws(format = 'draws_df', variables = pars) %>%
-  select(all_of(pars))
+  dplyr::select(all_of(pars))
 
 save(draws.wip_after_PSM, 
      file = "logistic_regression/samples/draws_npp_wip_after_PSM.RData")
@@ -258,7 +258,7 @@ a0.lognc.c0_after_PSM <- lapply(c0, function(c0_val) {
   a0.lognc <- mclapply(
     X = a0, FUN = logncfun, iter_warmup = iter_warmup,
     iter_sampling = iter_sampling, chains = 4,  beta.sd = c0_val,
-    mc.cores = ncores
+    mc.cores = 1
   )
   a0.lognc <- data.frame( do.call(rbind, a0.lognc) )
   return(a0.lognc)
@@ -291,7 +291,8 @@ draws.c0_after_PSM <- lapply(seq_along(c0), function(i) {
   
   pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
   draws.norm <- fit.norm$draws(format = 'draws_df', variables = pars) %>%
-    select(all_of(pars))
+    dplyr::select(all_of(pars))
+  return(draws.norm)
 })
 
 save(draws.c0_after_PSM, 
@@ -329,7 +330,8 @@ draws.a0_after_PSM <- lapply(seq_along(a0_hyper), function(i) {
   
   pars <- c("beta[1]", "beta[2]", "beta[3]", "beta[4]")
   draws.norm <- fit.norm$draws(format = 'draws_df', variables = pars) %>%
-    select(all_of(pars))
+    dplyr::select(all_of(pars))
+  return(draws.norm)
 })
 
 save(draws.a0_after_PSM, 

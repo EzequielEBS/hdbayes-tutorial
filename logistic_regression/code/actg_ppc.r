@@ -154,7 +154,7 @@ save(roc.curves.a0,
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM.rds")
 
 current_data$age <- (current_data$age - mean(current_data$age)) /
   (2*sd(current_data$age))

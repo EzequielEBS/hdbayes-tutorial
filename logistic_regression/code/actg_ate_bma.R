@@ -165,7 +165,7 @@ bma_ate_or <- (bma_ate + theme(legend.position = "none")) +
   )
 # save the plot
 ggsave("logistic_regression/figures/bma_ate_or.png",
-       bma_ate_or, width = 14, height = 8, units = "in", dpi = 300)
+       bma_ate_or, width = 14, height = 5, units = "in", dpi = 300)
 
 # summary of the BMA
 df_bma_summary <- data.frame(

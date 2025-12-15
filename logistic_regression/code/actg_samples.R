@@ -76,7 +76,7 @@ save(bma_trt, file = "logistic_regression/samples/bma_trt.RData")
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /

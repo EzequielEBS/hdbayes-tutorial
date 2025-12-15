@@ -150,7 +150,7 @@ xtable::xtable(df_post_ord, digits = 3)
 #-------------------------------------------------------------------------------
 
 current_data <- actg036
-hist_data <- readRDS("logistic_regression/data/actg019_after_PSM2.rds")
+hist_data <- readRDS("logistic_regression/data/actg019_after_PSM.rds")
 
 # normalize data
 current_data$age <- (current_data$age - mean(current_data$age)) /
@@ -231,19 +231,19 @@ post_beta <- function(formula) {
 logp0_models <- mclapply(
   X = formulas,
   FUN = logp0,
-  mc.cores = 14
+  mc.cores = 1
 )
 
 post_betam  <- mclapply(
   X = formulas,
   FUN = post_beta,
-  mc.cores = 14
+  mc.cores = 1
 )
 
 logml_models <- mclapply(
   X = post_betam,
   FUN = glm.logml.npp.wip,
-  mc.cores = 14
+  mc.cores = 1
 )
 
 prior_models <- exp(sapply(logp0_models, function(x) x[2]) -

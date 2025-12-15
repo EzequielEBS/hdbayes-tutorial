@@ -28,10 +28,10 @@ data_all$study <- rep(c(1, 0), times = c(nrow(curr), nrow(hist)))
 bart_ps <- bart2(
   formula   = study ~ age + race + cd4,
   data      = data_all,
-  n.samples = 1000,
-  n.burn    = 1000,
+  n.samples = 100000,
+  n.burn    = 50000,
   n.chains  = 4,
-  seed      = 1
+  n.threads = 4
 )
 
 # Obtain posterior mean of the estimated propensity scores (on the probability scale)
@@ -79,4 +79,4 @@ hist.matched <- matched_data %>%
   ) 
 
 # Save matched external set for downstream dynamic borrowing analysis
-saveRDS(hist.matched, file = "data/actg019_after_PSM.rds")
+saveRDS(hist.matched, file = "logistic_regression/data/actg019_after_PSM.rds")
