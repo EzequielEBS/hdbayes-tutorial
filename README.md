@@ -1,6 +1,6 @@
 # 📊 hdbayes tutorial
 
-This repository contains the code, data, and figures used in the paper *From priors to performance: a practical introduction to enhancing statistical efficiency with Bayesian dynamic borrowing*.
+This repository contains the code, data, and figures used in the paper *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*.
 
 ---
 
@@ -36,7 +36,7 @@ This repository contains the code, data, and figures used in the paper *From pri
 
 If you use this code, please cite:
 
-> Xinxin Chen | Ezequiel Braga Santos | Joseph G. Ibrahim | Luiz Max Carvalho | Ethan M. Alt (Year). *From priors to performance: a practical introduction to enhancing statistical efficiency with Bayesian dynamic borrowing*. Journal. DOI
+> Xinxin Chen | Ezequiel Braga Santos | Joseph G. Ibrahim | Luiz Max Carvalho | Ethan M. Alt (Year). *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*. Journal. DOI
 
 ---
 
