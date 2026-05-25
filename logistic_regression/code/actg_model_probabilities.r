@@ -24,7 +24,7 @@ library(tidyverse)
 
 map_models <- post_samples$df_post_ord %>% 
   mutate(model_id = paste0("M", row_number())) %>%
-  select(model_id, model)
+  dplyr::select(model_id, model)
 
 prob_wip <- post_samples_wip$df_post %>%
   left_join(map_models, by = "model") %>%

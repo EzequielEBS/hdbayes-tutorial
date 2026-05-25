@@ -1,53 +1,105 @@
-# 📊 hdbayes tutorial
+# hdbayes tutorial
 
-This repository contains the code, data, and figures used in the paper *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*.
+This repository contains the code, saved intermediate outputs, figures, vignettes, and reports used for the manuscript *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*.
 
----
+The project is organized around applied examples for Bayesian dynamic borrowing. The main examples use the `hdbayes` R package to compare ways of incorporating historical or external trial information into current-study analyses.
 
-## 📁 Repository Structure
+## Project Structure
 
-```
+```text
 .
-├── logistic_regression/                # Bayesian logistic regression example with ACTG data              
-|   ├── code/                       
-|   ├── data/                       
-|   ├── figures/                    
-|   ├── samples/
-|   ├── vignettes/
-|   ├── figures/ 
-|   └── README.md
+|-- logistic_regression/          # ACTG binary-outcome example
+|   |-- code/                     # Main analysis scripts and auxiliary Stan/R code
+|   |-- data/                     # Propensity-score matched ACTG historical data
+|   |-- figures/                  # Manuscript and diagnostic figures
+|   |-- samples/                  # Saved posterior/prior predictive samples
+|   `-- vignettes/                # Walkthroughs for variable selection, ATE, and PPC
 |
-├── method_comparison/                  # Compare covariate effects under different priors with ACTG data
+|-- method_comparison/            # Side-by-side ACTG comparison of borrowing methods
 |
-├── survival_analysis/                  # Bayesian survival analysis example with the E1684 and E1690 trials
-|   ├── code/                       
-|   ├── figures/                        
-|   ├── report/ 
-|   └── README.md
+|-- survival_analysis/            # E1684/E1690 relapse-free survival example
+|   |-- code/                     # Grid setup, model fitting, result compilation
+|   |-- figures/                  # Survival-analysis figures
+|   `-- report/                   # R Markdown report and rendered HTML
 |
-├── .gitignore
-|
-└── README.md
+`-- README.md
 ```
 
----
+## Analyses Included
 
-## 📝 Citation
+### Logistic Regression
+
+The `logistic_regression/` directory contains the ACTG binary-outcome analysis used in Sections 3.2-3.4 and 4 of the manuscript. It covers:
+
+- Bayesian variable/subset selection over logistic regression models.
+- Normalized power prior (NPP) analyses using ACTG036 as the current study and ACTG019 as historical data.
+- Posterior model probabilities before and after propensity score matching (PSM).
+- Bayesian model averaging (BMA) for marginal means, average treatment effects (ATEs), and odds ratios.
+- Sensitivity analyses for prior hyperparameters, including Normal and Cauchy prior choices.
+- Prior predictive checks (PPCs), including individual-level prior predictive distributions and ROC/AUC summaries.
+
+See [logistic_regression/README.md](logistic_regression/README.md) for the full workflow.
+
+### Method Comparison
+
+The `method_comparison/` directory contains a compact ACTG script comparing several borrowing approaches on the same logistic-regression setup:
+
+- Current-study-only and pooled analyses.
+- Bayesian hierarchical model (BHM).
+- Commensurate prior.
+- Robust MAP (RMAP).
+- Power prior (PP).
+- Normalized power prior (NPP).
+- Normalized asymptotic power prior (NAPP).
+- Latent exchangeability prior (LEAP).
+
+See [method_comparison/README.md](method_comparison/README.md) for details.
+
+### Survival Analysis
+
+The `survival_analysis/` directory contains the E1684/E1690 relapse-free survival analysis for Section 3.1 and Appendix A. It covers:
+
+- Baseline summaries and Kaplan-Meier comparisons for the E1684 and E1690 trials.
+- Piecewise exponential proportional hazards (PWEPH) models.
+- Mixture cure-rate extensions of PWEPH (CurePWEPH).
+- Dynamic borrowing priors including vague, PP, PSIPP, BHM, CP, LEAP, and NPP.
+- Model selection over the number of baseline-hazard intervals using expected log predictive density (ELPD).
+- Posterior summaries for two-year relapse-free survival probabilities and treatment effects.
+- Effective sample size (ESS) summaries for external borrowing.
+
+See [survival_analysis/README.md](survival_analysis/README.md) for the full workflow.
+
+## Reproducibility Notes
+
+Most scripts assume they are run from the repository root. Several scripts use paths such as `logistic_regression/samples/...` and `survival_analysis/code/...`, so setting the R working directory to the project root is recommended.
+
+The analyses are computationally intensive. Many scripts run MCMC with multiple chains, use parallel workers, or evaluate grids of model-prior combinations. Saved `.RData`, `.rds`, `.png`, and rendered `.html` files are included where practical to make inspection easier without rerunning every model.
+
+Some large survival-analysis fit objects and compiled result files are intentionally not stored in the repository. They can be regenerated by running the scripts in `survival_analysis/code/` sequentially.
+
+## Main Dependencies
+
+The project is written in R and uses the `hdbayes` package throughout. Other commonly used packages include:
+
+- Modeling and posterior summaries: `posterior`, `MCMCpack`, `matrixStats`, `survival`, `survminer`
+- Data manipulation: `dplyr`, `tidyverse`, `reshape2`
+- Plotting and tables: `ggplot2`, `patchwork`, `ggpubr`, `gtsummary`, `kableExtra`, `xtable`, `bayestestR`
+- Stan interfaces and generated models used by the auxiliary logistic-regression scripts
+
+Install any missing packages before running the scripts or rendering the R Markdown files.
+
+## Citation
 
 If you use this code, please cite:
 
-> Xinxin Chen | Ezequiel Braga Santos | Joseph G. Ibrahim | Luiz Max Carvalho | Ethan M. Alt (Year). *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*. Journal. DOI
+> Xinxin Chen, Ezequiel Braga Santos, Joseph G. Ibrahim, Luiz Max Carvalho, and Ethan M. Alt. *From priors to performance: enhancing statistical efficiency with Bayesian dynamic borrowing*. Manuscript.
 
----
+## Contact
 
-## 🧑‍💻 Contact
-
-- Name: Ezequiel Braga 
-- Email: ezequiel.braga.santos@gmail.com 
+- Ezequiel Braga Santos
+- ezequiel.braga.santos@gmail.com
 - GitHub: [@ezequielebs](https://github.com/ezequielebs)
 
----
+## License
 
-## 📜 License
-
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
