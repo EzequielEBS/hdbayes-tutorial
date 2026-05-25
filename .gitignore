@@ -49,6 +49,13 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
+# README files
+README.html
+README_files/
+*/README.html
+*/README_files/
+bayesian_subset_selection/
+
 # others
 *.exe
 logistic_regression/figures/ppc/plots_pnew.RData
